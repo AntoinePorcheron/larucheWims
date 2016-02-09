@@ -2049,7 +2049,6 @@ Ruche.prototype.chargerElementAnalyse = function (elem)
                 break;
         }
     }
-    ;
 }
 
 //---------------------------------//

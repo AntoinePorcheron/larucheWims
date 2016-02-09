@@ -143,7 +143,7 @@ Essaim.prototype.initBloc = function()
                 $("#divAide"+divAideNom).toggleClass("Rcl_Help_Closed",false);
     //            buttonAide.parentNode.parentNode.className = "";
     //            buttonAide.parentNode.parentNode.className = "Rcl_Bloc_Essaim Rcl_Bloc";
-            };
+            }
         },
         true);
     }
@@ -179,7 +179,7 @@ Essaim.prototype.aideInit = function()
 {
     var divAide = $("<div>", {
                     id: "divAide"+this.nom,
-                    class: "Rcl_Help_Essaim Rcl_Help_Closed",
+                    class: "Rcl_Help_Essaim Rcl_Help_Closed"
                     });
     divAide.css("overflow","hidden");   // pour empêcher les éléments flottants
                                         // (le menu) de dépasser du div
