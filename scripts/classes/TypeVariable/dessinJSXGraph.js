@@ -1,10 +1,23 @@
 /*
 * Types de variables de dessin JSXGraph
 * Classe fille de la classe "TypeVariable"
-* Un objet "variable" contiendra un objet représentant le type
-* Ceci permet de modifier le type d'une variable à la volée
+* Un objet "variable" contiendra un objet reprï¿½sentant le type
+* Ceci permet de modifier le type d'une variable ï¿½ la volï¿½e
 */
 
+/**
+ * TODO Comme ce que je montre dans /essayer/class.js,
+ * je conseille que nous utitilisons un facon de nommer les variable
+ * comme exemple wg.class.DessinJSXGraph = func...
+ * les noms peuvent etre longue mais c'est effectue de gerer et combiner nos travails,
+ * et meme pour eviter les variable global pas necessaire (important si nous allons le "repack" comme un lib de js)
+ */
+
+/**
+ *
+ * @param nom
+ * @constructor
+ */
 DessinJSXGraph = function(nom){
 
     // ------ ATTRIBUTS   ----- //
@@ -16,6 +29,7 @@ DessinJSXGraph = function(nom){
     this.parametres = [];
 }
 
+// Pourquoi nous avons un prototype re-defini?
 DessinJSXGraph.prototype = Object.create(TypeVariable.prototype);
 DessinJSXGraph.prototype.constructor = DessinJSXGraph;
 

@@ -21,7 +21,11 @@ wg.ui.$toolbar = (/**
                 .data("name", b.name)
                 .html($("<img />").attr("src", b.icon))
                 .css(option.buttoncss)
-                .click(b.callback)
+                .click(function (event) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    b.callback()
+                })
                 .appendTo($toolbar));
             ui(toolList.slice(1))
         }
