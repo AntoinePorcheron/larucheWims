@@ -15,5 +15,6 @@ var wg = wimsGraph;
 wg.ui = {};
 wg.default = {};
 wg.options = {};
+wg.lib = {};
 
 wg.class = {};

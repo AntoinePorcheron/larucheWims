@@ -29,7 +29,6 @@ DessinJSXGraph = function(nom){
     this.parametres = [];
 }
 
-// Pourquoi nous avons un prototype re-defini?
 DessinJSXGraph.prototype = Object.create(TypeVariable.prototype);
 DessinJSXGraph.prototype.constructor = DessinJSXGraph;
 
