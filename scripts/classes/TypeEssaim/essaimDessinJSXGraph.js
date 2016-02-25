@@ -115,8 +115,8 @@ EssaimJSXGraph.prototype.creerBloc = function(dataRecup){
     barre_tache_editJSXGraph.appendChild(bouton_composant_editJSXGraph);
 
     this.divBloc.appendChild(titreBloc);
-    var div_brd = document.createElement("DIV");
-    div_brd.setAttribute("style", "width:" + this.divBloc.clientWidth - 30 + "px;height:400px;");
+    /*var div_brd = document.createElement("DIV");
+    div_brd.setAttribute("style", "width:" + this.divBloc.clientWidth - 30 + "px;height:400px;");*/
     /*-30 pour obtenir un ensemble harmonieux*/
     
     /*div_brd.setAttribute("id", "box");
@@ -133,7 +133,6 @@ EssaimJSXGraph.prototype.creerBloc = function(dataRecup){
             height: 400
         })
         .appendTo($(this.divBloc));
-    /**/
     /*Ok, on gardera probablement la façon JQuery*/
     var brd = JXG.JSXGraph.initBoard('box', {axis:true});
     
