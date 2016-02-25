@@ -3,6 +3,11 @@
  * Permet de crÃ©er un bloc d'instructions gÃ©nÃ©rant un dessins utilisant JSXGraphe
  */
 
+/*Pseudo type énumérée qui permet d'avoir des nom explicite pour la variable mode*/
+var point = 1;
+var ligne = 2;
+var cercle = 3;
+
 EssaimJSXGraph = function(num){
 
     //Appelle le constructeur parent
@@ -14,22 +19,29 @@ EssaimJSXGraph = function(num){
     this.numero = num;
     this.proto = "EssaimJSXGraph";
 
-    /*this.tailleImageEnonceX = 200;
-      this.tailleImageEnonceY = 200;*/
+    /* Probablement à mieux définir*/
+    /* La variable mode permet de définir dans quel mode l'utilisateur se trouve,
+     * si il souhaite dessiner (le choix de la forme), etc...
+     */
+    /*TODO : 
+     * Crée la partie qui permet de changer le mode de dessin
+     */
+    this.mode = cercle;
+    this.point = [];
 }
 
-//------------ Dï¿½claration comme classe dï¿½rivï¿½e de Essaim -------------//
+//------------ Déclaration comme classe dérivée de Essaim -------------//
 
 EssaimJSXGraph.prototype = Object.create(Essaim.prototype);
 EssaimJSXGraph.prototype.constructor = EssaimJSXGraph;
 
-//Dï¿½finit les nouveaux attributs
+//Définit les nouveaux attributs
 EssaimJSXGraph.prototype.nomAffiche = "Essaim : Dessin JSXGraph";
 EssaimJSXGraph.prototype.proto = "EssaimJSXGraph";
 
 /*EssaimJSXGraph.prototype.imageEnonce= "NULL";*/
 
-EssaimJSXGraph.prototype.gereReponde = false;
+EssaimJSXGraph.prototype.gereReponse = false;
 Essaim.prototype.aUneAide = false;
 EssaimJSXGraph.prototype.gereTailleImageEnonce = false;
 
@@ -69,7 +81,7 @@ EssaimJSXGraph.prototype.initEnonce = function(){
                 essaimFd.tailleImageEnonceY = oef_tailleY;
 	    }
 	    
-	    /*rucheSys.enonce.ajoutImageEssaim(essaimFd);*/ /*Inclusion de l'image reportï¿½e ï¿½ 
+	    /*rucheSys.enonce.ajoutImageEssaim(essaimFd);*/ /*Inclusion de l'image reportée à
 							     *plus tard*/
 	}
     }
@@ -97,7 +109,7 @@ EssaimJSXGraph.prototype.creerBloc = function(dataRecup){
 
 
     // **** Fabrication du contenu du bloc ****
-    // *** Barre de tï¿½ches pour cet ï¿½diteur ***
+    // *** Barre de tâches pour cet éditeur ***
 
     var barre_tache_editJSXGraph = document.createElement("DIV");
 
@@ -115,16 +127,10 @@ EssaimJSXGraph.prototype.creerBloc = function(dataRecup){
     barre_tache_editJSXGraph.appendChild(bouton_composant_editJSXGraph);
 
     this.divBloc.appendChild(titreBloc);
-    /*var div_brd = document.createElement("DIV");
-    div_brd.setAttribute("style", "width:" + this.divBloc.clientWidth - 30 + "px;height:400px;");*/
-    /*-30 pour obtenir un ensemble harmonieux*/
-    
-    /*div_brd.setAttribute("id", "box");
-    div_brd.setAttribute("class", "jxgbox");
-    this.divBloc.appendChild(div_brd);*/
+
     /** un facon jquery*/
     var $div_brd = $("<div></div>")
-        .attr({
+	.attr({
             id: "box",
             class: "jxgbox"
         })
@@ -133,28 +139,55 @@ EssaimJSXGraph.prototype.creerBloc = function(dataRecup){
             height: 400
         })
         .appendTo($(this.divBloc));
-    /*Ok, on gardera probablement la façon JQuery*/
+    /*Ok, on garde la façon JQuery*/
+
+    /*Création du graphe*/
     var brd = JXG.JSXGraph.initBoard('box', {axis:true});
     
     EssaimJSXGraph.prototype.initEnonce.call(this);
     EssaimJSXGraph.prototype.initAnalyse.call(this);
 
+    var db = this.divBloc;
     /*Gestion de la modification de la taille du bloc*/
-    window.onresize = function(){
+    $(window).resize(function(){
 	/*A modifier, ne marche pas pour les resize non "manuel"*/
 	brd.resizeContainer(db.clientWidth - 30, 400, false, false);
-    }
-
+    });
+    
     /*Creation de points, à retoucher/améliorer*/
     /*Gere la grille magnétique*/
+    var tmp = this;
     $div_brd.click(function(e){
 	/*La partie en commentaire sera utile lors de la gestion de la grille magnetique*/	
 	/*if (grilleMagnetique){
-	    var pos = [Math.round(brd.getUsrCoordsOfMouse(e)[0]), Math.round(brd.getUsrCoordsOfMouse(e)[1])];
-	}else{*/
-	    var pos = brd.getUsrCoordsOfMouse(e);
-    /*}*/
-	brd.create("point", pos);
+	 *  var pos = [Math.round(brd.getUsrCoordsOfMouse(e)[0]), 
+	 *  Math.round(brd.getUsrCoordsOfMouse(e)[1])];
+	 *}else{
+	 */
+	tmp.point.push(brd.getUsrCoordsOfMouse(e))
+	console.log(tmp.point);
+	switch (tmp.mode){
+	case point:
+	    if (tmp.point.length === 1){
+		brd.create("point", tmp.point[0]);
+		tmp.point = [];
+	    }
+	    break;
+	case ligne:
+	    if (tmp.point.length === 2){
+		brd.create("line", tmp.point);
+		tmp.point = [];
+	    }
+	    break;
+	case cercle:
+	    if (tmp.point.length === 2){
+		brd.create("circle", tmp.point);
+		tmp.point = [];
+	    }
+	    break;   
+	}
+	/*}*/ 
+	/*brd.create("point", pos);*/
     });
 }
 
@@ -169,7 +202,7 @@ EssaimJSXGraph.prototype.detruitBloc = function(){
 }
 
 EssaimJSXGraph.prototype.toOEF = function(){
-    /*TODO : gï¿½nï¿½rer le code OEF*/
+    /*TODO : générer le code OEF*/
     return "";
 }
 
