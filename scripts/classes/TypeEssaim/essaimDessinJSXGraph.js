@@ -3,10 +3,15 @@
  * Permet de crÃ©er un bloc d'instructions gÃ©nÃ©rant un dessins utilisant JSXGraphe
  */
 
+/*
+ * Problème : On ne peut pas crée plusieur graphe, faudrait trouver la raison de se problème
+ */
+
 /*Pseudo type énumérée qui permet d'avoir des nom explicite pour la variable mode*/
 var point = 1;
 var ligne = 2;
 var cercle = 3;
+var segment = 4;
 
 EssaimJSXGraph = function(num){
 
@@ -26,7 +31,7 @@ EssaimJSXGraph = function(num){
     /*TODO : 
      * Crée la partie qui permet de changer le mode de dessin
      */
-    this.mode = cercle;
+    this.mode = ligne;
     this.point = [];
 }
 
@@ -82,7 +87,7 @@ EssaimJSXGraph.prototype.initEnonce = function(){
 	    }
 	    
 	    /*rucheSys.enonce.ajoutImageEssaim(essaimFd);*/ /*Inclusion de l'image reportée à
-							     *plus tard*/
+	    						     *plus tard*/
 	}
     }
     li.appendChild(bouton);
@@ -129,43 +134,61 @@ EssaimJSXGraph.prototype.creerBloc = function(dataRecup){
     this.divBloc.appendChild(titreBloc);
 
     /** un facon jquery*/
-    var $div_brd = $("<div></div>")
-	.attr({
-            id: "box",
-            class: "jxgbox"
-        })
-        .css({
-            width: this.divBloc.clientWidth - 30,
-            height: 400
-        })
-        .appendTo($(this.divBloc));
+    var $div_brd = $("<div></div>").attr({
+        id: "box" + this.num,
+        class: "jxgbox"
+    }).css({
+        width: this.divBloc.clientWidth - 30,
+        height: 400
+    }).appendTo($(this.divBloc));
     /*Ok, on garde la façon JQuery*/
+    var $div_button = $("<div></div>");
+    var $button_point = $("<button>Point</button>").appendTo($div_button).click(
+	{objet : this}, function(e){
+	    e.data.objet.mode = point;
+	});
 
-    /*Création du graphe*/
-    var brd = JXG.JSXGraph.initBoard('box', {axis:true});
-    
+    var $button_ligne = $("<button>Ligne</button>").appendTo($div_button).click(
+	{objet : this}, function(e){
+	    e.data.objet.mode = ligne;
+	});
+    var $button_cercle = $("<button>Cercle</button>").appendTo($div_button).click(
+	{objet : this}, function(e){
+	    e.data.objet.mode = cercle;
+	});
+    var $button_segment = $("<button>Segment</button>").appendTo($div_button).click(
+	{objet : this}, function(e){
+	    e.data.objet.mode = segment;
+	});
+
+    $div_button.appendTo(this.divBloc);
+
     EssaimJSXGraph.prototype.initEnonce.call(this);
     EssaimJSXGraph.prototype.initAnalyse.call(this);
 
+    
+    /*Création du graphe*/
+    var brd = JXG.JSXGraph.initBoard('box' + this.num, {axis:true});
+
     var db = this.divBloc;
     /*Gestion de la modification de la taille du bloc*/
+    /*A modifier, ne marche pas pour les resize non "manuel"*/
     $(window).resize(function(){
-	/*A modifier, ne marche pas pour les resize non "manuel"*/
 	brd.resizeContainer(db.clientWidth - 30, 400, false, false);
     });
     
     /*Creation de points, à retoucher/améliorer*/
     /*Gere la grille magnétique*/
-    var tmp = this;
-    $div_brd.click(function(e){
+    $div_brd.click({objet : this}, function(e){
 	/*La partie en commentaire sera utile lors de la gestion de la grille magnetique*/	
 	/*if (grilleMagnetique){
 	 *  var pos = [Math.round(brd.getUsrCoordsOfMouse(e)[0]), 
 	 *  Math.round(brd.getUsrCoordsOfMouse(e)[1])];
 	 *}else{
 	 */
+	console.log(e.data.objet);
+	var tmp = e.data.objet;
 	tmp.point.push(brd.getUsrCoordsOfMouse(e))
-	console.log(tmp.point);
 	switch (tmp.mode){
 	case point:
 	    if (tmp.point.length === 1){
@@ -175,16 +198,27 @@ EssaimJSXGraph.prototype.creerBloc = function(dataRecup){
 	    break;
 	case ligne:
 	    if (tmp.point.length === 2){
-		brd.create("line", tmp.point);
+		var p1 = brd.create("point", tmp.point[0]);
+		var p2 = brd.create("point", tmp.point[1]);
+		brd.create("line", [p1, p2]);
 		tmp.point = [];
 	    }
 	    break;
 	case cercle:
 	    if (tmp.point.length === 2){
-		brd.create("circle", tmp.point);
+		var p1 = brd.create("point", tmp.point[0]);
+		var p2 = brd.create("point", tmp.point[1]);
+		brd.create("circle", [p1, p2]);
 		tmp.point = [];
 	    }
-	    break;   
+	    break;
+	case segment:
+	    if (tmp.point.length === 2){
+		var p1 = brd.create("point", tmp.point[0]);
+		var p2 = brd.create("point", tmp.point[1]);
+		brd.create("segment", [p1, p2]);
+		tmp.point = [];
+	    }
 	}
 	/*}*/ 
 	/*brd.create("point", pos);*/
