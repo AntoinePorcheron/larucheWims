@@ -116,7 +116,9 @@ EssaimJSXGraph.prototype.creerBloc = function(dataRecup){
 
     this.divBloc.appendChild(titreBloc);
     var div_brd = document.createElement("DIV");
-    div_brd.setAttribute("style", "width:300px;height:400px;");
+    div_brd.setAttribute("style", "width:" + this.divBloc.clientWidth - 30 + "px;height:400px;");
+    /*-30 pour obtenir un ensemble harmonieux*/
+    
     div_brd.setAttribute("id", "box");
     div_brd.setAttribute("class", "jxgbox");
     this.divBloc.appendChild(div_brd);
@@ -124,7 +126,24 @@ EssaimJSXGraph.prototype.creerBloc = function(dataRecup){
     
     EssaimJSXGraph.prototype.initEnonce.call(this);
     EssaimJSXGraph.prototype.initAnalyse.call(this);
-    
+
+    /*Gestion de la modification de la taille du bloc*/
+    window.onresize = function(){
+	/*A modifier, ne marche pas pour les resize non "manuel"*/
+	brd.resizeContainer(db.clientWidth - 30, 400, false, false);
+    }
+
+    /*Creation de points, à retoucher/améliorer*/
+    /*Gere la grille magnétique*/
+    div_brd.onmousedown = function(e){
+	/*La partie en commentaire sera utile lors de la gestion de la grille magnetique*/	
+	/*if (grilleMagnetique){
+	    var pos = [Math.round(brd.getUsrCoordsOfMouse(e)[0]), Math.round(brd.getUsrCoordsOfMouse(e)[1])];
+	}else{*/
+	    var pos = brd.getUsrCoordsOfMouse(e);
+    /*}*/
+	brd.create("point", pos);
+    }
 }
 
 

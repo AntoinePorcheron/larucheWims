@@ -61,28 +61,11 @@ DessinJSXGraph.prototype.creerBloc = function(nom)
     TypeVariable.prototype.creerBloc(nom);
 
     var divBloc = $("#RidPrBloc_Interne_"+nom);
-    /*divBloc.append("<div>");*/
+    //*divBloc.append("<div>");*/
 
     var div_editJSXGraph = document.createElement("DIV");
     div_editJSXGraph.id = "editJSXGraph" + nom;
-    div_editJSXGraph.classeName = "Rcl_Droppable";
-    /*
-    var div_justif = document.createElment("DIV");
-    var div_justifi1 = document.createElement("DIV");
-
-    divBloc.append("<span>\r\nLargeur du dessin (en pixels) : <span>");
-    divBloc.append(*/
-
-    /*TODO
-     *
-     * Inclure bloc
-     */
-    var div_brd = document.createElement("DIV");
-    div_brd.setAttribute("style", "width:600px;height:600px;");
-    div_brd.setAttribute("id", "box");
-    div_brd.setAttribute("class", "jxgbox");
-    divBloc.append(div_brd);
-    var brd = JXG.JSX_Graph.initBoard('box', {axis:true});
+    div_editJSXGraph.classeName = "Rcl_Droppable";    
 }
 
 
