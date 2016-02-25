@@ -129,7 +129,7 @@ EssaimJSXGraph.prototype.creerBloc = function(dataRecup){
             class: "jxgbox"
         })
         .css({
-            width: 300,
+            width: this.divBloc.clientWidth - 30,
             height: 400
         })
         .appendTo($(this.divBloc));
