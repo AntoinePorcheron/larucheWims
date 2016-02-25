@@ -12,6 +12,13 @@
  * les noms peuvent etre longue mais c'est effectue de gerer et combiner nos travails,
  * et meme pour eviter les variable global pas necessaire (important si nous allons le "repack" comme un lib de js)
  */
+/*
+ *EDIT : 
+ * Je suis pas sur d'avoir compris le code de /essayer/class.js, mais si j'ai bien compris ça sera
+ * pour l'histoire de la boite à outil qui contient plusieur élément, et si c'est effectivement
+ * ça, c'est une bonne idée, mais on verra quand on en sera la!
+ * après pour les noms de variable je suis d'accord, faut juste se mettre d'accord :p
+ */
 
 /**
  *
