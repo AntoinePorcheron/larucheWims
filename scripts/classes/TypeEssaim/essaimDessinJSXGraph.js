@@ -18,12 +18,12 @@ EssaimJSXGraph = function(num){
       this.tailleImageEnonceY = 200;*/
 }
 
-//------------ Déclaration comme classe dérivée de Essaim -------------//
+//------------ Dï¿½claration comme classe dï¿½rivï¿½e de Essaim -------------//
 
 EssaimJSXGraph.prototype = Object.create(Essaim.prototype);
 EssaimJSXGraph.prototype.constructor = EssaimJSXGraph;
 
-//Définit les nouveaux attributs
+//Dï¿½finit les nouveaux attributs
 EssaimJSXGraph.prototype.nomAffiche = "Essaim : Dessin JSXGraph";
 EssaimJSXGraph.prototype.proto = "EssaimJSXGraph";
 
@@ -51,7 +51,7 @@ EssaimJSXGraph.prototype.initEnonce = function(){
 	var ind = rucheSys.rechercheIndice(nomEssaim, rucheSys.listeBlocPrepa);
 	var essaimFd = rucheSys.listeBlocPrepa[ind];
 	if (essaimFd.gereReponde == true){
-	    alert("Problème , cet essaim devrait pouvoir gérer plusieurs dessins. Contacter les développeurs");
+	    alert("Problï¿½me , cet essaim devrait pouvoir gï¿½rer plusieurs dessins. Contacter les dï¿½veloppeurs");
 	}else{
 	    var indice_tailleX =
 		rucheSys.rechercheIndice("tailleX"+essaimFd.nom,rucheSys.listeEditeur);
@@ -63,13 +63,13 @@ EssaimJSXGraph.prototype.initEnonce = function(){
 	    var oef_tailleX = Number(rucheSys.listeEditeur[indicie_tailleX].toOEF());
 	    var oef_tailleY = Number(rucheSys.listeEditeur[indicie_tailleY].toOEF());
 	    if (oef_tailleX<5 || oef_tailleY<5) {
-                alert("Une image ne peut pas être en largeur\n ou hauteur plus petite que 5 pixels");
+                alert("Une image ne peut pas ï¿½tre en largeur\n ou hauteur plus petite que 5 pixels");
 	    } else {
                 essaimFd.tailleImageEnonceX = oef_tailleX;
                 essaimFd.tailleImageEnonceY = oef_tailleY;
 	    }
 	    
-	    /*rucheSys.enonce.ajoutImageEssaim(essaimFd);*/ /*Inclusion de l'image reportée à 
+	    /*rucheSys.enonce.ajoutImageEssaim(essaimFd);*/ /*Inclusion de l'image reportï¿½e ï¿½ 
 							     *plus tard*/
 	}
     }
@@ -97,7 +97,7 @@ EssaimJSXGraph.prototype.creerBloc = function(dataRecup){
 
 
     // **** Fabrication du contenu du bloc ****
-    // *** Barre de tâches pour cet éditeur ***
+    // *** Barre de tï¿½ches pour cet ï¿½diteur ***
 
     var barre_tache_editJSXGraph = document.createElement("DIV");
 
@@ -120,6 +120,18 @@ EssaimJSXGraph.prototype.creerBloc = function(dataRecup){
     div_brd.setAttribute("id", "box");
     div_brd.setAttribute("class", "jxgbox");
     this.divBloc.appendChild(div_brd);
+    /** un facon jquery
+    var $div_brd = $("<div></div>")
+        .attr({
+            id: "box",
+            class: "jxgbox"
+        })
+        .css({
+            width: 300,
+            height: 400
+        })
+        .appendTo($(this.divBloc));
+     */
     var brd = JXG.JSXGraph.initBoard('box', {axis:true});
     
     EssaimJSXGraph.prototype.initEnonce.call(this);
@@ -138,7 +150,7 @@ EssaimJSXGraph.prototype.detruitBloc = function(){
 }
 
 EssaimJSXGraph.prototype.toOEF = function(){
-    /*TODO : générer le code OEF*/
+    /*TODO : gï¿½nï¿½rer le code OEF*/
     return "";
 }
 
