@@ -97,9 +97,6 @@ EssaimJSXGraph.prototype.creerBloc = function(dataRecup){
 
 
     // **** Fabrication du contenu du bloc ****
-    /* A compléter: contient le graphe */
-
-    
     // *** Barre de tâches pour cet éditeur ***
 
     var barre_tache_editJSXGraph = document.createElement("DIV");
@@ -114,33 +111,17 @@ EssaimJSXGraph.prototype.creerBloc = function(dataRecup){
 	var nomEssaim = this.id.slice("boutonComposantFD".length, this.id.length);
 	var ind = rucheSys.rechercheIndice(nomEssaim,rucheSys.listeBlocPrepa);
 	var essaim = rucheSys.listeBlocPrepa[ind];
-
-	/*essaim.menyDeroulShow(essaim.menuDeroulIdFind(1),this.id);*/
     }
     barre_tache_editJSXGraph.appendChild(bouton_composant_editJSXGraph);
 
-    var para_txt_tailleX = document.createElement("P");
-    var txt_tailleX = document.createTextNode("\r\nLargeur du dessins (en pixels) : ");
-    para_txt_tailleX.appendChild(txt_tailleX);
-    var txt_tailleY = document.createTextNode("\r\nHauteur du dessins (en pixels) : ");
-    var txt_editJSXGraph = document.createTextNode("\r\n jsxgraph: ");
-
-    var div_justif = document.createElement("DIV");
-    var div_justif1 = document.createElement("DIV");
-
     this.divBloc.appendChild(titreBloc);
-    this.divBloc.appendChild(para_txt_tailleX);
-    /*this.divBloc.appendChild(div_tailleX);*/
-    this.divBloc.appendChild(div_justif);
-    this.divBloc.appendChild(txt_tailleY);
-    /*this.divBloc.appendChild(div_tailleY);*/
-    this.divBloc.appendChild(div_justif1);
-    this.divBloc.appendChild(txt_editJSXGraph);
-    this.divBloc.appendChild(barre_tache_editJSXGraph);
-    /*this.divBloc.appendChild(div_editJSXGraph);*/
-
-    /*var idMenuComposant = this.menuDeroulInt(bouton_composant_editJSXGraph.id);*/
-
+    var div_brd = document.createElement("DIV");
+    div_brd.setAttribute("style", "width:300px;height:400px;");
+    div_brd.setAttribute("id", "box");
+    div_brd.setAttribute("class", "jxgbox");
+    this.divBloc.appendChild(div_brd);
+    var brd = JXG.JSXGraph.initBoard('box', {axis:true});
+    
     EssaimJSXGraph.prototype.initEnonce.call(this);
     EssaimJSXGraph.prototype.initAnalyse.call(this);
     
