@@ -119,10 +119,10 @@ EssaimJSXGraph.prototype.creerBloc = function(dataRecup){
     div_brd.setAttribute("style", "width:" + this.divBloc.clientWidth - 30 + "px;height:400px;");
     /*-30 pour obtenir un ensemble harmonieux*/
     
-    div_brd.setAttribute("id", "box");
+    /*div_brd.setAttribute("id", "box");
     div_brd.setAttribute("class", "jxgbox");
-    this.divBloc.appendChild(div_brd);
-    /** un facon jquery
+    this.divBloc.appendChild(div_brd);*/
+    /** un facon jquery*/
     var $div_brd = $("<div></div>")
         .attr({
             id: "box",
@@ -133,7 +133,8 @@ EssaimJSXGraph.prototype.creerBloc = function(dataRecup){
             height: 400
         })
         .appendTo($(this.divBloc));
-     */
+    /**/
+    /*Ok, on gardera probablement la façon JQuery*/
     var brd = JXG.JSXGraph.initBoard('box', {axis:true});
     
     EssaimJSXGraph.prototype.initEnonce.call(this);
