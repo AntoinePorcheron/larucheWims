@@ -19,6 +19,10 @@
  * ça, c'est une bonne idée, mais on verra quand on en sera la!
  * après pour les noms de variable je suis d'accord, faut juste se mettre d'accord :p
  */
+/**
+ * D'accord
+ * -- Yan
+ */
 
 /**
  *
