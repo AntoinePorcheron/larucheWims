@@ -148,7 +148,7 @@ EssaimJSXGraph.prototype.creerBloc = function(dataRecup){
 
     /*Creation de points, à retoucher/améliorer*/
     /*Gere la grille magnétique*/
-    div_brd.onmousedown = function(e){
+    $div_brd.click(function(e){
 	/*La partie en commentaire sera utile lors de la gestion de la grille magnetique*/	
 	/*if (grilleMagnetique){
 	    var pos = [Math.round(brd.getUsrCoordsOfMouse(e)[0]), Math.round(brd.getUsrCoordsOfMouse(e)[1])];
@@ -156,7 +156,7 @@ EssaimJSXGraph.prototype.creerBloc = function(dataRecup){
 	    var pos = brd.getUsrCoordsOfMouse(e);
     /*}*/
 	brd.create("point", pos);
-    }
+    });
 }
 
 
