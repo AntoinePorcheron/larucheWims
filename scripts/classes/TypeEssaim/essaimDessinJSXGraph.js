@@ -22,7 +22,7 @@ var segment = "segment";
 EssaimJSXGraph = function(num){
 
     //Appelle le constructeur parent
-    Essaim.call(num);
+    Essaim.call(this,num);
 
     //---------- ATTRIBUTS -------------//
 
@@ -49,7 +49,7 @@ EssaimJSXGraph.prototype.constructor = EssaimJSXGraph;
 EssaimJSXGraph.prototype.nomAffiche = "Essaim : Dessin JSXGraph";
 EssaimJSXGraph.prototype.proto = "EssaimJSXGraph";
 
-/*EssaimJSXGraph.prototype.imageEnonce= "NULL";*/
+EssaimJSXGraph.prototype.imageEnonce= "NULL";
 
 EssaimJSXGraph.prototype.gereReponse = false;
 Essaim.prototype.aUneAide = false;
@@ -132,7 +132,6 @@ EssaimJSXGraph.prototype.creerBloc = function(dataRecup){
     barre_tache_editJSXGraph.appendChild(bouton_composant_editJSXGraph);
 
     this.divBloc.appendChild(titreBloc);
-    console.log(this.numero);
     var $div_brd = $("<div></div>").attr({
         id: "box" + this.numero,
         class: "jxgbox"
@@ -177,6 +176,7 @@ EssaimJSXGraph.prototype.creerBloc = function(dataRecup){
     /*A modifier, ne marche pas pour les resize non "manuel"*/
     $(window).resize(function(){
 	brd.resizeContainer(db.clientWidth - 30, 400, false, false);
+	brd.update();
     });
     
     /*Creation de points, à retoucher/améliorer*/
