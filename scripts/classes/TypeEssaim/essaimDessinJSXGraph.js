@@ -5,6 +5,10 @@
 
 /*
  * Problème : On ne peut pas crée plusieur graphe, faudrait trouver la raison de se problème
+ * + le redimensionnement possede quelque problème, il n'est pas complétement fonctionnel
+ * + parfois, lors de simple drag, on crée une forme que l'on voulais pas
+ * + on a pas de suppression d'element (pas encore)
+ * + on a pas la génération du code OEF correspondant
  */
 
 /*Pseudo type énumérée qui permet d'avoir des nom explicite pour la variable mode*/
@@ -28,11 +32,10 @@ EssaimJSXGraph = function(num){
     /* La variable mode permet de définir dans quel mode l'utilisateur se trouve,
      * si il souhaite dessiner (le choix de la forme), etc...
      */
-    /*TODO : 
-     * Crée la partie qui permet de changer le mode de dessin
-     */
+   
     this.mode = ligne;
     this.point = [];
+    this.brd;
 }
 
 //------------ Déclaration comme classe dérivée de Essaim -------------//
@@ -141,6 +144,7 @@ EssaimJSXGraph.prototype.creerBloc = function(dataRecup){
         width: this.divBloc.clientWidth - 30,
         height: 400
     }).appendTo($(this.divBloc));
+
     /*Ok, on garde la façon JQuery*/
     var $div_button = $("<div></div>");
     var $button_point = $("<button>Point</button>").appendTo($div_button).click(
@@ -168,8 +172,8 @@ EssaimJSXGraph.prototype.creerBloc = function(dataRecup){
 
     
     /*Création du graphe*/
-    var brd = JXG.JSXGraph.initBoard('box' + this.num, {axis:true});
-
+    this.brd = JXG.JSXGraph.initBoard('box' + this.num, {axis:true});
+    var brd = this.brd;
     var db = this.divBloc;
     /*Gestion de la modification de la taille du bloc*/
     /*A modifier, ne marche pas pour les resize non "manuel"*/
@@ -178,50 +182,53 @@ EssaimJSXGraph.prototype.creerBloc = function(dataRecup){
     });
     
     /*Creation de points, à retoucher/améliorer*/
-    /*Gere la grille magnétique*/
     $div_brd.click({objet : this}, function(e){
-	/*La partie en commentaire sera utile lors de la gestion de la grille magnetique*/	
-	/*if (grilleMagnetique){
-	 *  var pos = [Math.round(brd.getUsrCoordsOfMouse(e)[0]), 
-	 *  Math.round(brd.getUsrCoordsOfMouse(e)[1])];
-	 *}else{
-	 */
-	console.log(e.data.objet);
+	var getMouseCoords = function(e, i) {
+            var cPos = brd.getCoordsTopLeftCorner(e, i),
+		absPos = JXG.getPosition(e, i),
+		dx = absPos[0]-cPos[0],
+		dy = absPos[1]-cPos[1];
+            return new JXG.Coords(JXG.COORDS_BY_SCREEN, [dx, dy], brd);
+	}
 	var tmp = e.data.objet;
-	tmp.point.push(brd.getUsrCoordsOfMouse(e))
+	var point_tmp = undefined;
+	var coords = getMouseCoords(e, 0);
+	for (el in brd.objects){
+	    if (JXG.isPoint(brd.objects[el]) && brd.objects[el].hasPoint
+		(coords.scrCoords[1],coords.scrCoords[2])){
+		point_tmp = el;
+	    }
+	}
+	if (point_tmp !== undefined){
+	    tmp.point.push(point_tmp);
+	    console.log(tmp.point);
+	}else{
+	    tmp.point.push(brd.create("point", brd.getUsrCoordsOfMouse(e)));
+	}
 	switch (tmp.mode){
 	case point:
 	    if (tmp.point.length === 1){
-		brd.create("point", tmp.point[0]);
 		tmp.point = [];
 	    }
 	    break;
 	case ligne:
 	    if (tmp.point.length === 2){
-		var p1 = brd.create("point", tmp.point[0]);
-		var p2 = brd.create("point", tmp.point[1]);
-		brd.create("line", [p1, p2]);
+		brd.create("line", tmp.point);
 		tmp.point = [];
 	    }
 	    break;
 	case cercle:
 	    if (tmp.point.length === 2){
-		var p1 = brd.create("point", tmp.point[0]);
-		var p2 = brd.create("point", tmp.point[1]);
-		brd.create("circle", [p1, p2]);
+		brd.create("circle", tmp.point);
 		tmp.point = [];
 	    }
 	    break;
 	case segment:
 	    if (tmp.point.length === 2){
-		var p1 = brd.create("point", tmp.point[0]);
-		var p2 = brd.create("point", tmp.point[1]);
-		brd.create("segment", [p1, p2]);
+		brd.create("segment", tmp.point);
 		tmp.point = [];
 	    }
 	}
-	/*}*/ 
-	/*brd.create("point", pos);*/
     });
 }
 
@@ -231,6 +238,7 @@ EssaimJSXGraph.prototype.nouveauComposant = function(classeComposant){
 }
 
 EssaimJSXGraph.prototype.detruitBloc = function(){
+    freeBoard(this.brd);
     Essaim.prototype.detruitBloc.call(this);
     /*Ajouter suppression du graphe*/
 }
