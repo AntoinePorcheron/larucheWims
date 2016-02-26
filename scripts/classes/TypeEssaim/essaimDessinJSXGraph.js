@@ -4,23 +4,25 @@
  */
 
 /*
- * Problème : On ne peut pas crée plusieur graphe, faudrait trouver la raison de se problème
+ * Problème :
  * + le redimensionnement possede quelque problème, il n'est pas complétement fonctionnel
  * + parfois, lors de simple drag, on crée une forme que l'on voulais pas
  * + on a pas de suppression d'element (pas encore)
  * + on a pas la génération du code OEF correspondant
+ * + améliorer bouton (graphique)
+ * + on ne peut pas encore connecter les points au lignes/segment..
  */
 
 /*Pseudo type énumérée qui permet d'avoir des nom explicite pour la variable mode*/
-var point = 1;
-var ligne = 2;
-var cercle = 3;
-var segment = 4;
+var point = "point";
+var ligne = "line";
+var cercle = "circle";
+var segment = "segment";
 
 EssaimJSXGraph = function(num){
 
     //Appelle le constructeur parent
-    Essaim.call(this.num);
+    Essaim.call(num);
 
     //---------- ATTRIBUTS -------------//
 
@@ -87,16 +89,12 @@ EssaimJSXGraph.prototype.initEnonce = function(){
 	    } else {
                 essaimFd.tailleImageEnonceX = oef_tailleX;
                 essaimFd.tailleImageEnonceY = oef_tailleY;
-	    }
-	    
-	    /*rucheSys.enonce.ajoutImageEssaim(essaimFd);*/ /*Inclusion de l'image reportée à
-	    						     *plus tard*/
+	    }    
 	}
     }
     li.appendChild(bouton);
     tab.appendChild(li);
 }
-
 
 EssaimJSXGraph.prototype.creerBloc = function(dataRecup){
     Essaim.prototype.initBloc.call(this);
@@ -114,7 +112,6 @@ EssaimJSXGraph.prototype.creerBloc = function(dataRecup){
     span_txtNom.appendChild(txtNom);
     titreBloc.appendChild(span_txtNom);
     titreBloc.style.textAlign="center";
-
 
     // **** Fabrication du contenu du bloc ****
     // *** Barre de tâches pour cet éditeur ***
@@ -135,10 +132,9 @@ EssaimJSXGraph.prototype.creerBloc = function(dataRecup){
     barre_tache_editJSXGraph.appendChild(bouton_composant_editJSXGraph);
 
     this.divBloc.appendChild(titreBloc);
-
-    /** un facon jquery*/
+    console.log(this.numero);
     var $div_brd = $("<div></div>").attr({
-        id: "box" + this.num,
+        id: "box" + this.numero,
         class: "jxgbox"
     }).css({
         width: this.divBloc.clientWidth - 30,
@@ -148,21 +144,23 @@ EssaimJSXGraph.prototype.creerBloc = function(dataRecup){
     /*Ok, on garde la façon JQuery*/
     var $div_button = $("<div></div>");
     var $button_point = $("<button>Point</button>").appendTo($div_button).click(
-	{objet : this}, function(e){
-	    e.data.objet.mode = point;
+	{essaimJSXGraph : this}, function(event){
+	    event.data.essaimJSXGraph.mode = point;
 	});
 
     var $button_ligne = $("<button>Ligne</button>").appendTo($div_button).click(
-	{objet : this}, function(e){
-	    e.data.objet.mode = ligne;
+	{essaimJSXGraph : this}, function(event){
+	    event.data.essaimJSXGraph.mode = ligne;
 	});
+    
     var $button_cercle = $("<button>Cercle</button>").appendTo($div_button).click(
-	{objet : this}, function(e){
-	    e.data.objet.mode = cercle;
+	{essaimJSXGraph : this}, function(event){
+	    event.data.essaimJSXGraph.mode = cercle;
 	});
+    
     var $button_segment = $("<button>Segment</button>").appendTo($div_button).click(
-	{objet : this}, function(e){
-	    e.data.objet.mode = segment;
+	{essaimJSXGraph : this}, function(event){
+	    event.data.essaimJSXGraph.mode = segment;
 	});
 
     $div_button.appendTo(this.divBloc);
@@ -170,11 +168,11 @@ EssaimJSXGraph.prototype.creerBloc = function(dataRecup){
     EssaimJSXGraph.prototype.initEnonce.call(this);
     EssaimJSXGraph.prototype.initAnalyse.call(this);
 
-    
     /*Création du graphe*/
-    this.brd = JXG.JSXGraph.initBoard('box' + this.num, {axis:true});
+    this.brd = JXG.JSXGraph.initBoard('box' + this.numero, {axis:true});
     var brd = this.brd;
     var db = this.divBloc;
+
     /*Gestion de la modification de la taille du bloc*/
     /*A modifier, ne marche pas pour les resize non "manuel"*/
     $(window).resize(function(){
@@ -182,52 +180,35 @@ EssaimJSXGraph.prototype.creerBloc = function(dataRecup){
     });
     
     /*Creation de points, à retoucher/améliorer*/
-    $div_brd.click({objet : this}, function(e){
-	var getMouseCoords = function(e, i) {
-            var cPos = brd.getCoordsTopLeftCorner(e, i),
-		absPos = JXG.getPosition(e, i),
+    $div_brd.click({essaimJSXGraph : this}, function(event){
+	var getMouseCoords = function(event) {
+            var cPos = brd.getCoordsTopLeftCorner(event,0),
+		absPos = JXG.getPosition(event, 0),
 		dx = absPos[0]-cPos[0],
 		dy = absPos[1]-cPos[1];
             return new JXG.Coords(JXG.COORDS_BY_SCREEN, [dx, dy], brd);
 	}
-	var tmp = e.data.objet;
-	var point_tmp = undefined;
-	var coords = getMouseCoords(e, 0);
-	for (el in brd.objects){
-	    if (JXG.isPoint(brd.objects[el]) && brd.objects[el].hasPoint
-		(coords.scrCoords[1],coords.scrCoords[2])){
-		point_tmp = el;
+	
+	var essaimJSXGraph = event.data.essaimJSXGraph;
+	var point = undefined;
+	var coords = getMouseCoords(event);
+	for (element in brd.objects){
+	    if (JXG.isPoint(brd.objects[element]) &&
+		brd.objects[element].hasPoint(coords.scrCoords[1],coords.scrCoords[2])){
+		point = element;
 	    }
 	}
-	if (point_tmp !== undefined){
-	    tmp.point.push(point_tmp);
-	    console.log(tmp.point);
-	}else{
-	    tmp.point.push(brd.create("point", brd.getUsrCoordsOfMouse(e)));
+	if (point === undefined){
+	    point = brd.create("point", brd.getUsrCoordsOfMouse(event));
 	}
-	switch (tmp.mode){
-	case point:
-	    if (tmp.point.length === 1){
-		tmp.point = [];
-	    }
-	    break;
-	case ligne:
-	    if (tmp.point.length === 2){
-		brd.create("line", tmp.point);
-		tmp.point = [];
-	    }
-	    break;
-	case cercle:
-	    if (tmp.point.length === 2){
-		brd.create("circle", tmp.point);
-		tmp.point = [];
-	    }
-	    break;
-	case segment:
-	    if (tmp.point.length === 2){
-		brd.create("segment", tmp.point);
-		tmp.point = [];
-	    }
+	essaimJSXGraph.point.push(point);
+
+	/*Creation de la forme souhaiter*/
+	if (essaimJSXGraph.mode === point){
+	    essaimJSXGraph.point = [];
+	}else if (essaimJSXGraph.point.length === 2){
+	    brd.create(essaimJSXGraph.mode, essaimJSXGraph.point);
+	    essaimJSXGraph.point = [];
 	}
     });
 }
