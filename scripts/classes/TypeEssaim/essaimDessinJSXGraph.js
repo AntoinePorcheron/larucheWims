@@ -11,6 +11,7 @@
  * + on a pas la génération du code OEF correspondant
  * + améliorer bouton (graphique)
  * + on ne peut pas encore connecter les points au lignes/segment..
+ * + on ne peut pas encore inclure le graphe dans le statement
  */
 
 /*Pseudo type énumérée qui permet d'avoir des nom explicite pour la variable mode*/
@@ -49,11 +50,11 @@ EssaimJSXGraph.prototype.constructor = EssaimJSXGraph;
 EssaimJSXGraph.prototype.nomAffiche = "Essaim : Dessin JSXGraph";
 EssaimJSXGraph.prototype.proto = "EssaimJSXGraph";
 
-EssaimJSXGraph.prototype.imageEnonce= "NULL";
+EssaimJSXGraph.prototype.imageEnonce= "image_essaims/graphe.gif";
 
 EssaimJSXGraph.prototype.gereReponse = false;
 Essaim.prototype.aUneAide = false;
-EssaimJSXGraph.prototype.gereTailleImageEnonce = false;
+EssaimJSXGraph.prototype.gereTailleImageEnonce = true;
 
 //------------ METHODES -----------------//
 
@@ -72,24 +73,10 @@ EssaimJSXGraph.prototype.initEnonce = function(){
 	nomEssaim = li.id.slice("RidEnEs_".length,li.id.length);
 	var ind = rucheSys.rechercheIndice(nomEssaim, rucheSys.listeBlocPrepa);
 	var essaimFd = rucheSys.listeBlocPrepa[ind];
-	if (essaimFd.gereReponde == true){
-	    alert("Problï¿½me , cet essaim devrait pouvoir gï¿½rer plusieurs dessins. Contacter les dï¿½veloppeurs");
+	if (essaimFd.gereReponse == true){
+	    alert("Problème , cet essaim devrait pouvoir gérer plusieurs dessins. Contacter les développeurs");
 	}else{
-	    var indice_tailleX =
-		rucheSys.rechercheIndice("tailleX"+essaimFd.nom,rucheSys.listeEditeur);
-	    var indice_tailleY =
-		rucheSys.rechercheIndice("tailleY"+essaimFd.nom,rucheSys.listeEditeur);
-	    rucheSys.listeEditeur[indice_tailleX].recupDonneesVar();
-	    rucheSys.listeEditeur[indice_tailleY].recupDonneesVar();
-	    
-	    var oef_tailleX = Number(rucheSys.listeEditeur[indicie_tailleX].toOEF());
-	    var oef_tailleY = Number(rucheSys.listeEditeur[indicie_tailleY].toOEF());
-	    if (oef_tailleX<5 || oef_tailleY<5) {
-                alert("Une image ne peut pas ï¿½tre en largeur\n ou hauteur plus petite que 5 pixels");
-	    } else {
-                essaimFd.tailleImageEnonceX = oef_tailleX;
-                essaimFd.tailleImageEnonceY = oef_tailleY;
-	    }    
+	    rucheSys.enonce.ajoutImageEssaim(essaimFd);
 	}
     }
     li.appendChild(bouton);
@@ -169,18 +156,19 @@ EssaimJSXGraph.prototype.creerBloc = function(dataRecup){
 
     /*Création du graphe*/
     this.brd = JXG.JSXGraph.initBoard('box' + this.numero, {axis:true});
-    var brd = this.brd;
-    var db = this.divBloc;
-
+   
     /*Gestion de la modification de la taille du bloc*/
     /*A modifier, ne marche pas pour les resize non "manuel"*/
-    $(window).resize(function(){
-	brd.resizeContainer(db.clientWidth - 30, 400, false, false);
-	brd.update();
+    $(window).resize({essaimJSXGraph : this},function(event){
+	var graph = event.data.essaimJSXGraph;
+	graph.brd.resizeContainer(graph.divBloc.clientWidth - 30, 400);
     });
     
     /*Creation de points, à retoucher/améliorer*/
     $div_brd.click({essaimJSXGraph : this}, function(event){
+	var essaimJSXGraph = event.data.essaimJSXGraph;
+	var point = undefined;
+	var brd = essaimJSXGraph.brd;
 	var getMouseCoords = function(event) {
             var cPos = brd.getCoordsTopLeftCorner(event,0),
 		absPos = JXG.getPosition(event, 0),
@@ -189,8 +177,7 @@ EssaimJSXGraph.prototype.creerBloc = function(dataRecup){
             return new JXG.Coords(JXG.COORDS_BY_SCREEN, [dx, dy], brd);
 	}
 	
-	var essaimJSXGraph = event.data.essaimJSXGraph;
-	var point = undefined;
+	
 	var coords = getMouseCoords(event);
 	for (element in brd.objects){
 	    if (JXG.isPoint(brd.objects[element]) &&
@@ -226,11 +213,26 @@ EssaimJSXGraph.prototype.detruitBloc = function(){
 
 EssaimJSXGraph.prototype.toOEF = function(){
     /*TODO : générer le code OEF*/
-    return "";
+    var OEF = "\\text{rangex" + this.nom + " -5,5}\n\\text{rangey" + this.nom + " -5,5}\n";
+    /*OEF += "\\integer{nx" + this.nom +
+	" = \\rangex" + this.nom + "[2]-\\rangex" + this.nom + "[1]}\n";
+    OEF += "\\integer{ny" + this.nom +
+	" = \\rangey" + this.nom + "[2]-\\rangey" + this.nom + "[1]}\n";*/
+    OEF += "\\text{" + this.nom + " = rangex \\rangex" + this.nom + "\n";
+    OEF += "rangey \\rangey" + this.nom + "\n";
+    /*for (element in this.brd.objects){
+	if (this.brd.objects[element].getType() === point){
+	    OEF +=  "point " + Math.round(this.brd.objects[element].X()) + "," + Math.round(this.brd.objects[element].Y()) + ",black\n";
+	}
+    }*/
+    OEF += "hline black,0,0\nvline black,0,0}\n"
+    OEF += "\\text{url" + this.nom + " = draw(200,200\n\\" + this.nom + ")}"
+    return OEF;
 }
 
 EssaimJSXGraph.prototype.toOEFFromStatement = function(idReponse){
-    /*Peut etre TODO*/
+    return "<img src=\"\\url" + this.nom + "\" alt=\"Erreur de lecture d'image\"/>";
+
 }
 
 $(document).ready(function(){ rucheSys.initClasseEssaim(EssaimJSXGraph)});

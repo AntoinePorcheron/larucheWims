@@ -10,7 +10,7 @@ EssaimFlydraw = function(num)
     
     //--------- ATTRIBUTS ---------//
     
-	this.nom = "Flydraw" + num;     // nom de l'élément
+    this.nom = "Flydraw" + num;     // nom de l'élément
     this.numero = num;          // numéro de cet essaim
     this.proto = "EssaimFlydraw";   // nature de la classe
 
