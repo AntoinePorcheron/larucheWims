@@ -11,7 +11,6 @@
  * + on a pas la génération du code OEF correspondant
  * + améliorer bouton (graphique)
  * + on ne peut pas encore connecter les points au lignes/segment..
- * + on ne peut pas encore inclure le graphe dans le statement
  */
 
 /*Pseudo type énumérée qui permet d'avoir des nom explicite pour la variable mode*/
@@ -213,18 +212,18 @@ EssaimJSXGraph.prototype.detruitBloc = function(){
 
 EssaimJSXGraph.prototype.toOEF = function(){
     /*TODO : générer le code OEF*/
-    var OEF = "\\text{rangex" + this.nom + " -5,5}\n\\text{rangey" + this.nom + " -5,5}\n";
-    /*OEF += "\\integer{nx" + this.nom +
-	" = \\rangex" + this.nom + "[2]-\\rangex" + this.nom + "[1]}\n";
-    OEF += "\\integer{ny" + this.nom +
-	" = \\rangey" + this.nom + "[2]-\\rangey" + this.nom + "[1]}\n";*/
+    var OEF = "\\text{rangex" + this.nom + " = -5,5}\n\\text{rangey" + this.nom + " = -5,5}\n";
     OEF += "\\text{" + this.nom + " = rangex \\rangex" + this.nom + "\n";
     OEF += "rangey \\rangey" + this.nom + "\n";
-    /*for (element in this.brd.objects){
-	if (this.brd.objects[element].getType() === point){
-	    OEF +=  "point " + Math.round(this.brd.objects[element].X()) + "," + Math.round(this.brd.objects[element].Y()) + ",black\n";
+    for (element in this.brd.objects){
+	var brdElement = this.brd.objects[element];
+	if (brdElement.getType() === point){
+	    OEF +=  "point " + brdElement.X() + "," + brdElement.Y() + ",black\n";
+	}else if (brdElement.getType() === ligne){
+	    console.log(brdElement.point1);
+	    OEF += "polyline black," + brdElement.point1.X() + "," + brdElement.point1.Y() + "," + brdElement.point2.X() + "," + brdElement.point2.Y() + "\n"; 
 	}
-    }*/
+    }
     OEF += "hline black,0,0\nvline black,0,0}\n"
     OEF += "\\text{url" + this.nom + " = draw(200,200\n\\" + this.nom + ")}"
     return OEF;
