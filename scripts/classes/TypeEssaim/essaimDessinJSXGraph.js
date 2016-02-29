@@ -5,19 +5,20 @@
 
 /*
  * Problème :
- * + le redimensionnement possede quelque problème, il n'est pas complétement fonctionnel
- * + parfois, lors de simple drag, on crée une forme que l'on voulais pas
  * + on a pas de suppression d'element (pas encore)
- * + on a pas la génération du code OEF correspondant
  * + améliorer bouton (graphique)
- * + on ne peut pas encore connecter les points au lignes/segment..
+ * + on ne peut pas encore connecter les points au lignes/segment.
+ * + Le code OEF à quelque problème avec les cercles
+ * + Le code OEF d'une ligne ne fait aps une ligne, mais un segment
+ * + Le loading ne marche pas sur le graphe
  */
 
 /*Pseudo type énumérée qui permet d'avoir des nom explicite pour la variable mode*/
-var point = "point";
-var ligne = "line";
-var cercle = "circle";
-var segment = "segment";
+var GLOB_libre = "libre";
+var GLOB_point = "point";
+var GLOB_ligne = "line";
+var GLOB_cercle = "circle";
+var GLOB_segment = "segment";
 
 EssaimJSXGraph = function(num){
 
@@ -35,7 +36,7 @@ EssaimJSXGraph = function(num){
      * si il souhaite dessiner (le choix de la forme), etc...
      */
    
-    this.mode = ligne;
+    this.mode = GLOB_point;
     this.point = [];
     this.brd;
 }
@@ -128,24 +129,28 @@ EssaimJSXGraph.prototype.creerBloc = function(dataRecup){
 
     /*Ok, on garde la façon JQuery*/
     var $div_button = $("<div></div>");
+    var $button_libre = $("<button> libre </button>").appendTo($div_button).click(
+	{essaimJSXGraph : this}, function(event){
+	    event.data.essaimJSXGraph.mode = GLOB_libre
+	});
     var $button_point = $("<button>Point</button>").appendTo($div_button).click(
 	{essaimJSXGraph : this}, function(event){
-	    event.data.essaimJSXGraph.mode = point;
+	    event.data.essaimJSXGraph.mode = GLOB_point;
 	});
-
+    
     var $button_ligne = $("<button>Ligne</button>").appendTo($div_button).click(
 	{essaimJSXGraph : this}, function(event){
-	    event.data.essaimJSXGraph.mode = ligne;
+	    event.data.essaimJSXGraph.mode = GLOB_ligne;
 	});
     
     var $button_cercle = $("<button>Cercle</button>").appendTo($div_button).click(
 	{essaimJSXGraph : this}, function(event){
-	    event.data.essaimJSXGraph.mode = cercle;
+	    event.data.essaimJSXGraph.mode = GLOB_cercle;
 	});
     
     var $button_segment = $("<button>Segment</button>").appendTo($div_button).click(
 	{essaimJSXGraph : this}, function(event){
-	    event.data.essaimJSXGraph.mode = segment;
+	    event.data.essaimJSXGraph.mode = GLOB_segment;
 	});
 
     $div_button.appendTo(this.divBloc);
@@ -157,48 +162,61 @@ EssaimJSXGraph.prototype.creerBloc = function(dataRecup){
     this.brd = JXG.JSXGraph.initBoard('box' + this.numero, {axis:true});
    
     /*Gestion de la modification de la taille du bloc*/
-    /*A modifier, ne marche pas pour les resize non "manuel"*/
+    /*Pour le moment, la solution trouver pour limiter le problème lors du resize, c'est 
+     d'inclure un delai de 200milliseconde*/
+    var timer;
     $(window).resize({essaimJSXGraph : this},function(event){
 	var graph = event.data.essaimJSXGraph;
-	graph.brd.resizeContainer(graph.divBloc.clientWidth - 30, 400);
+	clearTimeout(timer);
+	timer = setTimeout(
+	    function(){
+		graph.brd.resizeContainer(graph.divBloc.clientWidth - 30, 400);
+	    }, 200);
+	
     });
     
     /*Creation de points, à retoucher/améliorer*/
     $div_brd.click({essaimJSXGraph : this}, function(event){
-	var essaimJSXGraph = event.data.essaimJSXGraph;
-	var point = undefined;
-	var brd = essaimJSXGraph.brd;
-	var getMouseCoords = function(event) {
-            var cPos = brd.getCoordsTopLeftCorner(event,0),
-		absPos = JXG.getPosition(event, 0),
-		dx = absPos[0]-cPos[0],
-		dy = absPos[1]-cPos[1];
-            return new JXG.Coords(JXG.COORDS_BY_SCREEN, [dx, dy], brd);
-	}
-	
-	
-	var coords = getMouseCoords(event);
-	for (element in brd.objects){
-	    if (JXG.isPoint(brd.objects[element]) &&
-		brd.objects[element].hasPoint(coords.scrCoords[1],coords.scrCoords[2])){
-		point = element;
+	if (event.data.essaimJSXGraph.mode !== GLOB_libre){
+	    var essaimJSXGraph = event.data.essaimJSXGraph;
+	    var point = undefined;
+	    var brd = essaimJSXGraph.brd;
+	    var getMouseCoords = function(event) {
+		var cPos = brd.getCoordsTopLeftCorner(event,0),
+		    absPos = JXG.getPosition(event, 0),
+		    dx = absPos[0]-cPos[0],
+		    dy = absPos[1]-cPos[1];
+		return new JXG.Coords(JXG.COORDS_BY_SCREEN, [dx, dy], brd);
 	    }
-	}
-	if (point === undefined){
-	    point = brd.create("point", brd.getUsrCoordsOfMouse(event));
-	}
-	essaimJSXGraph.point.push(point);
-
-	/*Creation de la forme souhaiter*/
-	if (essaimJSXGraph.mode === point){
-	    essaimJSXGraph.point = [];
-	}else if (essaimJSXGraph.point.length === 2){
-	    brd.create(essaimJSXGraph.mode, essaimJSXGraph.point);
-	    essaimJSXGraph.point = [];
+	    var parent = undefined;
+	    var coords = getMouseCoords(event);
+	    for (element in brd.objects){
+		if (JXG.isPoint(brd.objects[element])
+		    && brd.objects[element].hasPoint(coords.scrCoords[1],coords.scrCoords[2])){
+			point = element;
+		}
+	    }
+	    if (point === undefined){
+		point = brd.create("point", brd.getUsrCoordsOfMouse(event));
+		if (parent !== undefined){
+		    point.ancestors[0] = 0;
+		    console.log(point.ancestors);
+		}
+	    }else if (!brd.objects[point].getAttribute("visible")){
+		brd.objects[point].setAttribute({visible : true});
+	    }
+	    essaimJSXGraph.point.push(point);
+	    /*Creation de la forme souhaiter*/
+	    if (essaimJSXGraph.mode === GLOB_point){
+		essaimJSXGraph.point = [];
+	    }else if (essaimJSXGraph.point.length === 2){
+		brd.create(essaimJSXGraph.mode, essaimJSXGraph.point);
+		essaimJSXGraph.point = [];
+	    }
 	}
     });
 }
-
+    
 
 EssaimJSXGraph.prototype.nouveauComposant = function(classeComposant){
     rucheSys.ajoutComposantEssaim("editJSXGraph"+this.nom, classeComposant);
@@ -217,12 +235,29 @@ EssaimJSXGraph.prototype.toOEF = function(){
     OEF += "rangey \\rangey" + this.nom + "\n";
     for (element in this.brd.objects){
 	var brdElement = this.brd.objects[element];
-	if (brdElement.getType() === point){
-	    OEF +=  "point " + brdElement.X() + "," + brdElement.Y() + ",black\n";
-	}else if (brdElement.getType() === ligne){
-	    console.log(brdElement.point1);
-	    OEF += "polyline black," + brdElement.point1.X() + "," + brdElement.point1.Y() + "," + brdElement.point2.X() + "," + brdElement.point2.Y() + "\n"; 
+	/*console.log(brdElement.getAttribute("visible"));*/
+	if (brdElement.getAttribute("visible")){
+	    switch (brdElement.getType()){
+	    case GLOB_point :
+		OEF +=  "point " + brdElement.X() + "," + brdElement.Y() + ",black\n";
+		break;
+	    case GLOB_ligne :
+		OEF += "line black," + brdElement.point1.X() + "," + brdElement.point1.Y() + "," +
+		    brdElement.point2.X() + "," + brdElement.point2.Y() + "\n";
+		break;
+	    case GLOB_cercle :
+		OEF += "circle " + brdElement.center.X() + "," + brdElement.center.Y() +
+		    "," + /*2 **/ (brdElement.Radius() * this.brd.unitX + brdElement.Radius() * this.brd.unitY) + ",black\n";
+		break;
+	    case GLOB_segment :
+		OEF += "segment " + brdElement.point1.X() + "," + brdElement.point1.Y() + "," +
+		    brdElement.point2.X() + "," + brdElement.point2.Y() + ",black\n"
+		break;
+	    default:
+		break;
+	    }
 	}
+	
     }
     OEF += "hline black,0,0\nvline black,0,0}\n"
     OEF += "\\text{url" + this.nom + " = draw(200,200\n\\" + this.nom + ")}"
@@ -230,7 +265,7 @@ EssaimJSXGraph.prototype.toOEF = function(){
 }
 
 EssaimJSXGraph.prototype.toOEFFromStatement = function(idReponse){
-    return "<img src=\"\\url" + this.nom + "\" alt=\"Erreur de lecture d'image\"/>";
+    return "<img src=\"\\url" + this.nom + "\" alt=\"Erreur avec l'image " + this.nom + "\"/>";
 
 }
 
