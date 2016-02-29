@@ -43,6 +43,88 @@ Essaim.prototype.initBloc = function()
     liste.id = "RidPrBloc_"+this.nom;
     liste.className = "Rcl_Bloc_Essaim Rcl_Bloc";
     
+    /* début des modifs pour le drap and drop */
+    liste.draggable = true;
+
+    liste.addEventListener('dragstart', function(e) {
+
+        e.dataTransfer.setData('text/plain', liste.id);
+        e.dataTransfer.setDragImage(dragImg, 40, 40); // Une position de 40x40 pixels centrera l'image (de 80x80 pixels) sous le curseur
+        
+    });
+
+    var dragImg = new Image(); // On précharge l'image
+    dragImg.src = 'drag_img.png';
+
+    //On gère la réception
+    liste.addEventListener('dragover', function(e) {
+        e.preventDefault(); // Annule l'interdiction de drop
+        console.log('Un élément survole la zone');
+    });
+
+   liste.addEventListener('drop', function(e) {
+        var nomZoneIn=" "; //on va récupérer l'id du bloc reçu. 
+        nomZoneIn=e.dataTransfer.getData('text/plain'); // Affiche le contenu du type MIME « text/plain »
+        console.log('Données reçu : ' + nomZoneIn);
+        //Maintenant nous allons faire en sorte de changer de place le bloc si on passe sur le bloc avant ou après lui
+
+        var id_drop = document.querySelector('#'+nomZoneIn);
+        //var li = buttonHaut.parentNode.parentNode;
+
+        // On va gérer le précédent
+        var previous = id_drop.previousElementSibling;//l'élément précédent le bloc droppé
+        
+        var next = id_drop.nextElementSibling;//l'élément suivant le bloc droppé
+
+        if (this==previous) {
+            if (previous) {
+              console.log('Un bloc precedent a été trouvé ! Changement...');
+                id_drop.parentNode.insertBefore(id_drop, previous);
+                var nom = id_drop.id.slice("RidPrBloc_".length,id_drop.id.length);
+            
+                var ind = rucheSys.rechercheIndice(nom,rucheSys.listeBlocPrepa);
+            
+                var temp = rucheSys.listeBlocPrepa[ind];
+                rucheSys.listeBlocPrepa[ind] = rucheSys.listeBlocPrepa[ind-1];
+                rucheSys.listeBlocPrepa[ind-1] = temp;
+            }
+            else
+            {
+                console.log('Pas de précédent, désolé !');
+            }
+        }
+        else if(this==next)
+        {
+
+            //Maintenant on s'occupe du suivant xcv
+        
+            if (next) {
+                //console.log('Un bloc suivant a été trouvé ! Changement...'+previous.id);
+                next = next.nextElementSibling;
+                var nom = id_drop.id.slice("RidPrBloc_".length,id_drop.id.length);
+            
+                var ind = rucheSys.rechercheIndice(nom,rucheSys.listeBlocPrepa);
+            
+                var temp = rucheSys.listeBlocPrepa[ind];
+                rucheSys.listeBlocPrepa[ind] = rucheSys.listeBlocPrepa[ind+1];
+                rucheSys.listeBlocPrepa[ind+1] = temp;
+            }
+            else
+            {
+                console.log('Pas de bloc suivant ici !');
+            }
+
+            id_drop.parentNode.insertBefore(id_drop, next);
+        }
+        else
+        {
+            console.log('Ni suivant, ne précédent !***********************');
+        }
+            console.log(this.id);
+    });
+
+    /* Fin des modifications inérentes au drag and drop */
+    
     this.divBloc = document.createElement("DIV");
     this.divBloc.className = "Rcl_Bloc_Interne";
 
