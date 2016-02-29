@@ -662,6 +662,19 @@ Essaim.prototype.initEnonce = function()
     var bouton = document.createElement('button');
     bouton.id = "boutonEssaimEnonce"+this.nom;
     bouton.className = "Rcl_Surligne_Essaim";
+    
+    /* Modif 2016 : mise en place du drag and drop */
+    bouton.draggable = true; //Permet de rendre le boutton déplacable.
+
+    //permet d'envoyer des données à la zone de drop
+    bouton.addEventListener('dragstart', function(e) {
+
+        e.dataTransfer.setData('text/plain', bouton.id);
+        
+    });
+
+    //clonedElement = draggedElement.cloneNode(true);  //On fais en sorte que l'élément soit cloné
+    /* Fin des modifs */
     var txt = document.createTextNode( this.nom );
     bouton.appendChild(txt);
     
