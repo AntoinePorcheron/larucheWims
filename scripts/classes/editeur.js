@@ -958,3 +958,36 @@ function Editeur(id,ruc,bool,toolbar){
 	
 	
 }
+
+/* On va permettre à l'éditeur d'autoriser à être ciblé par le drag and drop */
+
+
+    document.querySelector('#editor-container').addEventListener('dragover', function(e) {
+    e.preventDefault(); // Annule l'interdiction de drop
+    console.log('Un élément survole la zone');
+    });
+    
+    //Permet à l'éditeur de savoir qu'on a laché un élément draggable sur lui
+    document.querySelector('#editor-container').addEventListener('drop', function(e) {
+        e.preventDefault(); // Permet d'éviter une éventuelle redirection inattendue
+        console.log('Un élément a été déposé');
+
+        
+
+        
+
+    }, false);
+
+    // permet de recevoir du texte de l'élément envoyé !
+    document.querySelector('#editor-container').addEventListener('drop', function(e) {
+        var nomBoutton=" ";
+        nomBoutton=e.dataTransfer.getData('text/plain'); // Affiche le contenu du type MIME « text/plain »
+        console.log('Données reçu : ' + nomBoutton);
+        nomBoutton='#'+nomBoutton;
+        buttonDD=document.querySelector(nomBoutton);
+        buttonDD.onclick(); // On va simuler l'activation du bouton 
+
+
+    });
+
+    /*Fin des modifs drag and drop  */
