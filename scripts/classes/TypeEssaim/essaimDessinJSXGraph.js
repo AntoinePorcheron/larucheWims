@@ -49,7 +49,7 @@ EssaimJSXGraph.prototype.constructor = EssaimJSXGraph;
 EssaimJSXGraph.prototype.nomAffiche = "Essaim : Dessin JSXGraph";
 EssaimJSXGraph.prototype.proto = "EssaimJSXGraph";
 
-EssaimJSXGraph.prototype.imageEnonce= "image_essaims/graphe.gif";
+EssaimJSXGraph.prototype.imageEnonce= "images_essaims/graphe.gif";
 
 EssaimJSXGraph.prototype.gereReponse = false;
 Essaim.prototype.aUneAide = false;
@@ -169,7 +169,8 @@ EssaimJSXGraph.prototype.creerBloc = function(dataRecup){
 	clearTimeout(timer);
 	timer = setTimeout(
 	    function(){
-		graph.brd.resizeContainer(graph.divBloc.clientWidth - 30, 400);
+		graph.brd.resizeContainer(graph.divBloc.clientWidth - 30 ,
+					  graph.divBloc.clientWidth - 30);
 	    }, 200);
 	
     });
@@ -227,7 +228,12 @@ EssaimJSXGraph.prototype.detruitBloc = function(){
 }
 
 EssaimJSXGraph.prototype.toOEF = function(){
-    var OEF = "\\text{rangex" + this.nom + " = -5,5}\n\\text{rangey" + this.nom + " = -5,5}\n";
+    var x1 = Math.round(this.brd.getBoundingBox()[0]);
+    var y1 = Math.round(this.brd.getBoundingBox()[1]);
+    var x2 = Math.round(this.brd.getBoundingBox()[2]);
+    var y2 = Math.round(this.brd.getBoundingBox()[3]);
+    var OEF = "\\text{rangex" + this.nom + " = " + x1 + "," + x2 + "}\n"
+    OEF += "\\text{rangey" + this.nom + " = " + y2 + "," + y1 + "}\n";
     OEF += "\\text{" + this.nom + " = rangex \\rangex" + this.nom + "\n";
     OEF += "rangey \\rangey" + this.nom + "\n";
     for (element in this.brd.objects){
@@ -258,6 +264,7 @@ EssaimJSXGraph.prototype.toOEF = function(){
     }
     OEF += "hline black,0,0\nvline black,0,0}\n"
     OEF += "\\text{url" + this.nom + " = draw(200,200\n\\" + this.nom + ")}"
+    console.log(this.brd.getBoundingBox());
     return OEF;
 }
 
