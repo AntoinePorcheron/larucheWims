@@ -128,7 +128,7 @@ EssaimJSXGraph.prototype.creerBloc = function(dataRecup){
 
     /*Ok, on garde la façon JQuery*/
     var $div_button = $("<div></div>");
-    var $button_libre = $("<button> libre </button>").appendTo($div_button).click(
+    var $button_libre = $("<button> Deplacer </button>").appendTo($div_button).click(
 	{essaimJSXGraph : this}, function(event){
 	    event.data.essaimJSXGraph.mode = GLOB_libre
 	});
@@ -181,31 +181,37 @@ EssaimJSXGraph.prototype.creerBloc = function(dataRecup){
 	    var essaimJSXGraph = event.data.essaimJSXGraph;
 	    var point = undefined;
 	    var brd = essaimJSXGraph.brd;
-	    var getMouseCoords = function(event) {
-		var cPos = brd.getCoordsTopLeftCorner(event,0),
-		    absPos = JXG.getPosition(event, 0),
-		    dx = absPos[0]-cPos[0],
-		    dy = absPos[1]-cPos[1];
-		return new JXG.Coords(JXG.COORDS_BY_SCREEN, [dx, dy], brd);
-	    }
-	    var parent = undefined;
-	    var coords = getMouseCoords(event);
-	    for (element in brd.objects){
-		if (JXG.isPoint(brd.objects[element])
-		    && brd.objects[element].hasPoint(coords.scrCoords[1],coords.scrCoords[2])){
+	    console.log("yolo", brd.getAllUnderMouse(event));
+	    if (brd.drag_dx !== 0 || brd.drag_dy !== 0){
+		essaimJSXGraph.point = [];
+		console.log("ici");
+	    }else{
+		var getMouseCoords = function(event) {
+		    var cPos = brd.getCoordsTopLeftCorner(event,0),
+			absPos = JXG.getPosition(event, 0),
+			dx = absPos[0]-cPos[0],
+			dy = absPos[1]-cPos[1];
+		    return new JXG.Coords(JXG.COORDS_BY_SCREEN, [dx, dy], brd);
+		}
+		var parent = undefined;
+		var coords = getMouseCoords(event);
+		for (element in brd.objects){
+		    if (JXG.isPoint(brd.objects[element])
+			&& brd.objects[element].hasPoint(coords.scrCoords[1],coords.scrCoords[2])){
 			point = element;
+		    }
 		}
-	    }
-	    if (point === undefined){
-		point = brd.create("point", brd.getUsrCoordsOfMouse(event));
-		if (parent !== undefined){
-		    point.ancestors[0] = 0;
-		    console.log(point.ancestors);
+		if (point === undefined){
+		    point = brd.create("point", brd.getUsrCoordsOfMouse(event));
+		    if (parent !== undefined){
+			point.ancestors[0] = 0;
+			console.log(point.ancestors);
+		    }
+		}else if (!brd.objects[point].getAttribute("visible")){
+		    brd.objects[point].setAttribute({visible : true});
 		}
-	    }else if (!brd.objects[point].getAttribute("visible")){
-		brd.objects[point].setAttribute({visible : true});
+		essaimJSXGraph.point.push(point);
 	    }
-	    essaimJSXGraph.point.push(point);
 	    /*Creation de la forme souhaiter*/
 	    if (essaimJSXGraph.mode === GLOB_point){
 		essaimJSXGraph.point = [];
@@ -228,10 +234,10 @@ EssaimJSXGraph.prototype.detruitBloc = function(){
 }
 
 EssaimJSXGraph.prototype.toOEF = function(){
-    var x1 = Math.round(this.brd.getBoundingBox()[0]);
-    var y1 = Math.round(this.brd.getBoundingBox()[1]);
-    var x2 = Math.round(this.brd.getBoundingBox()[2]);
-    var y2 = Math.round(this.brd.getBoundingBox()[3]);
+    var x1 = this.brd.getBoundingBox()[0];
+    var y1 = this.brd.getBoundingBox()[1];
+    var x2 = this.brd.getBoundingBox()[2];
+    var y2 = this.brd.getBoundingBox()[3];
     var OEF = "\\text{rangex" + this.nom + " = " + x1 + "," + x2 + "}\n"
     OEF += "\\text{rangey" + this.nom + " = " + y2 + "," + y1 + "}\n";
     OEF += "\\text{" + this.nom + " = rangex \\rangex" + this.nom + "\n";
@@ -244,8 +250,8 @@ EssaimJSXGraph.prototype.toOEF = function(){
 		OEF +=  "point " + brdElement.X() + "," + brdElement.Y() + ",black\n";
 		break;
 	    case GLOB_ligne :
-		OEF += "line black," + brdElement.point1.X() + "," + brdElement.point1.Y() + "," +
-		    brdElement.point2.X() + "," + brdElement.point2.Y() + "\n";
+		OEF += "line " + brdElement.point1.X() + "," + brdElement.point1.Y() + "," +
+		    brdElement.point2.X() + "," + brdElement.point2.Y() + ",black\n";
 		break;
 	    case GLOB_cercle :
 		console.log(this.brd.unitX)
