@@ -8,7 +8,6 @@
  * + on a pas de suppression d'element (pas encore)
  * + amï¿½liorer bouton (graphique)
  * + on ne peut pas encore connecter les points au lignes/segment.
- * + Le code OEF d'une ligne ne fait pas une ligne, mais un segment
  * + Le loading ne marche pas sur le graphe
  */
 
@@ -175,15 +174,14 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup) {
 
     });    
     /*Creation de points, à retoucher/améliorer*/
-    $div_brd.click({essaimJSXGraph : this}, function(event){
-	if (event.data.essaimJSXGraph.mode !== GLOB_libre){
-	    var essaimJSXGraph = event.data.essaimJSXGraph;
+    var essaimJSXGraph = this;
+    this.brd.on('up', function(event){
+	console.log(this.grids);
+	if (essaimJSXGraph.mode !== GLOB_libre){
 	    var point = undefined;
 	    var brd = essaimJSXGraph.brd;
-	    console.log("yolo", brd.getAllUnderMouse(event));
 	    if (brd.drag_dx !== 0 || brd.drag_dy !== 0){
 		essaimJSXGraph.point = [];
-		console.log("ici");
 	    }else{
 		var getMouseCoords = function(event) {
 		    var cPos = brd.getCoordsTopLeftCorner(event,0),
@@ -204,7 +202,6 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup) {
 		    point = brd.create("point", brd.getUsrCoordsOfMouse(event));
 		    if (parent !== undefined){
 			point.ancestors[0] = 0;
-			console.log(point.ancestors);
 		    }
 		}else if (!brd.objects[point].getAttribute("visible")){
 		    brd.objects[point].setAttribute({visible : true});
@@ -254,7 +251,6 @@ EssaimJSXGraph.prototype.toOEF = function(){
 		    brdElement.point2.X() + "," + brdElement.point2.Y() + ",black\n";
 		break;
 	    case GLOB_cercle :
-		console.log(this.brd.unitX)
 		OEF += "circle " + brdElement.center.X() + "," + brdElement.center.Y() +
 		    "," + (brdElement.Radius() * this.brd.unitX) + ",black\n";
 		break;
@@ -269,7 +265,6 @@ EssaimJSXGraph.prototype.toOEF = function(){
     }
     OEF += "hline black,0,0\nvline black,0,0}\n"
     OEF += "\\text{url" + this.nom + " = draw(200,200\n\\" + this.nom + ")}"
-    console.log(this.brd.getBoundingBox());
     return OEF;
 }
 
@@ -317,3 +312,4 @@ EssaimJSXGraph.prototype.removeImage = function (image) {
 $(document).ready(function () {
     rucheSys.initClasseEssaim(EssaimJSXGraph)
 });
+
