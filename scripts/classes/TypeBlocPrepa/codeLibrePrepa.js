@@ -152,6 +152,30 @@ function CodeLibrePrepa(numero)
 			var n = liste.id.slice("RidPrBloc_".length,liste.id.length);
 			rucheSys.supprInstruction(n,rucheSys.listeBlocPrepa);
 		}
+        
+        // Bouton pour diminuer / agrandir la fenêtre
+		var buttonWindow = document.createElement('button');
+		buttonWindow.className = "Rcl_Button_Minimize";
+		buttonWindow.addEventListener('click', function (event)
+		{ 
+			if (buttonWindow.className == "Rcl_Button_Minimize") 
+			{
+				buttonWindow.className = "";
+				buttonWindow.className = "Rcl_Button_Maximize";
+				buttonWindow.parentNode.parentNode.className = "";
+				buttonWindow.parentNode.parentNode.className = "Rcl_Bloc Rcl_Closed";
+                txt.className = "Rcl_Mini_Editor_hidden";
+			}
+			else
+			{
+				buttonWindow.className = "";
+				buttonWindow.className = "Rcl_Button_Minimize";
+				buttonWindow.parentNode.parentNode.className = "";
+				buttonWindow.parentNode.parentNode.className = "Rcl_Bloc";
+                txt.className = "Rcl_Droppable Rcl_Editor";
+			};
+		}, 
+		true);
 
 		
 		/*Button de deplacement vers le haut*/
@@ -203,11 +227,13 @@ function CodeLibrePrepa(numero)
 
 		liste.className = "Rcl_Bloc";
 		div_fils.className = "Rcl_Bloc_Interne";
+        txt_codeL = document.createTextNode("\r\nCode Libre");
 
 		div_fils.appendChild(button);
+        div_fils.appendChild(buttonWindow);
 		div_fils.appendChild(buttonHaut);
 		div_fils.appendChild(buttonBas);
-		
+		div_fils.appendChild(txt_codeL);
 		/* Barre Var et Latex */
 		barre_tache.appendChild(button_latex);
 		div_fils.appendChild(barre_tache);

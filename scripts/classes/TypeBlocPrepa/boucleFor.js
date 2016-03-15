@@ -142,6 +142,9 @@ function BoucleFor(numero)
 				buttonWindow.className = "";
 				buttonWindow.className = "Rcl_Button_Maximize";
 				buttonWindow.parentNode.parentNode.className = "Rcl_Bloc Rcl_Closed";
+                div_forDebut.className = "Rcl_Mini_Editor_hidden";
+                div_forFin.className = "Rcl_Mini_Editor_hidden";
+                div_forInstruction.className = "Rcl_Mini_Editor_hidden";
 			}
 			else
 			{
@@ -149,6 +152,9 @@ function BoucleFor(numero)
 				buttonWindow.className = "Rcl_Button_Minimize";
 				buttonWindow.parentNode.parentNode.className = "";
 				buttonWindow.parentNode.parentNode.className = "Rcl_Bloc";
+                div_forDebut.className = "Rcl_Droppable Rcl_Mini_Editor";
+                div_forFin.className = "Rcl_Droppable Rcl_Mini_Editor";
+                div_forInstruction.className = "Rcl_Droppable";
 			};
 		}, 
 		true);
