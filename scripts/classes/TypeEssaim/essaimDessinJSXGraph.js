@@ -157,7 +157,7 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup) {
     EssaimJSXGraph.prototype.initAnalyse.call(this);
 
     /*Cr�ation du graphe*/
-    this.brd = JXG.JSXGraph.initBoard('box' + this.numero, {axis: true, keepaspectratio: true});
+    this.brd = JXG.JSXGraph.initBoard('box' + this.numero, {axis: false, keepaspectratio: true});
 
     /*Gestion de la modification de la taille du bloc*/
     /*Pour le moment, la solution trouver pour limiter le probl�me lors du resize, c'est 
@@ -218,6 +218,8 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup) {
 	}
 
     });
+    console.log(this.brd.grids);
+    this.brd.removeGrids();
 }
 
 
