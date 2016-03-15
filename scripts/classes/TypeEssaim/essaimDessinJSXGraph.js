@@ -8,8 +8,7 @@
  * + on a pas de suppression d'element (pas encore)
  * + améliorer bouton (graphique)
  * + on ne peut pas encore connecter les points au lignes/segment.
- * + Le code OEF à quelque problème avec les cercles
- * + Le code OEF d'une ligne ne fait aps une ligne, mais un segment
+ * + Le code OEF d'une ligne ne fait pas une ligne, mais un segment
  * + Le loading ne marche pas sur le graphe
  */
 
@@ -50,7 +49,7 @@ EssaimJSXGraph.prototype.constructor = EssaimJSXGraph;
 EssaimJSXGraph.prototype.nomAffiche = "Essaim : Dessin JSXGraph";
 EssaimJSXGraph.prototype.proto = "EssaimJSXGraph";
 
-EssaimJSXGraph.prototype.imageEnonce= "image_essaims/graphe.gif";
+EssaimJSXGraph.prototype.imageEnonce= "images_essaims/graphe.gif";
 
 EssaimJSXGraph.prototype.gereReponse = false;
 Essaim.prototype.aUneAide = false;
@@ -159,7 +158,7 @@ EssaimJSXGraph.prototype.creerBloc = function(dataRecup){
     EssaimJSXGraph.prototype.initAnalyse.call(this);
 
     /*Création du graphe*/
-    this.brd = JXG.JSXGraph.initBoard('box' + this.numero, {axis:true});
+    this.brd = JXG.JSXGraph.initBoard('box' + this.numero, {axis:true, keepaspectratio : true});
    
     /*Gestion de la modification de la taille du bloc*/
     /*Pour le moment, la solution trouver pour limiter le problème lors du resize, c'est 
@@ -170,7 +169,8 @@ EssaimJSXGraph.prototype.creerBloc = function(dataRecup){
 	clearTimeout(timer);
 	timer = setTimeout(
 	    function(){
-		graph.brd.resizeContainer(graph.divBloc.clientWidth - 30, 400);
+		graph.brd.resizeContainer(graph.divBloc.clientWidth - 30 ,
+					  graph.divBloc.clientWidth - 30);
 	    }, 200);
 	
     });
@@ -225,17 +225,19 @@ EssaimJSXGraph.prototype.nouveauComposant = function(classeComposant){
 EssaimJSXGraph.prototype.detruitBloc = function(){
     freeBoard(this.brd);
     Essaim.prototype.detruitBloc.call(this);
-    /*Ajouter suppression du graphe*/
 }
 
 EssaimJSXGraph.prototype.toOEF = function(){
-    /*TODO : générer le code OEF*/
-    var OEF = "\\text{rangex" + this.nom + " = -5,5}\n\\text{rangey" + this.nom + " = -5,5}\n";
+    var x1 = Math.round(this.brd.getBoundingBox()[0]);
+    var y1 = Math.round(this.brd.getBoundingBox()[1]);
+    var x2 = Math.round(this.brd.getBoundingBox()[2]);
+    var y2 = Math.round(this.brd.getBoundingBox()[3]);
+    var OEF = "\\text{rangex" + this.nom + " = " + x1 + "," + x2 + "}\n"
+    OEF += "\\text{rangey" + this.nom + " = " + y2 + "," + y1 + "}\n";
     OEF += "\\text{" + this.nom + " = rangex \\rangex" + this.nom + "\n";
     OEF += "rangey \\rangey" + this.nom + "\n";
     for (element in this.brd.objects){
 	var brdElement = this.brd.objects[element];
-	/*console.log(brdElement.getAttribute("visible"));*/
 	if (brdElement.getAttribute("visible")){
 	    switch (brdElement.getType()){
 	    case GLOB_point :
@@ -246,8 +248,9 @@ EssaimJSXGraph.prototype.toOEF = function(){
 		    brdElement.point2.X() + "," + brdElement.point2.Y() + "\n";
 		break;
 	    case GLOB_cercle :
+		console.log(this.brd.unitX)
 		OEF += "circle " + brdElement.center.X() + "," + brdElement.center.Y() +
-		    "," + /*2 **/ (brdElement.Radius() * this.brd.unitX + brdElement.Radius() * this.brd.unitY) + ",black\n";
+		    "," + (brdElement.Radius() * this.brd.unitX) + ",black\n";
 		break;
 	    case GLOB_segment :
 		OEF += "segment " + brdElement.point1.X() + "," + brdElement.point1.Y() + "," +
@@ -261,6 +264,7 @@ EssaimJSXGraph.prototype.toOEF = function(){
     }
     OEF += "hline black,0,0\nvline black,0,0}\n"
     OEF += "\\text{url" + this.nom + " = draw(200,200\n\\" + this.nom + ")}"
+    console.log(this.brd.getBoundingBox());
     return OEF;
 }
 
