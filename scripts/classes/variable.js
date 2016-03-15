@@ -141,6 +141,7 @@ Variable.prototype.ajoutBlocDansPreparation = function()
     var li = $("<li>",{
                id:"RidPrBloc_"+this.nom,
                class:"Rcl_Bloc",
+               draggable:"true", //on rajoute ceci pour le drag and drop
                });
     
     // Création du bloc
@@ -260,7 +261,7 @@ Variable.prototype.ajoutBlocDansPreparation = function()
         li.parentNode.insertBefore(li, next);
     },
     true);
-    
+
     divEnTeteVar.append(button);
     divEnTeteVar.append(buttonWindow);
     divEnTeteVar.append(buttonHaut);
@@ -271,8 +272,102 @@ Variable.prototype.ajoutBlocDansPreparation = function()
 //		bloc.appendChild(select);
     li.append(bloc);
     
-
     $("#Rid_Prep_Blocs").append(li);
+    drag();
+}
+
+function drag(){ 
+    /* Gestion du drag and drop xcvb*/
+    /* Cette fonction fait en sorte que les blocs de variable soient droppables */
+    var cpt =0;
+    console.log('Entrée dans la fonction drag');
+    console.log(cpt);
+    var T_rc1_drag =document.querySelectorAll(".Rcl_Bloc");
+    var rc1_drag = T_rc1_drag[T_rc1_drag.length-1]
+
+
+    console.log(rc1_drag.id);
+    cpt++;
+
+    //var rc1_drag =document.querySelector("#Rid_Prep_Blocs");
+   //rc1_drag.draggable = true;
+    rc1_drag.addEventListener('dragstart', function(e) {
+
+        e.dataTransfer.setData('text/plain', rc1_drag.id);
+        //e.dataTransfer.setDragImage(dragImg, 40, 40); // Une position de 40x40 pixels centrera l'image (de 80x80 pixels) sous le curseur
+        
+    });
+
+    //On gère la réception
+    rc1_drag.addEventListener('dragover', function(e) {
+        e.preventDefault(); // Annule l'interdiction de drop
+        console.log('Un élément survole la zone');
+    });
+
+   rc1_drag.addEventListener('drop', function(e) {
+        var nomZoneIn=" "; //on va récupérer l'id du bloc reçu. 
+        nomZoneIn=e.dataTransfer.getData('text/plain'); // Affiche le contenu du type MIME « text/plain »
+        console.log('Données reçu : ' + nomZoneIn);
+
+
+
+         var id_drop = document.querySelector('#'+nomZoneIn);
+        //var li = buttonHaut.parentNode.parentNode;
+
+        // On va gérer le précédent
+        var previous = id_drop.previousElementSibling;//l'élément précédent le bloc droppé
+        
+        var next = id_drop.nextElementSibling;//l'élément suivant le bloc droppé
+
+        if (this==previous) {
+            if (previous) {
+              console.log('Un bloc precedent a été trouvé ! Changement...');
+                id_drop.parentNode.insertBefore(id_drop, previous);
+                var nom = id_drop.id.slice("RidPrBloc_".length,id_drop.id.length);
+            
+                var ind = rucheSys.rechercheIndice(nom,rucheSys.listeBlocPrepa);
+            
+                var temp = rucheSys.listeBlocPrepa[ind];
+                rucheSys.listeBlocPrepa[ind] = rucheSys.listeBlocPrepa[ind-1];
+                rucheSys.listeBlocPrepa[ind-1] = temp;
+            }
+            else
+            {
+                console.log('Pas de précédent, désolé !');
+            }
+        }
+        else if(this==next)
+        {
+
+            //Maintenant on s'occupe du suivant xcv
+        
+            if (next) {
+                //console.log('Un bloc suivant a été trouvé ! Changement...'+previous.id);
+                next = next.nextElementSibling;
+                var nom = id_drop.id.slice("RidPrBloc_".length,id_drop.id.length);
+            
+                var ind = rucheSys.rechercheIndice(nom,rucheSys.listeBlocPrepa);
+            
+                var temp = rucheSys.listeBlocPrepa[ind];
+                rucheSys.listeBlocPrepa[ind] = rucheSys.listeBlocPrepa[ind+1];
+                rucheSys.listeBlocPrepa[ind+1] = temp;
+            }
+            else
+            {
+                console.log('Pas de bloc suivant ici !');
+            }
+
+            id_drop.parentNode.insertBefore(id_drop, next);
+        }
+        else
+        {
+            console.log('Ni suivant, ne précédent !***********************');
+        }
+            console.log(this.id);
+        
+    });
+
+    /* Fin des modifs */
 }
 
 
