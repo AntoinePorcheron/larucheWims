@@ -16,6 +16,7 @@ var GLOB_libre = "libre";
 var GLOB_point = "point";
 var GLOB_ligne = "line";
 var GLOB_cercle = "circle";
+var GLOB_arrow = "arrow";
 var GLOB_segment = "segment";
 
 EssaimJSXGraph = function (num) {
@@ -38,6 +39,8 @@ EssaimJSXGraph = function (num) {
     this.point = [];
     this.brd;
     this.grid = true;
+    this.axis_x = false;
+    this.axis_y = false;
 }
 
 //------------ Dï¿½claration comme classe dï¿½rivï¿½e de Essaim -------------//
@@ -152,6 +155,11 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup) {
             event.data.essaimJSXGraph.mode = GLOB_segment;
         });
 
+    var $button_arrow = $("<button>Arrow</button>").appendTo($div_button).click(
+	{essaimJSXGraph : this}, function(event){
+	    event.data.essaimJSXGraph.mode = GLOB_arrow;
+	});
+
     var $button_switch_grille = $("<button>Grille</button>").appendTo($div_button).click(
 	{essaimJSXGraph : this}, function(event){
 	    if (event.data.essaimJSXGraph.grid){
@@ -165,21 +173,25 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup) {
 
     var $button_axis_x = $("<button>Axis-X</button>").appendTo($div_button).click(
 	{essaimJSXGraph : this}, function(event){
-	    event.data.essaimJSXGraph.brd.create('axis', [[0, 0], [1, 0]],
-						 {ticks: {insertTicks: false,
-							  ticksDistance: 3,
-							  label: {offset: [-20, -20]}}});
-	    event.data.essaimJSXGraph.brd.fullUpdate();
+	    if (event.data.essaimJSXGraph.axis_x){
+		event.data.essaimJSXGraph.brd.create('axis', [[0, 0], [1, 0]],
+						     {ticks: {insertTicks: false,
+							      ticksDistance: 3,
+							      label: {offset: [-20, -20]}}});
+		event.data.essaimJSXGraph.brd.fullUpdate();
+	    }
 	});
 
     var $button_axis_y = $("<button>Axis-Y</button>").appendTo($div_button).click(
-	{essaimJSXGraph : this}, function(event){
-	    event.data.essaimJSXGraph.brd.create('axis', [[0, 0], [0, 1]],
-						 {ticks: {insertTicks: false,
-							  ticksDistance: 3,
-							  label: {offset: [-20, -20]}}});
-	    event.data.essaimJSXGraph.brd.fullUpdate();
-	});
+	if (event.data.essaimJSXGraph.axis_y){
+	    {essaimJSXGraph : this}, function(event){
+		event.data.essaimJSXGraph.brd.create('axis', [[0, 0], [0, 1]],
+						     {ticks: {insertTicks: false,
+							      ticksDistance: 3,
+							      label: {offset: [-20, -20]}}});
+		event.data.essaimJSXGraph.brd.fullUpdate();
+	    }
+	    });
     $div_button.appendTo(this.divBloc);
 
     EssaimJSXGraph.prototype.initEnonce.call(this);
@@ -187,8 +199,6 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup) {
 
     /*Crï¿½ation du graphe*/
     this.brd = JXG.JSXGraph.initBoard('box' + this.numero, {axis: false, keepaspectratio: true});
-    this.brd.options.axis = true;
-    this.brd.updateRenderer();
     /*Gestion de la modification de la taille du bloc*/
     /*Pour le moment, la solution trouver pour limiter le problï¿½me lors du resize, c'est 
      d'inclure un delai de 200milliseconde*/
@@ -199,10 +209,9 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup) {
         timer = setTimeout(
             function () {
                 graph.brd.resizeContainer(graph.divBloc.clientWidth - 30,
-                    graph.divBloc.clientWidth - 30);
+					  graph.divBloc.clientWidth - 30);
             }, 200);
-
-    });    
+    });
     /*Creation de points, à retoucher/améliorer*/
     var essaimJSXGraph = this;
     this.brd.on('up', function(event){

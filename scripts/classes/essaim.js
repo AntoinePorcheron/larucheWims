@@ -73,7 +73,7 @@ Essaim.prototype.initBloc = function()
 
         // On va gérer le précédent
         var previous = id_drop.previousElementSibling;//l'élément précédent le bloc droppé
-        
+       
         var next = id_drop.nextElementSibling;//l'élément suivant le bloc droppé
 
         if (this==previous) {
