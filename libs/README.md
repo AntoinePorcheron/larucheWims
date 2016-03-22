@@ -39,7 +39,7 @@ Il prend beaucoup de temp pour le construire dans un ordinateur faible (comme ma
 ```
 
 #### Use
-```javascript
+```JavaScript
     $.contextMenu({
         selector: '#changhui',
         // peut marche avec jQuery DOM elements ajoute apres load
@@ -60,4 +60,6 @@ Il prend beaucoup de temp pour le construire dans un ordinateur faible (comme ma
             "quit": {name: "Quit", icon: function($element, key, item){ return 'context-menu-icon context-menu-icon-quit'; }}
         }
     });
+    
+    joindre disjoindre 
 ```

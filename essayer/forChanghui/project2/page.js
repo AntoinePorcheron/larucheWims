@@ -1,10 +1,4 @@
-/**
- * Created by yan on 16/3/8.
- */
-
 $(document).ready(function () {
-
-
     var board = JXG.JSXGraph.initBoard('jxgbox', {boundingbox: [-5, 4, 5, -4], keepaspectratio: true, axis: true});
     //[-5, 4, 5, -4] sont les points haut gauche et bas droite de la grille
 
@@ -33,14 +27,13 @@ $(document).ready(function () {
 
     //circle------------------------------------------------------------------------------
     //creer un circle avec 2 points
-    var ci = board.createElement('circle', [p1, "point2"], {
+    var ci = board.create('circle', [p1, "point2"], {
         strokeColor: '#00ff00', fillColor: '#555500', fillOpacity: 0.1,
         strokeWidth: 2
     });
 
     //text--------------------------------------------------------------------------------
     var txt = board.create('text', [5, -1, 'testcharactere'], {fontSize: 20});
-
 
     var initMenu = function (options) {
         return {
@@ -56,12 +49,12 @@ $(document).ready(function () {
         };
     };
 
-    $("div").click(function () {
+    $("#jxgbox").click(function () {
         console.log(board.getAllUnderMouse())
     });
 
     $.contextMenu({
-        selector: 'div',
+        selector: '#jxgbox',
         build: function ($trigger, e) {
             // this callback is executed every time the menu is to be shown
             // its results are destroyed every time the menu is hidden
@@ -71,14 +64,5 @@ $(document).ready(function () {
                 icon: "edit"
             })
         }
-        /*
-         initMenu({
-         name: board.getAllUnderMouse()[0].htmlStr,
-         icon: "edit"
-         })
-         */
-
     });
-
-
 });
