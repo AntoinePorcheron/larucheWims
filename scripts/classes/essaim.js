@@ -44,7 +44,7 @@ Essaim.prototype.initBloc = function()
     liste.className = "Rcl_Bloc_Essaim Rcl_Bloc";
     
     /* début des modifs pour le drap and drop */
-    liste.draggable = true;
+    /*liste.draggable = true;*/
 
     liste.addEventListener('dragstart', function(e) {
 

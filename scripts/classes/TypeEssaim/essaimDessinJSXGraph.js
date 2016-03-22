@@ -37,6 +37,7 @@ EssaimJSXGraph = function (num) {
     this.mode = GLOB_point;
     this.point = [];
     this.brd;
+    this.grid = true;
 }
 
 //------------ Dï¿½claration comme classe dï¿½rivï¿½e de Essaim -------------//
@@ -151,6 +152,34 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup) {
             event.data.essaimJSXGraph.mode = GLOB_segment;
         });
 
+    var $button_switch_grille = $("<button>Grille</button>").appendTo($div_button).click(
+	{essaimJSXGraph : this}, function(event){
+	    if (event.data.essaimJSXGraph.grid){
+		event.data.essaimJSXGraph.brd.removeGrids();
+		event.data.essaimJSXGraph.grid = false;
+	    }else{
+		event.data.essaimJSXGraph.brd.create('grid', []);
+		event.data.essaimJSXGraph.grid = true;
+	    }
+	});
+
+    var $button_axis_x = $("<button>Axis-X</button>").appendTo($div_button).click(
+	{essaimJSXGraph : this}, function(event){
+	    event.data.essaimJSXGraph.brd.create('axis', [[0, 0], [1, 0]],
+						 {ticks: {insertTicks: false,
+							  ticksDistance: 3,
+							  label: {offset: [-20, -20]}}});
+	    event.data.essaimJSXGraph.brd.fullUpdate();
+	});
+
+    var $button_axis_y = $("<button>Axis-Y</button>").appendTo($div_button).click(
+	{essaimJSXGraph : this}, function(event){
+	    event.data.essaimJSXGraph.brd.create('axis', [[0, 0], [0, 1]],
+						 {ticks: {insertTicks: false,
+							  ticksDistance: 3,
+							  label: {offset: [-20, -20]}}});
+	    event.data.essaimJSXGraph.brd.fullUpdate();
+	});
     $div_button.appendTo(this.divBloc);
 
     EssaimJSXGraph.prototype.initEnonce.call(this);
@@ -158,7 +187,8 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup) {
 
     /*Crï¿½ation du graphe*/
     this.brd = JXG.JSXGraph.initBoard('box' + this.numero, {axis: false, keepaspectratio: true});
-
+    this.brd.options.axis = true;
+    this.brd.updateRenderer();
     /*Gestion de la modification de la taille du bloc*/
     /*Pour le moment, la solution trouver pour limiter le problï¿½me lors du resize, c'est 
      d'inclure un delai de 200milliseconde*/
@@ -176,7 +206,6 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup) {
     /*Creation de points, à retoucher/améliorer*/
     var essaimJSXGraph = this;
     this.brd.on('up', function(event){
-	console.log(this.grids);
 	if (essaimJSXGraph.mode !== GLOB_libre){
 	    var point = undefined;
 	    var brd = essaimJSXGraph.brd;
@@ -218,8 +247,6 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup) {
 	}
 
     });
-    console.log(this.brd.grids);
-    this.brd.removeGrids();
 }
 
 
