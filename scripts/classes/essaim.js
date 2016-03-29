@@ -233,9 +233,9 @@ Essaim.prototype.initBloc = function()
     // Fabrication du contenu du bloc
     
     this.divBloc.appendChild(buttonSuppr);
+    this.divBloc.appendChild(buttonWindow);
     this.divBloc.appendChild(buttonHaut);
     this.divBloc.appendChild(buttonBas);
-    this.divBloc.appendChild(buttonWindow);
     if (this.aUneAide==true) {
         this.divBloc.appendChild(buttonAide);
     }
