@@ -63,6 +63,8 @@ Essaim.prototype.initBloc = function()
     });
 
    liste.addEventListener('drop', function(e) {
+    /*Cette fonction sert à décrire ce qui se passera pour le bloc ciblé ce qui se passera lorsqu'on lachera un objet droppable sur lui */
+        
         var nomZoneIn=" "; //on va récupérer l'id du bloc reçu. 
         nomZoneIn=e.dataTransfer.getData('text/plain'); // Affiche le contenu du type MIME « text/plain »
         console.log('Données reçu : ' + nomZoneIn);
@@ -76,54 +78,74 @@ Essaim.prototype.initBloc = function()
         
         var next = id_drop.nextElementSibling;//l'élément suivant le bloc droppé
 
-        if (this==previous) {
-            if (previous) {
-              console.log('Un bloc precedent a été trouvé ! Changement...');
-                id_drop.parentNode.insertBefore(id_drop, previous);
-                var nom = id_drop.id.slice("RidPrBloc_".length,id_drop.id.length);
-            
-                var ind = rucheSys.rechercheIndice(nom,rucheSys.listeBlocPrepa);
-            
-                var temp = rucheSys.listeBlocPrepa[ind];
-                rucheSys.listeBlocPrepa[ind] = rucheSys.listeBlocPrepa[ind-1];
-                rucheSys.listeBlocPrepa[ind-1] = temp;
-            }
-            else
-            {
-                console.log('Pas de précédent, désolé !');
-            }
-        }
-        else if(this==next)
+        var lgNext= Essaim.prototype.trouverSuivant(id_drop,this); //Permet de donner à cb de cases se trouve le bloc ciblé wxc
+        var lgPrev=0;
+        console.log('Oui, vous avez bien entendu, '+lgNext+' blocs plus loin')
+
+
+        var lgPrev= Essaim.prototype.trouverPrecedent(id_drop,this);
+        //var actu= id_drop;
+        if(lgNext>0)
         {
+            console.log("Et ca, ca permet d'entrer dans la fonction de déplacement du suivant");
+           
+            for (var i = 0; i < lgNext; i++) { //on fait faire au bloc droppé lgNext descentes vers le bas.
+                
+                if(next){
+                    next = next.nextElementSibling;
 
-            //Maintenant on s'occupe du suivant xcv
-        
-            if (next) {
-                //console.log('Un bloc suivant a été trouvé ! Changement...'+previous.id);
-                next = next.nextElementSibling;
-                var nom = id_drop.id.slice("RidPrBloc_".length,id_drop.id.length);
-            
-                var ind = rucheSys.rechercheIndice(nom,rucheSys.listeBlocPrepa);
-            
-                var temp = rucheSys.listeBlocPrepa[ind];
-                rucheSys.listeBlocPrepa[ind] = rucheSys.listeBlocPrepa[ind+1];
-                rucheSys.listeBlocPrepa[ind+1] = temp;
-            }
-            else
-            {
-                console.log('Pas de bloc suivant ici !');
-            }
+                    console.log('Un bloc suivant a été trouvé ! Changement...');
+                    id_drop.parentNode.insertBefore(id_drop, next);
+                    var nom = id_drop.id.slice("RidPrBloc_".length,id_drop.id.length);
+                
+                    var ind = rucheSys.rechercheIndice(nom,rucheSys.listeBlocPrepa);
+                
+                    var temp = rucheSys.listeBlocPrepa[ind];
+                    rucheSys.listeBlocPrepa[ind] = rucheSys.listeBlocPrepa[ind+1];
+                    rucheSys.listeBlocPrepa[ind+1] = temp;
 
-            id_drop.parentNode.insertBefore(id_drop, next);
+
+                }
+                else
+                {
+                    console.log("Fin du next");
+                }
+
+                //On change visuellement la place. 
+                
+            }
         }
+
+        if (lgPrev) {
+            for(var j=0; j< lgPrev;j++)
+            {
+                if (previous) {
+                    console.log('Un bloc precedent a été trouvé ! Changement...');
+                    id_drop.parentNode.insertBefore(id_drop, previous);
+                    var nom = id_drop.id.slice("RidPrBloc_".length,id_drop.id.length);
+                
+                    var ind = rucheSys.rechercheIndice(nom,rucheSys.listeBlocPrepa);
+                
+                    var temp = rucheSys.listeBlocPrepa[ind];
+                    rucheSys.listeBlocPrepa[ind] = rucheSys.listeBlocPrepa[ind-1];
+                    rucheSys.listeBlocPrepa[ind-1] = temp;
+                    previous = id_drop.previousElementSibling;
+                }
+                else
+                {
+                    console.log('Pas de précédent, désolé !');
+                }
+            }
+        }
+        
         else
         {
             console.log('Ni suivant, ne précédent !***********************');
         }
             console.log(this.id);
-    });
+        });
 
-    /* Fin des modifications inérentes au drag and drop */
+    /* Fin des modifs */
     
     this.divBloc = document.createElement("DIV");
     this.divBloc.className = "Rcl_Bloc_Interne";
@@ -979,3 +1001,73 @@ Essaim.prototype.toOEFFromAnswer = function()
 
 // ne charge pas cet Essaim, il est virtuel
 // rucheSys.initClasseEssaim(Essaim);
+
+
+Essaim.prototype.trouverSuivant = function(source,cible)
+/* 
+* Pour le drag and drop 
+* Sert à trouver si le bloc pointé suit le bloc source, et renvoi la longueur à laquelle il se trouve si il est bien suivant.
+* Paramètres : 
+* - source : Le bloc qu'on drag sur un autre bloc
+* - cible : le bloc sur lequel on relache le bloc dragué
+*/
+{        
+    var cpt = 0;
+    var next = source;
+    var trouve = false;
+
+    while(next != null && !trouve)
+    {
+        next = next.nextElementSibling;//l'élément suivant le bloc droppé
+        cpt++;
+        if (next==cible)
+         {
+            trouve = true;
+         }
+
+    }
+
+    //cpt++;
+
+    if (!trouve)
+    {
+        cpt =0;
+    }
+    console.log("Le bloc visé et de "+cpt+" bloc après.")
+
+    return cpt;
+}
+
+Essaim.prototype.trouverPrecedent = function(source,cible)
+/* 
+* Pour le drag and drop 
+* Sert à trouver si le bloc pointé precede le bloc source, et renvoi le nombre de bloc à laquelle il se trouve si il est bien precedent.
+* Paramètres : 
+* - source : Le bloc qu'on drag sur un autre bloc
+* - cible : le bloc sur lequel on relache le bloc dragué
+*/
+{        
+    var cpt = 0;
+    var prev = source;
+    var trouve = false;
+
+    while(prev != null && !trouve)
+    {
+        //next = next.nextElementSibling;//l'élément suivant le bloc droppé
+        prev = prev.previousElementSibling
+        cpt++;
+        if (prev==cible)
+         {
+            trouve = true;
+         }
+
+    }
+
+    if (!trouve)
+    {
+        cpt =0;
+    }
+    console.log("Le bloc visé et de "+cpt+" bloc avant.")
+
+    return cpt;
+}
