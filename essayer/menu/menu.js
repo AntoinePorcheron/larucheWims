@@ -153,12 +153,20 @@ $(document).ready(function () {
                         break;
                 }
             },
-            items: {
-                "ajoute": {name: "Ajoute un image", icon: option.icon},
-                "sup": {name: "supprimer un image", icon: "delete"},
-                "cut": {name: "Cut", icon: "cut"},
-                "copy": {name: "Copy", icon: "copy"}
-            }
+            items: (function () {
+                var base = {
+                    type: {name: option.element.elType}
+                };
+                switch (option.element.elType){
+                    case "point":
+                        base.ajoute = {name: "Ajouter un Image", icon: "edit"};
+                        break;
+                    case "image":
+                        base.sup = {name: "Supprimer cet Image", icon: "delete"};
+                        break;
+                }
+                return base
+            })()
         };
     };
 
@@ -170,9 +178,7 @@ $(document).ready(function () {
             // its results are destroyed every time the menu is hidden
             // e is the original contextmenu event, containing e.pageX and e.pageY (amongst other data)
             return initMenu({
-                name: board.getAllUnderMouse()[0].htmlStr,
-                icon: "edit",
-                element: board.getAllUnderMouse([0])
+                element: getTopUnderMouse(board)
             })
         }
         /*
@@ -180,6 +186,12 @@ $(document).ready(function () {
          name: board.getAllUnderMouse()[0].htmlStr,
          icon: "edit"
          })
+         {
+         "ajoute": {name: "Ajoute un image", icon: option.icon},
+         "sup": {name: "supprimer un image", icon: "delete"},
+         "cut": {name: "Cut", icon: "cut"},
+         "copy": {name: "Copy", icon: "copy"}
+         }
          */
 
     });
