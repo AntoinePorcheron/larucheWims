@@ -7,6 +7,7 @@ var fillImageIntoPoint = function (board, url, paint) {
     function getCoord(paint) {
         return paint.coords.usrCoords
     }
+
     function getCoord2D(paint) {
         return getCoord(paint).slice(1)
     }
@@ -29,6 +30,34 @@ var fillImageIntoPoint = function (board, url, paint) {
     return board.create("image", [url, point, [width, width]])
 };
 
+var getTopUnderMouse = function (board) {
+    //var layer = board.options.layer;
+    var layer = {
+        point: 9,
+        arc: 8,
+        line: 7,
+        circle: 6,
+        curve: 5,
+        polygon: 4,
+        sector: 3,
+        angle: 2,
+        grid: 1,
+        image: 10,
+        text: -1
+    };
+    var ele = board.getAllUnderMouse();
+    if (!ele.length) return null;
+    var level = layer[ele[0].elType];
+    var top = ele[0];
+    for (var i = 0; i < ele.length; i++) {
+        if (level < layer[ele[i].elType]) {
+            level = layer[ele[i].elType];
+            top = ele[i]
+        }
+    }
+    return top
+};
+
 var popupImageUploader = function (board, paint) {
     if (!FileReader) throw "A Newer Version of Browser is Required.";
     var $input = $("<input />")
@@ -38,12 +67,12 @@ var popupImageUploader = function (board, paint) {
         alt: "image"
     });
     /*var $div = $("<div></div>").css({
-            position: "absolute"
-        })
-        .html($input)
-        //.append($img)
-        .appendTo("body");
-        */
+     position: "absolute"
+     })
+     .html($input)
+     //.append($img)
+     .appendTo("body");
+     */
     $input.trigger("click");
     function readFile(file) {
         var reader = new FileReader();
@@ -53,8 +82,10 @@ var popupImageUploader = function (board, paint) {
             //$div.hide();
             fillImageIntoPoint(board, event.target.result, paint)
         }
+
         reader.readAsDataURL(file);
     }
+
     $input.get(0).onchange = function (event) {
         readFile(event.srcElement.files[0])
     }
@@ -107,15 +138,15 @@ $(document).ready(function () {
                 var i = 0;
                 switch (key) {
                     case "ajoute":
-                        for(i = 0; i < l.length; i++){
-                            if(l[i].elType == "point"){
+                        for (i = 0; i < l.length; i++) {
+                            if (l[i].elType == "point") {
                                 popupImageUploader(board, l[i])
                             }
                         }
                         break;
                     case "sup":
-                        for(i = 0; i < l.length; i++){
-                            if(l[i].elType == "image"){
+                        for (i = 0; i < l.length; i++) {
+                            if (l[i].elType == "image") {
                                 board.removeObject(l[i])
                             }
                         }
@@ -134,6 +165,7 @@ $(document).ready(function () {
     $.contextMenu({
         selector: 'div',
         build: function ($trigger, e) {
+            console.log(getTopUnderMouse(board).elType);
             // this callback is executed every time the menu is to be shown
             // its results are destroyed every time the menu is hidden
             // e is the original contextmenu event, containing e.pageX and e.pageY (amongst other data)
