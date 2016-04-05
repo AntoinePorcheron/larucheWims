@@ -63,7 +63,11 @@ Essaim.prototype.initBloc = function()
     });
 
    liste.addEventListener('drop', function(e) {
+<<<<<<< HEAD
+        /*Cette fonction sert à décrire ce qui se passera pour le bloc ciblé ce qui se passera lorsqu'on lachera un objet droppable sur lui */
+=======
     /*Cette fonction sert à décrire ce qui se passera pour le bloc ciblé ce qui se passera lorsqu'on lachera un objet droppable sur lui */
+>>>>>>> master
         
         var nomZoneIn=" "; //on va récupérer l'id du bloc reçu. 
         nomZoneIn=e.dataTransfer.getData('text/plain'); // Affiche le contenu du type MIME « text/plain »
@@ -78,6 +82,35 @@ Essaim.prototype.initBloc = function()
         
         var next = id_drop.nextElementSibling;//l'élément suivant le bloc droppé
 
+<<<<<<< HEAD
+       var lgNext= Essaim.prototype.trouverSuivant(id_drop,this); //Permet de donner à cb de cases se trouve le bloc ciblé wxc
+        var lgPrev=0;
+        console.log('Oui, vous avez bien entendu, '+lgNext+' blocs plus loin')
+
+
+        var lgPrev= Essaim.prototype.trouverPrecedent(id_drop,this);
+        //var actu= id_drop;
+        if(lgNext>0)
+        {
+            console.log("Et ca, ca permet d'entrer dans la fonction de déplacement du suivant");
+           
+            for (var i = 0; i < lgNext; i++) { //on fait faire au bloc droppé lgNext descentes vers le bas.
+                
+                if(next){
+                    next = next.nextElementSibling;
+
+                    console.log('Un bloc suivant a été trouvé ! Changement...');
+                    id_drop.parentNode.insertBefore(id_drop, next);
+                    var nom = id_drop.id.slice("RidPrBloc_".length,id_drop.id.length);
+                
+                    var ind = rucheSys.rechercheIndice(nom,rucheSys.listeBlocPrepa);
+                
+                    var temp = rucheSys.listeBlocPrepa[ind];
+                    rucheSys.listeBlocPrepa[ind] = rucheSys.listeBlocPrepa[ind+1];
+                    rucheSys.listeBlocPrepa[ind+1] = temp;
+           
+            
+=======
         var lgNext= Essaim.prototype.trouverSuivant(id_drop,this); //Permet de donner à cb de cases se trouve le bloc ciblé wxc
         var lgPrev=0;
         console.log('Oui, vous avez bien entendu, '+lgNext+' blocs plus loin')
@@ -105,6 +138,7 @@ Essaim.prototype.initBloc = function()
                     rucheSys.listeBlocPrepa[ind+1] = temp;
 
 
+>>>>>>> master
                 }
                 else
                 {
@@ -113,13 +147,22 @@ Essaim.prototype.initBloc = function()
 
                 //On change visuellement la place. 
                 
+<<<<<<< HEAD
+                }
+            }
+=======
             }
         }
+>>>>>>> master
 
         if (lgPrev) {
             for(var j=0; j< lgPrev;j++)
             {
+<<<<<<< HEAD
+             if (previous) {
+=======
                 if (previous) {
+>>>>>>> master
                     console.log('Un bloc precedent a été trouvé ! Changement...');
                     id_drop.parentNode.insertBefore(id_drop, previous);
                     var nom = id_drop.id.slice("RidPrBloc_".length,id_drop.id.length);
@@ -137,7 +180,11 @@ Essaim.prototype.initBloc = function()
                 }
             }
         }
+<<<<<<< HEAD
+       
+=======
         
+>>>>>>> master
         else
         {
             console.log('Ni suivant, ne précédent !***********************');
@@ -145,7 +192,11 @@ Essaim.prototype.initBloc = function()
             console.log(this.id);
         });
 
+<<<<<<< HEAD
+    
+=======
     /* Fin des modifs */
+>>>>>>> master
     
     this.divBloc = document.createElement("DIV");
     this.divBloc.className = "Rcl_Bloc_Interne";
@@ -255,9 +306,9 @@ Essaim.prototype.initBloc = function()
     // Fabrication du contenu du bloc
     
     this.divBloc.appendChild(buttonSuppr);
+    this.divBloc.appendChild(buttonWindow);
     this.divBloc.appendChild(buttonHaut);
     this.divBloc.appendChild(buttonBas);
-    this.divBloc.appendChild(buttonWindow);
     if (this.aUneAide==true) {
         this.divBloc.appendChild(buttonAide);
     }
@@ -1070,4 +1121,8 @@ Essaim.prototype.trouverPrecedent = function(source,cible)
     console.log("Le bloc visé et de "+cpt+" bloc avant.")
 
     return cpt;
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> master

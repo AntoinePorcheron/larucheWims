@@ -43,7 +43,11 @@ function CodeLibrePrepa(numero)
     		});
 
    		liste.addEventListener('drop', function(e) {
+<<<<<<< HEAD
+        	/*Cette fonction sert à décrire ce qui se passera pour le bloc ciblé ce qui se passera lorsqu'on lachera un objet droppable sur lui */
+=======
         /*Cette fonction sert à décrire ce qui se passera pour le bloc ciblé ce qui se passera lorsqu'on lachera un objet droppable sur lui */
+>>>>>>> master
         
         var nomZoneIn=" "; //on va récupérer l'id du bloc reçu. 
         nomZoneIn=e.dataTransfer.getData('text/plain'); // Affiche le contenu du type MIME « text/plain »
@@ -54,6 +58,18 @@ function CodeLibrePrepa(numero)
         //var li = buttonHaut.parentNode.parentNode;
 
         // On va gérer le précédent
+<<<<<<< HEAD
+        var previous = id_drop.previousElementSibling;//l'élément précédent le bloc droppé	
+        
+        var next = id_drop.nextElementSibling;//l'élément suivant le bloc droppé  	
+
+         var lgNext= Essaim.prototype.trouverSuivant(id_drop,this); //Permet de donner à cb de cases se trouve le bloc ciblé wxc
+        var lgPrev=0;	
+            		
+        
+            		
+var lgPrev= Essaim.prototype.trouverPrecedent(id_drop,this);
+=======
         var previous = id_drop.previousElementSibling;//l'élément précédent le bloc droppé
         
         var next = id_drop.nextElementSibling;//l'élément suivant le bloc droppé
@@ -64,6 +80,7 @@ function CodeLibrePrepa(numero)
 
 
         var lgPrev= Essaim.prototype.trouverPrecedent(id_drop,this);
+>>>>>>> master
         //var actu= id_drop;
         if(lgNext>0)
         {
@@ -125,8 +142,13 @@ function CodeLibrePrepa(numero)
             
         });
 
+<<<<<<< HEAD
+        /* Fin des modifs */
+
+=======
     /* Fin des modifs */
 		
+>>>>>>> master
 		
 		var barre_tache = document.createElement("DIV");
 		barre_tache.className = "barre_tache_prepa"; // Pas encore utilisŽ
@@ -164,6 +186,30 @@ function CodeLibrePrepa(numero)
 			var n = liste.id.slice("RidPrBloc_".length,liste.id.length);
 			rucheSys.supprInstruction(n,rucheSys.listeBlocPrepa);
 		}
+        
+        // Bouton pour diminuer / agrandir la fenêtre
+		var buttonWindow = document.createElement('button');
+		buttonWindow.className = "Rcl_Button_Minimize";
+		buttonWindow.addEventListener('click', function (event)
+		{ 
+			if (buttonWindow.className == "Rcl_Button_Minimize") 
+			{
+				buttonWindow.className = "";
+				buttonWindow.className = "Rcl_Button_Maximize";
+				buttonWindow.parentNode.parentNode.className = "";
+				buttonWindow.parentNode.parentNode.className = "Rcl_Bloc Rcl_Closed";
+                txt.className = "Rcl_Mini_Editor_hidden";
+			}
+			else
+			{
+				buttonWindow.className = "";
+				buttonWindow.className = "Rcl_Button_Minimize";
+				buttonWindow.parentNode.parentNode.className = "";
+				buttonWindow.parentNode.parentNode.className = "Rcl_Bloc";
+                txt.className = "Rcl_Droppable Rcl_Editor";
+			};
+		}, 
+		true);
 
 		
 		/*Button de deplacement vers le haut*/
@@ -215,11 +261,13 @@ function CodeLibrePrepa(numero)
 
 		liste.className = "Rcl_Bloc";
 		div_fils.className = "Rcl_Bloc_Interne";
+        txt_codeL = document.createTextNode("\r\nCode Libre");
 
 		div_fils.appendChild(button);
+        div_fils.appendChild(buttonWindow);
 		div_fils.appendChild(buttonHaut);
 		div_fils.appendChild(buttonBas);
-		
+		div_fils.appendChild(txt_codeL);
 		/* Barre Var et Latex */
 		barre_tache.appendChild(button_latex);
 		div_fils.appendChild(barre_tache);
