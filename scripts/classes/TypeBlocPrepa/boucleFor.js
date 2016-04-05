@@ -45,7 +45,11 @@ function BoucleFor(numero)
         console.log('Un élément survole la zone');
     	});
 
+<<<<<<< HEAD
    		liste.addEventListener('drop', function(e) {
+=======
+   	liste.addEventListener('drop', function(e) {
+>>>>>>> master
         /*Cette fonction sert à décrire ce qui se passera pour le bloc ciblé ce qui se passera lorsqu'on lachera un objet droppable sur lui */
         
         var nomZoneIn=" "; //on va récupérer l'id du bloc reçu. 
@@ -70,8 +74,13 @@ function BoucleFor(numero)
         //var actu= id_drop;
         if(lgNext>0)
         {
+<<<<<<< HEAD
             
             
+=======
+            
+           
+>>>>>>> master
             for (var i = 0; i < lgNext; i++) { //on fait faire au bloc droppé lgNext descentes vers le bas.
                 
                 if(next){
@@ -95,6 +104,7 @@ function BoucleFor(numero)
                 }
 
                 //On change visuellement la place. 
+<<<<<<< HEAD
                    
             }
         }
@@ -103,6 +113,16 @@ function BoucleFor(numero)
             for(var j=0; j< lgPrev;j++)
             {
             if (previous) {
+=======
+                
+            }
+        }
+
+        if (lgPrev) {
+            for(var j=0; j< lgPrev;j++)
+            {
+                if (previous) {
+>>>>>>> master
                     console.log('Un bloc precedent a été trouvé ! Changement...');
                     id_drop.parentNode.insertBefore(id_drop, previous);
                     var nom = id_drop.id.slice("RidPrBloc_".length,id_drop.id.length);
@@ -117,18 +137,32 @@ function BoucleFor(numero)
                 else
                 {
                     console.log('Pas de précédent, désolé !');
+<<<<<<< HEAD
                 } 
             }
         }
             
+=======
+                }
+            }
+        }
+        
+>>>>>>> master
         else
         {
             console.log('Ni suivant, ne précédent !***********************');
         }
+<<<<<<< HEAD
           
         });         
 
 	    /* Fin des modifs */
+=======
+            
+        });
+
+    /* Fin des modifs */
+>>>>>>> master
 
 		var div_forDebut = document.createElement("DIV");
 		div_forDebut.id = "forDebut" + this.nom;

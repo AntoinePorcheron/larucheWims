@@ -305,6 +305,7 @@ function drag(){
     });
 
    rc1_drag.addEventListener('drop', function(e) {
+<<<<<<< HEAD
        /*Cette fonction sert à décrire ce qui se passera pour le bloc ciblé ce qui se passera lorsqu'on lachera un objet droppable sur lui */
          
        var nomZoneIn=" "; //on va récupérer l'id du bloc reçu. 
@@ -314,13 +315,28 @@ function drag(){
 
        var id_drop = document.querySelector('#'+nomZoneIn); 
        //var li = buttonHaut.parentNode.parentNode;
+=======
+        /*Cette fonction sert à décrire ce qui se passera pour le bloc ciblé ce qui se passera lorsqu'on lachera un objet droppable sur lui */
+        
+        var nomZoneIn=" "; //on va récupérer l'id du bloc reçu. 
+        nomZoneIn=e.dataTransfer.getData('text/plain'); // Affiche le contenu du type MIME « text/plain »
+        console.log('Données reçu : ' + nomZoneIn);
+        //Maintenant nous allons faire en sorte de changer de place le bloc si on passe sur le bloc avant ou après lui
+
+        var id_drop = document.querySelector('#'+nomZoneIn);
+        //var li = buttonHaut.parentNode.parentNode;
+>>>>>>> master
 
         // On va gérer le précédent
         var previous = id_drop.previousElementSibling;//l'élément précédent le bloc droppé
         
         var next = id_drop.nextElementSibling;//l'élément suivant le bloc droppé
 
+<<<<<<< HEAD
      var lgNext= Essaim.prototype.trouverSuivant(id_drop,this); //Permet de donner à cb de cases se trouve le bloc ciblé wxc
+=======
+        var lgNext= Essaim.prototype.trouverSuivant(id_drop,this); //Permet de donner à cb de cases se trouve le bloc ciblé wxc
+>>>>>>> master
         var lgPrev=0;
         
 
@@ -330,7 +346,11 @@ function drag(){
         if(lgNext>0)
         {
             
+<<<<<<< HEAD
           
+=======
+           
+>>>>>>> master
             for (var i = 0; i < lgNext; i++) { //on fait faire au bloc droppé lgNext descentes vers le bas.
                 
                 if(next){
@@ -354,12 +374,21 @@ function drag(){
                 }
 
                 //On change visuellement la place. 
+<<<<<<< HEAD
                       
             }
         }
         
        if (lgPrev) {
             for(var j=0; j< lgPrev;j++)           
+=======
+                
+            }
+        }
+
+        if (lgPrev) {
+            for(var j=0; j< lgPrev;j++)
+>>>>>>> master
             {
                 if (previous) {
                     console.log('Un bloc precedent a été trouvé ! Changement...');
@@ -379,12 +408,20 @@ function drag(){
                 }
             }
         }
+<<<<<<< HEAD
        
+=======
+        
+>>>>>>> master
         else
         {
             console.log('Ni suivant, ne précédent !***********************');
         }
+<<<<<<< HEAD
            
+=======
+            
+>>>>>>> master
         });
 
     /* Fin des modifs */

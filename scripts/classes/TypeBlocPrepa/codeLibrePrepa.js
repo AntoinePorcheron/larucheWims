@@ -43,7 +43,11 @@ function CodeLibrePrepa(numero)
     		});
 
    		liste.addEventListener('drop', function(e) {
+<<<<<<< HEAD
         	/*Cette fonction sert à décrire ce qui se passera pour le bloc ciblé ce qui se passera lorsqu'on lachera un objet droppable sur lui */
+=======
+        /*Cette fonction sert à décrire ce qui se passera pour le bloc ciblé ce qui se passera lorsqu'on lachera un objet droppable sur lui */
+>>>>>>> master
         
         var nomZoneIn=" "; //on va récupérer l'id du bloc reçu. 
         nomZoneIn=e.dataTransfer.getData('text/plain'); // Affiche le contenu du type MIME « text/plain »
@@ -54,6 +58,7 @@ function CodeLibrePrepa(numero)
         //var li = buttonHaut.parentNode.parentNode;
 
         // On va gérer le précédent
+<<<<<<< HEAD
         var previous = id_drop.previousElementSibling;//l'élément précédent le bloc droppé	
         
         var next = id_drop.nextElementSibling;//l'élément suivant le bloc droppé  	
@@ -64,6 +69,18 @@ function CodeLibrePrepa(numero)
         
             		
 var lgPrev= Essaim.prototype.trouverPrecedent(id_drop,this);
+=======
+        var previous = id_drop.previousElementSibling;//l'élément précédent le bloc droppé
+        
+        var next = id_drop.nextElementSibling;//l'élément suivant le bloc droppé
+
+        var lgNext= Essaim.prototype.trouverSuivant(id_drop,this); //Permet de donner à cb de cases se trouve le bloc ciblé wxc
+        var lgPrev=0;
+        
+
+
+        var lgPrev= Essaim.prototype.trouverPrecedent(id_drop,this);
+>>>>>>> master
         //var actu= id_drop;
         if(lgNext>0)
         {
@@ -125,8 +142,13 @@ var lgPrev= Essaim.prototype.trouverPrecedent(id_drop,this);
             
         });
 
+<<<<<<< HEAD
         /* Fin des modifs */
 
+=======
+    /* Fin des modifs */
+		
+>>>>>>> master
 		
 		var barre_tache = document.createElement("DIV");
 		barre_tache.className = "barre_tache_prepa"; // Pas encore utilisŽ
