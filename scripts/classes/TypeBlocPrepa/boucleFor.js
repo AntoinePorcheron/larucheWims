@@ -45,7 +45,7 @@ function BoucleFor(numero)
         console.log('Un élément survole la zone');
     	});
 
-   	liste.addEventListener('drop', function(e) {
+   		liste.addEventListener('drop', function(e) {
         /*Cette fonction sert à décrire ce qui se passera pour le bloc ciblé ce qui se passera lorsqu'on lachera un objet droppable sur lui */
         
         var nomZoneIn=" "; //on va récupérer l'id du bloc reçu. 
@@ -71,7 +71,7 @@ function BoucleFor(numero)
         if(lgNext>0)
         {
             
-           
+            
             for (var i = 0; i < lgNext; i++) { //on fait faire au bloc droppé lgNext descentes vers le bas.
                 
                 if(next){
@@ -95,14 +95,14 @@ function BoucleFor(numero)
                 }
 
                 //On change visuellement la place. 
-                
+                   
             }
         }
-
+        
         if (lgPrev) {
             for(var j=0; j< lgPrev;j++)
             {
-                if (previous) {
+            if (previous) {
                     console.log('Un bloc precedent a été trouvé ! Changement...');
                     id_drop.parentNode.insertBefore(id_drop, previous);
                     var nom = id_drop.id.slice("RidPrBloc_".length,id_drop.id.length);
@@ -117,18 +117,18 @@ function BoucleFor(numero)
                 else
                 {
                     console.log('Pas de précédent, désolé !');
-                }
+                } 
             }
         }
-        
+            
         else
         {
             console.log('Ni suivant, ne précédent !***********************');
         }
-            
-        });
+          
+        });         
 
-    /* Fin des modifs */
+	    /* Fin des modifs */
 
 		var div_forDebut = document.createElement("DIV");
 		div_forDebut.id = "forDebut" + this.nom;
@@ -164,6 +164,9 @@ function BoucleFor(numero)
 				buttonWindow.className = "";
 				buttonWindow.className = "Rcl_Button_Maximize";
 				buttonWindow.parentNode.parentNode.className = "Rcl_Bloc Rcl_Closed";
+                div_forDebut.className = "Rcl_Mini_Editor_hidden";
+                div_forFin.className = "Rcl_Mini_Editor_hidden";
+                div_forInstruction.className = "Rcl_Mini_Editor_hidden";
 			}
 			else
 			{
@@ -171,6 +174,9 @@ function BoucleFor(numero)
 				buttonWindow.className = "Rcl_Button_Minimize";
 				buttonWindow.parentNode.parentNode.className = "";
 				buttonWindow.parentNode.parentNode.className = "Rcl_Bloc";
+                div_forDebut.className = "Rcl_Droppable Rcl_Mini_Editor";
+                div_forFin.className = "Rcl_Droppable Rcl_Mini_Editor";
+                div_forInstruction.className = "Rcl_Droppable";
 			};
 		}, 
 		true);
