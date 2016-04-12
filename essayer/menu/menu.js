@@ -171,7 +171,7 @@ $(document).ready(function () {
     };
 
     $.contextMenu({
-        selector: 'div',
+        selector: '#box',
         build: function ($trigger, e) {
             console.log(getTopUnderMouse(board).elType);
             // this callback is executed every time the menu is to be shown
@@ -181,19 +181,6 @@ $(document).ready(function () {
                 element: getTopUnderMouse(board)
             })
         }
-        /*
-         initMenu({
-         name: board.getAllUnderMouse()[0].htmlStr,
-         icon: "edit"
-         })
-         {
-         "ajoute": {name: "Ajoute un image", icon: option.icon},
-         "sup": {name: "supprimer un image", icon: "delete"},
-         "cut": {name: "Cut", icon: "cut"},
-         "copy": {name: "Copy", icon: "copy"}
-         }
-         */
-
     });
 
 
