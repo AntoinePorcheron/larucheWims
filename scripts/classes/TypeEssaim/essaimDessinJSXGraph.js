@@ -129,38 +129,29 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup) {
         height: 400
     }).appendTo($(this.divBloc));
 
+	
     /*Ok, on garde la fa�on JQuery*/
-    var $div_button = $("<div></div>");
-    var $button_libre = $("<button> Deplacer </button>").appendTo($div_button).click(
-	{essaimJSXGraph : this}, function(event){
-	    event.data.essaimJSXGraph.mode = GLOB_libre
-	});
-    var $button_point = $("<button>Point</button>").appendTo($div_button).click(
-        {essaimJSXGraph: this}, function (event) {
-            event.data.essaimJSXGraph.mode = GLOB_point;
-        });
-
-    var $button_ligne = $("<button>Ligne</button>").appendTo($div_button).click(
-        {essaimJSXGraph: this}, function (event) {
-            event.data.essaimJSXGraph.mode = GLOB_ligne;
-        });
-
-    var $button_cercle = $("<button>Cercle</button>").appendTo($div_button).click(
-        {essaimJSXGraph: this}, function (event) {
-            event.data.essaimJSXGraph.mode = GLOB_cercle;
-        });
-
-    var $button_segment = $("<button>Segment</button>").appendTo($div_button).click(
-        {essaimJSXGraph: this}, function (event) {
-            event.data.essaimJSXGraph.mode = GLOB_segment;
-        });
-
-    var $button_arrow = $("<button>Arrow</button>").appendTo($div_button).click(
-	{essaimJSXGraph : this}, function(event){
-	    event.data.essaimJSXGraph.mode = GLOB_arrow;
-	});
-
-    var $button_switch_grille = $("<button>Grille</button>").appendTo($div_button).click(
+	
+	/* On crée deux blocs correspondant aux deux menus : 
+	 * - div_button_action :  bloc pour le menu des actions
+	 * - div_button_objet : bloc pour le menu des objets
+	 *
+	 **/
+	 
+	/* Menu pour les actions 
+	 * - grille (afficher/supprimer)
+	 * - déplacer (déplacement libre)
+	 *
+	 **/
+	 
+    var $div_button_action = $("<div></div>");
+	
+	var $zoneTexteAction = $("<p></p>").text("Actions").appendTo($div_button_action);
+	var $retourLigneAction = $("<br/>").after($div_button_action);
+	
+	var $div_button_retour_chariot_Action = $("<div></div>").appendTo($div_button_action);
+	
+	var $button_switch_grille = $("<button>Grille</button>").appendTo($div_button_retour_chariot_Action).click(
 	{essaimJSXGraph : this}, function(event){
 	    if (event.data.essaimJSXGraph.grid){
 		event.data.essaimJSXGraph.brd.removeGrids();
@@ -170,8 +161,56 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup) {
 		event.data.essaimJSXGraph.grid = true;
 	    }
 	});
+	
+	var $button_libre = $("<button> Deplacer </button>").appendTo($div_button_retour_chariot_Action).click(
+	{essaimJSXGraph : this}, function(event){
+	    event.data.essaimJSXGraph.mode = GLOB_libre
+	});
+	
+	$div_button_action.appendTo(this.divBloc);
+	
+	/* Menu pour les objets 
+	 * - point
+	 * - ligne
+	 * - cercle
+	 * - segment
+	 * - flèche
+	 * - axe X
+	 * - axe Y
+	 **/ 
+	 
+	var $div_button_objet = $("<div></div>");
+	var $zoneTexteObjet = $("<p></p>").text("Objets").appendTo($div_button_objet);
+	
+	var $div_button_retour_chariot_Objet = $("<div></div>").appendTo($div_button_objet);
+	
+    var $button_point = $("<button>Point</button>").appendTo($div_button_retour_chariot_Objet).click(
+        {essaimJSXGraph: this}, function (event) {
+            event.data.essaimJSXGraph.mode = GLOB_point;
+        });
 
-    var $button_axis_x = $("<button>Axis-X</button>").appendTo($div_button).click(
+    var $button_ligne = $("<button>Ligne</button>").appendTo($div_button_retour_chariot_Objet).click(
+        {essaimJSXGraph: this}, function (event) {
+            event.data.essaimJSXGraph.mode = GLOB_ligne;
+        });
+
+    var $button_cercle = $("<button>Cercle</button>").appendTo($div_button_retour_chariot_Objet).click(
+        {essaimJSXGraph: this}, function (event) {
+            event.data.essaimJSXGraph.mode = GLOB_cercle;
+        });
+
+    var $button_segment = $("<button>Segment</button>").appendTo($div_button_retour_chariot_Objet).click(
+        {essaimJSXGraph: this}, function (event) {
+            event.data.essaimJSXGraph.mode = GLOB_segment;
+        });
+
+    var $button_arrow = $("<button>Flèche</button>").appendTo($div_button_retour_chariot_Objet).click(
+	{essaimJSXGraph : this}, function(event){
+	    event.data.essaimJSXGraph.mode = GLOB_arrow;
+	});
+
+
+    var $button_axis_x = $("<button>Axe X</button>").appendTo($div_button_retour_chariot_Objet).click(
 	{essaimJSXGraph : this}, function(event){
 	    if (event.data.essaimJSXGraph.axis_x){
 		event.data.essaimJSXGraph.brd.create('axis', [[0, 0], [1, 0]],
@@ -182,9 +221,9 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup) {
 	    }
 	});
 
-    var $button_axis_y = $("<button>Axis-Y</button>").appendTo($div_button).click(
-	if (event.data.essaimJSXGraph.axis_y){
-	    {essaimJSXGraph : this}, function(event){
+    var $button_axis_y = $("<button>Axe Y</button>").appendTo($div_button_retour_chariot_Objet).click(
+	{essaimJSXGraph : this}, function(event){
+		if (event.data.essaimJSXGraph.axis_y){ 
 		event.data.essaimJSXGraph.brd.create('axis', [[0, 0], [0, 1]],
 						     {ticks: {insertTicks: false,
 							      ticksDistance: 3,
@@ -192,7 +231,8 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup) {
 		event.data.essaimJSXGraph.brd.fullUpdate();
 	    }
 	    });
-    $div_button.appendTo(this.divBloc);
+		
+    $div_button_objet.appendTo(this.divBloc);
 
     EssaimJSXGraph.prototype.initEnonce.call(this);
     EssaimJSXGraph.prototype.initAnalyse.call(this);
