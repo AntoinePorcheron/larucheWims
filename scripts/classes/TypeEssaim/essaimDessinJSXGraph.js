@@ -163,12 +163,12 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup) {
 
     var $button_switch_grille = $("<button>Grille</button>").appendTo($div_button).click(
 	{essaimJSXGraph : this}, function(event){
+	    event.data.essaimJSXGraph.grid = !event.data.essaimJSXGraph.grid;
 	    if (event.data.essaimJSXGraph.grid){
 		event.data.essaimJSXGraph.brd.removeGrids();
-		event.data.essaimJSXGraph.grid = false;
 	    }else{
 		event.data.essaimJSXGraph.brd.create('grid', []);
-		event.data.essaimJSXGraph.grid = true;
+		console.log("creation");
 	    }
 	});
 
