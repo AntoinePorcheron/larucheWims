@@ -63,7 +63,7 @@ Essaim.prototype.initBloc = function()
     });
 
    liste.addEventListener('drop', function(e) {
-    /*Cette fonction sert à décrire ce qui se passera pour le bloc ciblé ce qui se passera lorsqu'on lachera un objet droppable sur lui */
+        /*Cette fonction sert à décrire ce qui se passera pour le bloc ciblé ce qui se passera lorsqu'on lachera un objet droppable sur lui */
         
         var nomZoneIn=" "; //on va récupérer l'id du bloc reçu. 
         nomZoneIn=e.dataTransfer.getData('text/plain'); // Affiche le contenu du type MIME « text/plain »
@@ -78,7 +78,7 @@ Essaim.prototype.initBloc = function()
        
         var next = id_drop.nextElementSibling;//l'élément suivant le bloc droppé
 
-        var lgNext= Essaim.prototype.trouverSuivant(id_drop,this); //Permet de donner à cb de cases se trouve le bloc ciblé wxc
+       var lgNext= Essaim.prototype.trouverSuivant(id_drop,this); //Permet de donner à cb de cases se trouve le bloc ciblé wxc
         var lgPrev=0;
         console.log('Oui, vous avez bien entendu, '+lgNext+' blocs plus loin')
 
@@ -103,8 +103,8 @@ Essaim.prototype.initBloc = function()
                     var temp = rucheSys.listeBlocPrepa[ind];
                     rucheSys.listeBlocPrepa[ind] = rucheSys.listeBlocPrepa[ind+1];
                     rucheSys.listeBlocPrepa[ind+1] = temp;
-
-
+           
+            
                 }
                 else
                 {
@@ -113,13 +113,13 @@ Essaim.prototype.initBloc = function()
 
                 //On change visuellement la place. 
                 
+                }
             }
-        }
 
         if (lgPrev) {
             for(var j=0; j< lgPrev;j++)
             {
-                if (previous) {
+             if (previous) {
                     console.log('Un bloc precedent a été trouvé ! Changement...');
                     id_drop.parentNode.insertBefore(id_drop, previous);
                     var nom = id_drop.id.slice("RidPrBloc_".length,id_drop.id.length);
@@ -137,7 +137,7 @@ Essaim.prototype.initBloc = function()
                 }
             }
         }
-        
+       
         else
         {
             console.log('Ni suivant, ne précédent !***********************');
@@ -145,7 +145,7 @@ Essaim.prototype.initBloc = function()
             console.log(this.id);
         });
 
-    /* Fin des modifs */
+    
     
     this.divBloc = document.createElement("DIV");
     this.divBloc.className = "Rcl_Bloc_Interne";
@@ -255,9 +255,9 @@ Essaim.prototype.initBloc = function()
     // Fabrication du contenu du bloc
     
     this.divBloc.appendChild(buttonSuppr);
+    this.divBloc.appendChild(buttonWindow);
     this.divBloc.appendChild(buttonHaut);
     this.divBloc.appendChild(buttonBas);
-    this.divBloc.appendChild(buttonWindow);
     if (this.aUneAide==true) {
         this.divBloc.appendChild(buttonAide);
     }
