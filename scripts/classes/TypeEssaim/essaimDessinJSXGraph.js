@@ -41,6 +41,7 @@ EssaimJSXGraph = function (num) {
     this.grid = true;
     this.axis_x = false;
     this.axis_y = false;
+    this.saveState = [];
 }
 
 //------------ Dï¿½claration comme classe dï¿½rivï¿½e de Essaim -------------//
@@ -204,7 +205,11 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup) {
             event.data.essaimJSXGraph.mode = GLOB_segment;
         });
 
+<<<<<<< HEAD
     var $button_arrow = $("<button>FlÃ¨che</button>").appendTo($div_button_retour_chariot_Objet).click(
+=======
+    var $button_arrow = $("<button>Vecteur</button>").appendTo($div_button).click(
+>>>>>>> origin/graphe
 	{essaimJSXGraph : this}, function(event){
 	    event.data.essaimJSXGraph.mode = GLOB_arrow;
 	});
@@ -212,6 +217,7 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup) {
 
     var $button_axis_x = $("<button>Axe X</button>").appendTo($div_button_retour_chariot_Objet).click(
 	{essaimJSXGraph : this}, function(event){
+	    event.data.essaimJSXGraph.axis_x = !event.data.essaimJSXGraph.axis_x;   
 	    if (event.data.essaimJSXGraph.axis_x){
 		event.data.essaimJSXGraph.brd.create('axis', [[0, 0], [1, 0]],
 						     {ticks: {insertTicks: false,
@@ -221,18 +227,49 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup) {
 	    }
 	});
 
+<<<<<<< HEAD
     var $button_axis_y = $("<button>Axe Y</button>").appendTo($div_button_retour_chariot_Objet).click(
 	{essaimJSXGraph : this}, function(event){
 		if (event.data.essaimJSXGraph.axis_y){ 
+=======
+    var $button_axis_y = $("<button>Axis-Y</button>").appendTo($div_button).click(
+	{essaimJSXGraph : this}, function(event){
+	    event.data.essaimJSXGraph.axis_y = !event.data.essaimJSXGraph.axis_y;
+	    if (event.data.essaimJSXGraph.axis_y){
+>>>>>>> origin/graphe
 		event.data.essaimJSXGraph.brd.create('axis', [[0, 0], [0, 1]],
 						     {ticks: {insertTicks: false,
 							      ticksDistance: 3,
 							      label: {offset: [-20, -20]}}});
 		event.data.essaimJSXGraph.brd.fullUpdate();
 	    }
+<<<<<<< HEAD
 	    });
 		
     $div_button_objet.appendTo(this.divBloc);
+=======
+	});
+
+    var $deroule = $("<select></select>").appendTo($div_button);
+    
+    var $save = $("<button>Sauvegarde</button>").appendTo($div_button).click(
+	{essaimJSXGraph : this}, function(event){
+	    var t = {};
+	    for (i in event.data.essaimJSXGraph.brd.objects){
+		if (i.toLowerCase() !== "jxgBoard1_infobox".toLowerCase()){
+		    //un peu sale, à améliorer
+		    t[i] = event.data.essaimJSXGraph.brd.objects[i];
+		}
+	    }
+	    event.data.essaimJSXGraph.saveState.push(t);
+	    var tmp = Object.keys(t);
+	    var c = tmp[tmp.length - 2];
+	    $deroule.append("<option value"+ c +">" + c + "</option>")
+	});
+
+    
+    $div_button.appendTo(this.divBloc);
+>>>>>>> origin/graphe
 
     EssaimJSXGraph.prototype.initEnonce.call(this);
     EssaimJSXGraph.prototype.initAnalyse.call(this);
@@ -294,7 +331,6 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup) {
 		essaimJSXGraph.point = [];
 	    }
 	}
-
     });
 }
 
@@ -313,6 +349,8 @@ EssaimJSXGraph.prototype.toOEF = function(){
     var y1 = this.brd.getBoundingBox()[1];
     var x2 = this.brd.getBoundingBox()[2];
     var y2 = this.brd.getBoundingBox()[3];
+
+    /*console.log(this.brd.getBoundingBox());*/
     var OEF = "\\text{rangex" + this.nom + " = " + x1 + "," + x2 + "}\n"
     OEF += "\\text{rangey" + this.nom + " = " + y2 + "," + y1 + "}\n";
     OEF += "\\text{" + this.nom + " = rangex \\rangex" + this.nom + "\n";
@@ -325,16 +363,41 @@ EssaimJSXGraph.prototype.toOEF = function(){
 		OEF +=  "point " + brdElement.X() + "," + brdElement.Y() + ",black\n";
 		break;
 	    case GLOB_ligne :
-		OEF += "line " + brdElement.point1.X() + "," + brdElement.point1.Y() + "," +
-		    brdElement.point2.X() + "," + brdElement.point2.Y() + ",black\n";
+		var p1 = brdElement.point1;
+		var p2 = brdElement.point2;
+
+		var hauteur = x2 - x1;
+		var largeur = y1 - y2;
+		/*On recupère la hauteur et la largeur de la zone de dessin, en terme de 
+		  coordonnée du dessin*/
+		
+		var coef = Math.sqrt(largeur * largeur + hauteur * hauteur);
+		/*Taille de la diagonal de la zone de dessin*/
+		
+		var a = (p2.X() - p1.X()) * coef;
+		var b = (p2.Y() - p1.Y()) * coef;
+		/*a et b correspondent au vecteur de translation des deux point qui correspondent à
+		  la ligne, car un OEF la primitive ligne ne fait qu'un segment, on translate donc 
+		  les point en dehors de la zone de dessin, pour donner l'illusion d'une droite*/
+		OEF += "line " +
+		    (a + p1.X()) + "," + (b + p1.Y()) + "," +
+		    (-a + p2.X()) + "," + (-b + p2.Y()) +
+		    ",black\n";
+
 		break;
 	    case GLOB_cercle :
 		OEF += "circle " + brdElement.center.X() + "," + brdElement.center.Y() +
 		    "," + (brdElement.Radius() * this.brd.unitX) + ",black\n";
 		break;
 	    case GLOB_segment :
-		OEF += "segment " + brdElement.point1.X() + "," + brdElement.point1.Y() + "," +
-		    brdElement.point2.X() + "," + brdElement.point2.Y() + ",black\n"
+		var p1 = brdElement.point1;
+		var p2 = brdElement.point2;
+
+		tmp = "segment " +
+		    p1.X() + "," + p1.Y()+ "," +
+		    p2.X() + "," + p2.Y() + ",black\n";
+		console.log(tmp);
+		OEF += tmp;
 		break;
 	    default:
 		break;
@@ -380,7 +443,7 @@ EssaimJSXGraph.prototype.fillImageIntoPoint = function (url, pointExiste) {
 
 /**
  * supprimer un image dans le board
- * @param image: JSXGraph.element(image), le veriable qui indique un image de JSXGraph
+ * @param image: JSXGraph.element(image), la variable qui indique une image de JSXGraph
  */
 EssaimJSXGraph.prototype.removeImage = function (image) {
     this.brd.removeObject(image)
