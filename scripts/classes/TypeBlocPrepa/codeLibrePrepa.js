@@ -176,7 +176,7 @@ var lgPrev= Essaim.prototype.trouverPrecedent(id_drop,this);
 				buttonWindow.className = "Rcl_Button_Maximize";
 				buttonWindow.parentNode.parentNode.className = "";
 				buttonWindow.parentNode.parentNode.className = "Rcl_Bloc Rcl_Closed";
-                txt.className = "Rcl_Mini_Editor_hidden";
+                txt.className += " Rcl_Mini_Editor_hidden";
 			}
 			else
 			{
@@ -184,7 +184,7 @@ var lgPrev= Essaim.prototype.trouverPrecedent(id_drop,this);
 				buttonWindow.className = "Rcl_Button_Minimize";
 				buttonWindow.parentNode.parentNode.className = "";
 				buttonWindow.parentNode.parentNode.className = "Rcl_Bloc";
-                txt.className = "Rcl_Droppable Rcl_Editor";
+                txt.className = txt.className.replace(" Rcl_Mini_Editor_hidden","");
 			};
 		}, 
 		true);

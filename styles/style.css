@@ -672,6 +672,9 @@ input:-moz-placeholder { color:rgba(255,10,0,0.5); }
 .Rcl_Droppable {
 	border: 1px solid rgba(30,30,30,1);
 }
+.Rcl_Droppable_focus {
+    background-color:lightgreen;
+}
 /*
  * Style de la colonne de droite */
 .Rcl_Var_List {

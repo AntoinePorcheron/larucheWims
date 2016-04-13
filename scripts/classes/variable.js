@@ -224,7 +224,7 @@ Variable.prototype.ajoutBlocDansPreparation = function()
                 buttonWindow.className = "Rcl_Button_Maximize";
                 buttonWindow.parentNode.parentNode.parentNode.className = "";
                 buttonWindow.parentNode.parentNode.parentNode.className = "Rcl_Bloc Rcl_Closed"; document.getElementById("RidPrBloc_ValVar_"+IDvar).innerHTML=" "+document.getElementById("RidPrBloc_Content_"+IDvar).value;
-                document.getElementById("RidPrBloc_Content_"+IDvar).className = "Rcl_Mini_Editor_hidden";
+                document.getElementById("RidPrBloc_Content_"+IDvar).className += " Rcl_Mini_Editor_hidden";
                 
             }
             else 
@@ -234,7 +234,7 @@ Variable.prototype.ajoutBlocDansPreparation = function()
                 buttonWindow.parentNode.parentNode.parentNode.className = "";
                 buttonWindow.parentNode.parentNode.parentNode.className = "Rcl_Bloc";
                 document.getElementById("RidPrBloc_ValVar_"+IDvar).innerHTML=" ";
-                document.getElementById("RidPrBloc_Content_"+IDvar).className = "Rcl_Droppable Rcl_Mini_Editor";
+                document.getElementById("RidPrBloc_Content_"+IDvar).className =document.getElementById(IDvar).className.replace(" Rcl_Mini_Editor_hidden","");
             };
         }, 
         true

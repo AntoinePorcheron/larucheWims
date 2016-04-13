@@ -165,9 +165,9 @@ function Condition(numero)
 				buttonWindow.parentNode.parentNode.className = "";
 				buttonWindow.parentNode.parentNode.className = "Rcl_Bloc Rcl_Closed";
                 //cache les zones d'edition
-                div_condition.className = "Rcl_Mini_Editor_hidden";
-                div_conditionTrue.className = "Rcl_Mini_Editor_hidden";
-                div_conditionFalse.className = "Rcl_Mini_Editor_hidden";
+                div_condition.className += " Rcl_Mini_Editor_hidden";
+                div_conditionTrue.className += " Rcl_Mini_Editor_hidden";
+                div_conditionFalse.className += " Rcl_Mini_Editor_hidden";
 			}
 			else
 			{
@@ -176,9 +176,9 @@ function Condition(numero)
 				buttonWindow.parentNode.parentNode.className = "";
 				buttonWindow.parentNode.parentNode.className = "Rcl_Bloc";
                 //reaffiche les zones d'edition
-                div_condition.className = "Rcl_Droppable Rcl_Mini_Editor";
-                div_conditionTrue.className = "Rcl_Droppable";
-                div_conditionFalse.className = "Rcl_Droppable";
+                div_condition.className = div_condition.className.replace(" Rcl_Mini_Editor_hidden","");
+                div_conditionTrue.className = div_condition.className.replace(" Rcl_Mini_Editor_hidden","").replace(" Rcl_Mini_Editor","");
+                div_conditionFalse.className = div_condition.className.replace(" Rcl_Mini_Editor_hidden","").replace(" Rcl_Mini_Editor","");
 			};
 		}, 
 		true);
