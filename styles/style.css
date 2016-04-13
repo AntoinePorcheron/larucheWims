@@ -737,7 +737,16 @@ input:-moz-placeholder { color:rgba(255,10,0,0.5); }
     margin: 0 10px 0 -2px;
     padding: 0 4px;
     text-decoration: none;
-    vertical-align:top
+    vertical-align:top;
+}
+.Rcl_ValVar {
+    width: auto;
+    height: 32px;
+    border-top-right-radius: 16px;
+    border-bottom-right-radius: 16px;
+    color:darkgreen;
+    font-size: 16px;
+    vertical-align:top;
 }
 
 /* Style des blocs d'essaim */

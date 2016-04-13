@@ -36,6 +36,8 @@ function Editeur(id,ruc,bool,toolbar){
 		});
 		
 		this.edit.on('text-change', function(delta, source) {
+            var txt=document.getElementById(id);
+            txt.value=document.getElementById(id).textContent;
 		});
 	}
 

@@ -187,8 +187,20 @@ Variable.prototype.ajoutBlocDansPreparation = function()
     // Création du bouton de suppression de cette variable
     var button = document.createElement('button');
     var txt = document.createTextNode( this.nom );
+    
+    //Valeur de la variable affichee quand reduite
+    var valvar = $("<span>", {
+                       id: "RidPrBloc_ValVar_"+this.nom,
+                       class: "Rcl_ValVar"
+                       });
+    valvar.html(" ");
+    valvar.val="none yet";
+    var contvalue=document.getElementById("RidPrBloc_Content_"+this.nom);
+    contvalue="defaut";
+    
+    
     button.id = "Rid_Button_Delete_" + this.nom;
-    button.className = "Rcl_Button_Delete"
+    button.className = "Rcl_Button_Delete";
     // bouton de suppression des variable depuis les blocs
     button.onclick = function(){
         variable = li[0].id.slice("RidPrBloc_".length,li[0].id.length);// On supprime le "RidPrBloc_" devant le nom de la variable
@@ -199,17 +211,21 @@ Variable.prototype.ajoutBlocDansPreparation = function()
 
     /* Bouton pour diminuer / agrandir la fenêtre */
     var buttonWindow = document.createElement('button');
+    buttonWindow.id = "Rid_Button_MiniMaxi_"+this.nom;
     buttonWindow.className = "Rcl_Button_Minimize";
     buttonWindow.addEventListener(	
         'click', 
         function (event) 
         { 
+            IDvar = buttonWindow.id.slice("Rid_Button_MiniMaxi_".length,buttonWindow.id.length);
             if (buttonWindow.className == "Rcl_Button_Minimize")
             {
                 buttonWindow.className = "";
                 buttonWindow.className = "Rcl_Button_Maximize";
                 buttonWindow.parentNode.parentNode.parentNode.className = "";
-                buttonWindow.parentNode.parentNode.parentNode.className = "Rcl_Bloc Rcl_Closed";
+                buttonWindow.parentNode.parentNode.parentNode.className = "Rcl_Bloc Rcl_Closed"; document.getElementById("RidPrBloc_ValVar_"+IDvar).innerHTML=" "+document.getElementById("RidPrBloc_Content_"+IDvar).value;
+                document.getElementById("RidPrBloc_Content_"+IDvar).className = "Rcl_Mini_Editor_hidden";
+                
             }
             else 
             {
@@ -217,6 +233,8 @@ Variable.prototype.ajoutBlocDansPreparation = function()
                 buttonWindow.className = "Rcl_Button_Minimize";
                 buttonWindow.parentNode.parentNode.parentNode.className = "";
                 buttonWindow.parentNode.parentNode.parentNode.className = "Rcl_Bloc";
+                document.getElementById("RidPrBloc_ValVar_"+IDvar).innerHTML=" ";
+                document.getElementById("RidPrBloc_Content_"+IDvar).className = "Rcl_Droppable Rcl_Mini_Editor";
             };
         }, 
         true
@@ -269,6 +287,7 @@ Variable.prototype.ajoutBlocDansPreparation = function()
     divEnTeteVar.append(txt);
     divEnTeteVar.append(boutonChoixType);
     divEnTeteVar.append(affNomType);
+    divEnTeteVar.append(valvar);
 //		bloc.appendChild(select);
     li.append(bloc);
     
