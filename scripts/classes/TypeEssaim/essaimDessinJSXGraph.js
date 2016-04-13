@@ -142,14 +142,12 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup) {
 	/* Menu pour les actions 
 	 * - grille (afficher/supprimer)
 	 * - déplacer (déplacement libre)
-	 *
+	 * - déroule (menu déroulant pour objets enregistrés)
+	 * - save (sauvegarder des objets dans une boîte à dessins)
 	 **/
 	 
     var $div_button_action = $("<div></div>");
-	
 	var $zoneTexteAction = $("<p></p>").text("Actions").appendTo($div_button_action);
-	var $retourLigneAction = $("<br/>").after($div_button_action);
-	
 	var $div_button_retour_chariot_Action = $("<div></div>").appendTo($div_button_action);
 	
 	var $button_switch_grille = $("<button>Grille</button>").appendTo($div_button_retour_chariot_Action).click(
@@ -168,6 +166,25 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup) {
 	    event.data.essaimJSXGraph.mode = GLOB_libre
 	});
 	
+	var $save = $("<button>Ajout dans boîte à dessins</button>").appendTo($div_button_retour_chariot_Action).click(
+	{essaimJSXGraph : this}, function(event){
+	    var tab = {};
+	    for (i in event.data.essaimJSXGraph.brd.objects){
+		if (i.toLowerCase() !== "jxgBoard1_infobox".toLowerCase()){
+		    //un peu sale, ameliorer
+		    tab[i] = event.data.essaimJSXGraph.brd.objects[i];
+		}
+	    }
+	    event.data.essaimJSXGraph.saveState.push(tab);
+	    var clef = Object.keys(tab);
+	    var nom_objet = clef[clef.length - 2];
+	    $deroule.append("<option value"+ nom_objet +">" + nom_objet + "</option>")
+	});
+/* A modifier */
+	var $deroule = $("<select></select>").appendTo($div_button_retour_chariot_Action);
+	var nom_menu_deroulant = "Objets enregistrés";
+	$deroule.append("<option>"+ nom_menu_deroulant +"</option>");
+	
 	$div_button_action.appendTo(this.divBloc);
 	
 	/* Menu pour les objets 
@@ -182,7 +199,6 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup) {
 	 
 	var $div_button_objet = $("<div></div>");
 	var $zoneTexteObjet = $("<p></p>").text("Objets").appendTo($div_button_objet);
-	
 	var $div_button_retour_chariot_Objet = $("<div></div>").appendTo($div_button_objet);
 	
     var $button_point = $("<button>Point</button>").appendTo($div_button_retour_chariot_Objet).click(
@@ -205,7 +221,7 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup) {
             event.data.essaimJSXGraph.mode = GLOB_segment;
         });
 
-    var $button_arrow = $("<button>Fl�che</button>").appendTo($div_button_retour_chariot_Objet).click(
+    var $button_arrow = $("<button>Vecteur</button>").appendTo($div_button_retour_chariot_Objet).click(
 	{essaimJSXGraph : this}, function(event){
 	    event.data.essaimJSXGraph.mode = GLOB_arrow;
 	});
@@ -237,25 +253,6 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup) {
 	
 	$div_button_objet.appendTo(this.divBloc);
     
-    /*var $deroule = $("<select></select>").appendTo($div_button);*/ /*A ajouter*/
-    
-    /*var $save = $("<button>Sauvegarde</button>").appendTo($div_button).click(
-	{essaimJSXGraph : this}, function(event){
-	    var t = {};
-	    for (i in event.data.essaimJSXGraph.brd.objects){
-		if (i.toLowerCase() !== "jxgBoard1_infobox".toLowerCase()){
-		    //un peu sale, � am�liorer
-		    t[i] = event.data.essaimJSXGraph.brd.objects[i];
-		}
-	    }
-	    event.data.essaimJSXGraph.saveState.push(t);
-	    var tmp = Object.keys(t);
-	    var c = tmp[tmp.length - 2];
-	    $deroule.append("<option value"+ c +">" + c + "</option>")
-	});
-
-    */ /*A adapter*/
-    /*$div_button.appendTo(this.divBloc);*/ /*A changer ici*/
 
     EssaimJSXGraph.prototype.initEnonce.call(this);
     EssaimJSXGraph.prototype.initAnalyse.call(this);
