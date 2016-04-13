@@ -18,6 +18,7 @@ var GLOB_ligne = "line";
 var GLOB_cercle = "circle";
 var GLOB_arrow = "arrow";
 var GLOB_segment = "segment";
+var GLOB_menu_enregistre = 0;
 
 EssaimJSXGraph = function (num) {
 
@@ -38,7 +39,7 @@ EssaimJSXGraph = function (num) {
     this.mode = GLOB_point;
     this.point = [];
     this.brd;
-    this.grid = false;
+    this.grid = true;
     this.axis_x = false;
     this.axis_y = false;
     this.saveState = [];
@@ -180,10 +181,21 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup) {
 	    var nom_objet = clef[clef.length - 2];
 	    $deroule.append("<option value"+ nom_objet +">" + nom_objet + "</option>")
 	});
+	
 /* A modifier */
-	var $deroule = $("<select></select>").appendTo($div_button_retour_chariot_Action);
-	var nom_menu_deroulant = "Objets enregistrÃ©s";
-	$deroule.append("<option>"+ nom_menu_deroulant +"</option>");
+	/* On crÃ©e un menu dÃ©roulant contenant tous les objets enregistrÃ©s lors du click sur le bouton */
+	var $deroule = $("<button>Objets enregistrÃ©s</button>").appendTo($div_button_retour_chariot_Action).click(
+	{essaimJSXGraph : this}, function(event){
+		// Le menu dÃ©roulant ne se crÃ©e qu'une seule fois
+		if( GLOB_menu_enregistre !=1 ){
+			var $menu_deroulant = $("<select></select>").appendTo($div_button_retour_chariot_Action);
+			GLOB_menu_enregistre = 1;
+		}
+	});
+	
+	//var $deroule = $("<select></select>").appendTo($div_button_retour_chariot_Action);
+	//var nom_menu_deroulant = "Objets enregistrÃ©s";
+	//$deroule.append("<option>"+ nom_menu_deroulant +"</option>");
 	
 	$div_button_action.appendTo(this.divBloc);
 	
@@ -309,7 +321,7 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup) {
     });
 
     
-    /*Creation de points, à retoucher/améliorer*/
+    /*Creation de points, ï¿½ retoucher/amï¿½liorer*/
     var essaimJSXGraph = this;
     this.brd.on('up', function(event){
 	if (essaimJSXGraph.mode !== GLOB_libre){
@@ -395,15 +407,15 @@ EssaimJSXGraph.prototype.toOEF = function(){
 
 		var hauteur = x2 - x1;
 		var largeur = y1 - y2;
-		/*On recupère la hauteur et la largeur de la zone de dessin, en terme de 
-		  coordonnée du dessin*/
+		/*On recupï¿½re la hauteur et la largeur de la zone de dessin, en terme de 
+		  coordonnï¿½e du dessin*/
 		
 		var coef = Math.sqrt(largeur * largeur + hauteur * hauteur);
 		/*Taille de la diagonal de la zone de dessin*/
 		
 		var a = (p2.X() - p1.X()) * coef;
 		var b = (p2.Y() - p1.Y()) * coef;
-		/*a et b correspondent au vecteur de translation des deux point qui correspondent à
+		/*a et b correspondent au vecteur de translation des deux point qui correspondent ï¿½
 		  la ligne, car un OEF la primitive ligne ne fait qu'un segment, on translate donc 
 		  les point en dehors de la zone de dessin, pour donner l'illusion d'une droite*/
 		OEF += "line " +
