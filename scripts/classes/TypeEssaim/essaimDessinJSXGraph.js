@@ -26,9 +26,9 @@ EssaimJSXGraph = function (num) {
     /* La variable mode permet de d�finir dans quel mode l'utilisateur se trouve,
      * si il souhaite dessiner (le choix de la forme), etc...
      */
-    this.mode = GLOB_point;			// permet de définir dans quel mode l'utilisateur se trouve
-    this.point = [];				// 
-    this.brd;						// variable 
+    this.mode = GLOB_point;			// permet de définir dans quel mode l'utilisateur se trouve (mode point, mode ligne...)
+    this.point = [];				// contient un ensemble de point (une ligne = 2 points par exemple). Permet de créer un objets
+    this.brd;						// variable d'environnement : contient les bornes du graphe
     this.grid = true;				// variable permettant la création de la grille
     this.saveState = [];			// variable permettant de sauvegarder l'état actuel du dessin
 	this.menu_enregistre = true;	// variable permettant de créer un menu pour enregistrer les objets
