@@ -4,7 +4,7 @@
  *
 */
 
-function Variable(nom){
+function Variable(nom) {
 
 	//--------- ATTRIBUTS ---------//
 
@@ -224,7 +224,7 @@ Variable.prototype.ajoutBlocDansPreparation = function()
                 buttonWindow.className = "Rcl_Button_Maximize";
                 buttonWindow.parentNode.parentNode.parentNode.className = "";
                 buttonWindow.parentNode.parentNode.parentNode.className = "Rcl_Bloc Rcl_Closed"; document.getElementById("RidPrBloc_ValVar_"+IDvar).innerHTML=" "+document.getElementById("RidPrBloc_Content_"+IDvar).value;
-                document.getElementById("RidPrBloc_Content_"+IDvar).className = " Rcl_Mini_Editor_hidden";
+                document.getElementById("RidPrBloc_Content_"+IDvar).className += " Rcl_Mini_Editor_hidden";
                 
             }
             else 
@@ -234,7 +234,7 @@ Variable.prototype.ajoutBlocDansPreparation = function()
                 buttonWindow.parentNode.parentNode.parentNode.className = "";
                 buttonWindow.parentNode.parentNode.parentNode.className = "Rcl_Bloc";
                 document.getElementById("RidPrBloc_ValVar_"+IDvar).innerHTML=" ";
-                document.getElementById("RidPrBloc_Content_"+IDvar).className = "Rcl_Droppable";
+                document.getElementById("RidPrBloc_Content_"+IDvar).className =document.getElementById(IDvar).className.replace(" Rcl_Mini_Editor_hidden","");
             };
         }, 
         true
@@ -302,8 +302,9 @@ function drag(){
     console.log('Entrée dans la fonction drag');
     console.log(cpt);
     var T_rc1_drag =document.querySelectorAll(".Rcl_Bloc");
-    var rc1_drag = T_rc1_drag[T_rc1_drag.length-1]
-
+    var rc1_drag = T_rc1_drag[T_rc1_drag.length-1];
+    
+    
 
     console.log(rc1_drag.id);
     cpt++;
@@ -318,14 +319,41 @@ function drag(){
     });
 
     //On gère la réception
+    
+    
     rc1_drag.addEventListener('dragover', function(e) {
+        //Lorsqu'on survole la zone avec l'élément droppé
         e.preventDefault(); // Annule l'interdiction de drop
+        
+        if(e!=this)
+            {
+                this.style.backgroundColor='rgb(196, 255, 174)';
+                console.log('Entrée dans la zone');
+            }
+        
         console.log('Un élément survole la zone');
+        
     });
+    
+     rc1_drag.addEventListener('dragenter', function(e) {
+         //Lorsqu'on entre dans la zone de drop
+         console.log('Un élément est entré dans la zone');
+         
+     });
+                        
+    rc1_drag.addEventListener('dragleave', function(e) {
+         //Lorsqu'on sort d'une zone de drop.
+         this.style.backgroundColor = 'rgb(255,255,255)';
+        console.log('Sortie de zone');
+     });
+    
+         
 
    rc1_drag.addEventListener('drop', function(e) {
        /*Cette fonction sert à décrire ce qui se passera pour le bloc ciblé ce qui se passera lorsqu'on lachera un objet droppable sur lui */
          
+       this.style.backgroundColor = 'rgb(255,255,255)'; //On met à jour la couleur du recepteur
+       
        var nomZoneIn=" "; //on va récupérer l'id du bloc reçu. 
         nomZoneIn=e.dataTransfer.getData('text/plain'); // Affiche le contenu du type MIME « text/plain »
         console.log('Données reçu : ' + nomZoneIn);
