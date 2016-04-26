@@ -10,6 +10,7 @@ var GLOB_ligne = "line";
 var GLOB_cercle = "circle";
 var GLOB_arrow = "arrow";
 var GLOB_segment = "segment";
+var GLOB_axe = "axis";
 var GLOB_menu_enregistre = 0;
 
 EssaimJSXGraph = function (num) {
@@ -32,9 +33,9 @@ EssaimJSXGraph = function (num) {
     this.point = [];
     this.brd;
     this.grid = true;
-    this.axis_x = false;
-    this.axis_y = false;
+    /*this.axis_x = false;*/
     this.saveState = [];
+    this.GrilleCree = false;
 }
 
 //------------ D�claration comme classe d�riv�e de Essaim -------------//
@@ -230,9 +231,16 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup) {
 	    event.data.essaimJSXGraph.mode = GLOB_arrow;
 	});
 
-    var $button_axis_x = $("<button>Axe X</button>").appendTo($div_button_retour_chariot_Objet).click(
+    var $button_axis = $("<button>Axe</button>").appendTo($div_button_retour_chariot_Objet).click(
 	{essaimJSXGraph : this}, function(event){
-	    event.data.essaimJSXGraph.axis_x = !event.data.essaimJSXGraph.axis_x;   
+	    event.data.essaimJSXGraph.mode = GLOB_axe;
+	});
+    
+    /*var $form_valeur_axe = $("<form></form>").appendTo($div_button_retour_chariot_Objet);*/
+    /*var $axe = $("<input type=\"text\" placeholder=\"(x1,y1);(x2,y2)\"></input>").appendTo($form_valeur_axe);*/
+    /*var $button_axis = $("<button>Axe</button>").appendTo($div_button_retour_chariot_Objet).click(
+	{essaimJSXGraph : this}, function(event){
+	    event.data.essaimJSXGraph.axis = !event.data.essaimJSXGraph.axis;   
 	    if (event.data.essaimJSXGraph.axis_x){
 		event.data.essaimJSXGraph.brd.create('axis', [[0, 0], [1, 0]],
 						     {ticks: {insertTicks: true,
@@ -240,22 +248,7 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup) {
 							      label: {offset: [-20, -20]}}});
 		event.data.essaimJSXGraph.brd.fullUpdate();
 	    }
-	});
-
-    var $button_axis_y = $("<button>Axe Y</button>").appendTo($div_button_retour_chariot_Objet).click(
-	{essaimJSXGraph : this}, function(event){
-	    event.data.essaimJSXGraph.axis_y = !event.data.essaimJSXGraph.axis_y;
-	    if (event.data.essaimJSXGraph.axis_y){
-		event.data.essaimJSXGraph.brd.create('axis', [[0, 0], [0, 1]],
-						     {ticks: {insertTicks: false,
-							      ticksDistance: 1,
-							      label: {offset: [-20, -20]}},
-						      /*grid:false*/
-						     });
-		event.data.essaimJSXGraph.brd.fullUpdate();
-	    }
-	});
-    
+	});    */
     
     $div_button_objet.appendTo(this.divBloc);
     
