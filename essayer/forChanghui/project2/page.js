@@ -1,5 +1,5 @@
 $(document).ready(function () {
-    var board = JXG.JSXGraph.initBoard('jxgbox', {boundingbox: [-5, 4, 5, -4], keepaspectratio: true, axis: true});
+    var board = JXG.JSXGraph.initBoard('jxgbox', {boundingbox: [-5, 4, 5, -4], keepaspectratio: true, axis: true, grid: true});
     //[-5, 4, 5, -4] sont les points haut gauche et bas droite de la grille
 
     //point-------------------------------------------------------------------------------
@@ -21,6 +21,7 @@ $(document).ready(function () {
     //ligne-------------------------------------------------------------------------------
     //creer point2 pour avoir une ligne ou le coordonee de point comme li2
     var p2 = board.create('point', [2, -1], {name: 'point2', size: 2, face: 'x'});
+    console.log(p2);
     //var li1 = board.create('line',[p1,p2],
     //{straightFirst:false, straightLast:false, strokeWidth:2, dash:4});
     var li2 = board.create('line', [[3, 1], [0, 0]], {straightFirst: false, straightLast: false, strokeWidth: 2})
@@ -50,19 +51,10 @@ $(document).ready(function () {
     };
 
     $("#jxgbox").click(function () {
-        console.log(board.getAllUnderMouse())
+        //console.log(board.getAllUnderMouse())
     });
 
-    $.contextMenu({
-        selector: '#jxgbox',
-        build: function ($trigger, e) {
-            // this callback is executed every time the menu is to be shown
-            // its results are destroyed every time the menu is hidden
-            // e is the original contextmenu event, containing e.pageX and e.pageY (amongst other data)
-            return initMenu({
-                name: board.getAllUnderMouse()[0].htmlStr,
-                icon: "edit"
-            })
-        }
-    });
+
+
+    var ms = multiSelect(board);
 });

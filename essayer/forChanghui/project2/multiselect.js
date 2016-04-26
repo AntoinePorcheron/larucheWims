@@ -53,21 +53,21 @@ var multiSelect = function (board) {
     multiSelect.down = function(e) {
         if (!isSelectMode) return;
         var canCreate = true,
-            coords = getMouseCoords(e),
+            coords = multiSelect.getMouseCoords(e),
             el;
 
 
         if (canCreate) {
-            rectStart = board.create('point', [coords.usrCoords[1], coords.usrCoords[2]], rectPointStyle);
+            rectStart = board.create('point', [coords.usrCoords[1], coords.usrCoords[2]], multiSelect.style.rectPoint);
 
-            rectEnd = board.create('point', [coords.usrCoords[1], coords.usrCoords[2]], rectPointStyle);
+            rectEnd = board.create('point', [coords.usrCoords[1], coords.usrCoords[2]], multiSelect.style.rectPoint);
 
             rectCorner1 = board.create('point', [rectStart.X(), function() {
-                return rectEnd.Y();}], rectPointStyle);
+                return rectEnd.Y();}], multiSelect.style.rectPoint);
             rectCorner2 = board.create('point', [function() {
-                return rectEnd.X();}, rectStart.Y()], rectPointStyle);
+                return rectEnd.X();}, rectStart.Y()], multiSelect.style.rectPoint);
 
-            rect = board.create('polygon', [rectStart, rectCorner1, rectEnd, rectCorner2], rectStyle);
+            rect = board.create('polygon', [rectStart, rectCorner1, rectEnd, rectCorner2], multiSelect.style.rect);
             selecting = true;
         }
     };
@@ -95,7 +95,7 @@ var multiSelect = function (board) {
                 minY = rectEnd.Y();
             }
             for (i = 0; i < V.length; i++) {
-                if (V[i].pt.X() >= minX && V[i].pt.X() <= maxX && V[i].pt.Y() >= minY && V[i].pt.Y() <= maxY) {
+                if (V[i].X() >= minX && V[i].X() <= maxX && V[i].Y() >= minY && V[i].Y() <= maxY) {
                     selectedPts.push(V[i]);
                 }
 
@@ -103,8 +103,8 @@ var multiSelect = function (board) {
 
 
             for (i = 0; i < selectedPts.length; i++) {
-                selectedPts[i].pt.setAttribute(selectedStyle);
-                polyPoints.push(selectedPts[i].pt)
+                selectedPts[i].setAttribute(multiSelect.style.selected);
+                polyPoints.push(selectedPts[i])
 
             }
 
@@ -122,11 +122,37 @@ var multiSelect = function (board) {
     var isSelectMode = true;
     var selecting = false;
 
-    var V = board.objects;
+    var V = (function () {
+        var eles = Object.keys(board.objects);
+        var res = [];
+        for(var i = 0; i < eles.length; i++){
+            res.push(board.objects[eles[i]])
+        }
+        return res
+    })();
+    console.log(V);
     var E = [];
     var polyPoints = [], polygon;
 
+    JXG.Options.point.snapToGrid = true;
 
+    for (var i = 0; i < 4; i++) {
+
+        JXG.addEvent(V[i].rendNode, 'mousedown', function(e) {
+            isSelectMode = false;
+
+        }, V[i]);
+
+        V[i].on('up', (function() {
+            isSelectMode = true;
+        }));
+    }
+
+
+
+    board.addHook(multiSelect.down, 'mousedown');
+    board.addHook(multiSelect.move, 'mousemove');
+    board.addHook(multiSelect.up, 'mouseup');
 
     return multiSelect
 };
