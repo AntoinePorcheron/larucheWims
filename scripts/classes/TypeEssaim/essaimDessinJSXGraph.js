@@ -3,14 +3,6 @@
  * Permet de créer un bloc d'instructions générant un dessins utilisant JSXGraphe
  */
 
-/*
- * Probl�me :
- * + on a pas de suppression d'element (pas encore)
- * + am�liorer bouton (graphique)
- * + on ne peut pas encore connecter les points au lignes/segment.
- * + Le loading ne marche pas sur le graphe
- */
-
 /*Pseudo type �num�r�e qui permet d'avoir des nom explicite pour la variable mode*/
 var GLOB_libre = "libre";
 var GLOB_point = "point";
@@ -19,6 +11,7 @@ var GLOB_cercle = "circle";
 var GLOB_arrow = "arrow";
 var GLOB_segment = "segment";
 
+var GLOB_axe = "axis";
 EssaimJSXGraph = function (num) {
 
     //Appelle le constructeur parent
@@ -33,13 +26,10 @@ EssaimJSXGraph = function (num) {
     /* La variable mode permet de d�finir dans quel mode l'utilisateur se trouve,
      * si il souhaite dessiner (le choix de la forme), etc...
      */
-
     this.mode = GLOB_point;			// permet de définir dans quel mode l'utilisateur se trouve
     this.point = [];				// 
     this.brd;						// variable 
     this.grid = true;				// variable permettant la création de la grille
-    this.axis_x = false;			// variable permettant la création d'un axe X
-    this.axis_y = false;			// variable permettant la création d'un axe Y
     this.saveState = [];			// variable permettant de sauvegarder l'état actuel du dessin
 	this.menu_enregistre = true;	// variable permettant de créer un menu pour enregistrer les objets
 }
@@ -235,9 +225,16 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup) {
 	    event.data.essaimJSXGraph.mode = GLOB_arrow;
 	});
 
-    var $button_axis_x = $("<button>Axe X</button>").appendTo($div_button_retour_chariot_Objet).click(
+    var $button_axis = $("<button>Axe</button>").appendTo($div_button_retour_chariot_Objet).click(
 	{essaimJSXGraph : this}, function(event){
-	    event.data.essaimJSXGraph.axis_x = !event.data.essaimJSXGraph.axis_x;   
+	    event.data.essaimJSXGraph.mode = GLOB_axe;
+	});
+    
+    /*var $form_valeur_axe = $("<form></form>").appendTo($div_button_retour_chariot_Objet);*/
+    /*var $axe = $("<input type=\"text\" placeholder=\"(x1,y1);(x2,y2)\"></input>").appendTo($form_valeur_axe);*/
+    /*var $button_axis = $("<button>Axe</button>").appendTo($div_button_retour_chariot_Objet).click(
+	{essaimJSXGraph : this}, function(event){
+	    event.data.essaimJSXGraph.axis = !event.data.essaimJSXGraph.axis;   
 	    if (event.data.essaimJSXGraph.axis_x){
 		event.data.essaimJSXGraph.brd.create('axis', [[0, 0], [1, 0]],
 						     {ticks: {insertTicks: true,
@@ -245,22 +242,7 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup) {
 							      label: {offset: [-20, -20]}}});
 		event.data.essaimJSXGraph.brd.fullUpdate();
 	    }
-	});
-
-    var $button_axis_y = $("<button>Axe Y</button>").appendTo($div_button_retour_chariot_Objet).click(
-	{essaimJSXGraph : this}, function(event){
-	    event.data.essaimJSXGraph.axis_y = !event.data.essaimJSXGraph.axis_y;
-	    if (event.data.essaimJSXGraph.axis_y){
-		event.data.essaimJSXGraph.brd.create('axis', [[0, 0], [0, 1]],
-						     {ticks: {insertTicks: false,
-							      ticksDistance: 1,
-							      label: {offset: [-20, -20]}},
-						      /*grid:false*/
-						     });
-		event.data.essaimJSXGraph.brd.fullUpdate();
-	    }
-	});
-    
+	});    */
     
     $div_button_objet.appendTo(this.divBloc);
     
@@ -386,8 +368,11 @@ EssaimJSXGraph.prototype.toOEF = function(){
     OEF += "\\text{" + this.nom + " = rangex \\rangex" + this.nom + "\n";
     OEF += "rangey \\rangey" + this.nom + "\n";
     
-    if (this.grid){
-	console.log(this.brd);
+    if (!this.grid){
+	console.log(JXG.Options.axis.ticks.ticksDistance);
+	for (var i = 0; i < this.brd.grids.length; i++){
+	    console.log(this.brd.grids[i]);
+	}
     }
 
     
