@@ -3,14 +3,6 @@
  * Permet de créer un bloc d'instructions générant un dessins utilisant JSXGraphe
  */
 
-/*
- * Probl�me :
- * + on a pas de suppression d'element (pas encore)
- * + am�liorer bouton (graphique)
- * + on ne peut pas encore connecter les points au lignes/segment.
- * + Le loading ne marche pas sur le graphe
- */
-
 /*Pseudo type �num�r�e qui permet d'avoir des nom explicite pour la variable mode*/
 var GLOB_libre = "libre";
 var GLOB_point = "point";
@@ -38,7 +30,7 @@ EssaimJSXGraph = function (num) {
     this.mode = GLOB_point;
     this.point = [];
     this.brd;
-    this.grid = false;
+    this.grid = true;
     this.axis_x = false;
     this.axis_y = false;
     this.saveState = [];
@@ -377,8 +369,11 @@ EssaimJSXGraph.prototype.toOEF = function(){
     OEF += "\\text{" + this.nom + " = rangex \\rangex" + this.nom + "\n";
     OEF += "rangey \\rangey" + this.nom + "\n";
     
-    if (this.grid){
-	console.log(this.brd);
+    if (!this.grid){
+	console.log(JXG.Options.axis.ticks.ticksDistance);
+	for (var i = 0; i < this.brd.grids.length; i++){
+	    console.log(this.brd.grids[i]);
+	}
     }
 
     
