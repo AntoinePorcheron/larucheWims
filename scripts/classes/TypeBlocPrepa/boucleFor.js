@@ -156,7 +156,7 @@ function BoucleFor(numero)
           
         });         
 
-	    /* Fin des modifs */ss
+	    /* Fin des modifs */
 
 		var div_forDebut = document.createElement("DIV");
 		div_forDebut.id = "forDebut" + this.nom;
