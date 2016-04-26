@@ -10,9 +10,8 @@ var GLOB_ligne = "line";
 var GLOB_cercle = "circle";
 var GLOB_arrow = "arrow";
 var GLOB_segment = "segment";
-var GLOB_axe = "axis";
-var GLOB_menu_enregistre = 0;
 
+var GLOB_axe = "axis";
 EssaimJSXGraph = function (num) {
 
     //Appelle le constructeur parent
@@ -35,7 +34,7 @@ EssaimJSXGraph = function (num) {
     this.grid = true;
     /*this.axis_x = false;*/
     this.saveState = [];
-    this.GrilleCree = false;
+    this.menu_enregistre = true;
 }
 
 //------------ D�claration comme classe d�riv�e de Essaim -------------//
@@ -52,6 +51,7 @@ EssaimJSXGraph.prototype.imageEnonce = "images_essaims/graphe.gif";
 EssaimJSXGraph.prototype.gereReponse = false;
 Essaim.prototype.aUneAide = false;
 EssaimJSXGraph.prototype.gereTailleImageEnonce = true;
+
 
 //------------ METHODES -----------------//
 
@@ -125,18 +125,25 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup) {
     }).appendTo($(this.divBloc));
 
 	
-    /*Ok, on garde la fa�on JQuery*/
+	/* -----------------------------------
+	Création des blocs div pour les menus
+	--------------------------------------
+	*/
 	
 	/* On crée deux blocs correspondant aux deux menus : 
 	 * - div_button_action :  bloc pour le menu des actions
 	 * - div_button_objet : bloc pour le menu des objets
-	 *
+	 **/
+	/*
+	 * Pour chacun de ces menus, on crée un bloc div supplémentaire pour le retour à la ligne : 
+	 * - le bloc div_button_retour_chariot_Action
+	 * - le bloc div_button_retour_chariot_Objet
+	 * 
 	 **/
 	 
 	/* Menu pour les actions 
 	 * - grille (afficher/supprimer)
 	 * - déplacer (déplacement libre)
-	 * - déroule (menu déroulant pour objets enregistrés)
 	 * - save (sauvegarder des objets dans une boîte à dessins)
 	 **/
 	 
@@ -160,35 +167,25 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup) {
 	    event.data.essaimJSXGraph.mode = GLOB_libre
 	});
 	
+	var $menu_deroulant = $("<select></select>");
+	
 	var $save = $("<button>Ajout dans boîte à dessins</button>").appendTo($div_button_retour_chariot_Action).click(
-	{essaimJSXGraph : this}, function(event){
+	{essaimJSXGraph : this, menu_D : $menu_deroulant}, function(event){
 	    var tab = {};
-	    for (i in event.data.essaimJSXGraph.brd.objects){
-		if (i.toLowerCase() !== "jxgBoard1_infobox".toLowerCase()){
-		    //un peu sale, ameliorer
-		    tab[i] = event.data.essaimJSXGraph.brd.objects[i];
+		if(event.data.essaimJSXGraph.menu_enregistre){
+			event.data.menu_D.appendTo($div_button_retour_chariot_Action);
+			event.data.essaimJSXGraph.menu_enregistre = false;
 		}
+	    for (i in event.data.essaimJSXGraph.brd.objects){
+			if (i.toLowerCase() !== "jxgBoard1_infobox".toLowerCase()){
+				tab[i] = event.data.essaimJSXGraph.brd.objects[i];
+			}
 	    }
 	    event.data.essaimJSXGraph.saveState.push(tab);
 	    var clef = Object.keys(tab);
 	    var nom_objet = clef[clef.length - 2];
-	    $deroule.append("<option value"+ nom_objet +">" + nom_objet + "</option>")
+	    event.data.menu_D.append("<option value"+ nom_objet +">" + nom_objet + "</option>");
 	});
-	
-/* A modifier */
-	/* On crée un menu déroulant contenant tous les objets enregistrés lors du click sur le bouton */
-	var $deroule = $("<button>Objets enregistrés</button>").appendTo($div_button_retour_chariot_Action).click(
-	{essaimJSXGraph : this}, function(event){
-		// Le menu déroulant ne se crée qu'une seule fois
-		if( GLOB_menu_enregistre !=1 ){
-			var $menu_deroulant = $("<select></select>").appendTo($div_button_retour_chariot_Action);
-			GLOB_menu_enregistre = 1;
-		}
-	});
-	
-	//var $deroule = $("<select></select>").appendTo($div_button_retour_chariot_Action);
-	//var nom_menu_deroulant = "Objets enregistrés";
-	//$deroule.append("<option>"+ nom_menu_deroulant +"</option>");
 	
 	$div_button_action.appendTo(this.divBloc);
 	
@@ -198,8 +195,8 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup) {
 	 * - cercle
 	 * - segment
 	 * - flèche
-	 * - axe X
-	 * - axe Y
+	 * - axe X (horizontal)
+	 * - axe Y (vertical)
 	 **/ 
 	 
 	var $div_button_objet = $("<div></div>");
