@@ -38,16 +38,44 @@ function BoucleFor(numero)
         //e.dataTransfer.setDragImage(dragImg, 40, 40); // Une position de 40x40 pixels centrera l'image (de 80x80 pixels) sous le curseur
         
     	});
-
+        
+        // On gère le changement d'apparence entre les deux fonctions. 
+    
+        liste.addEventListener('dragleave', function(e) {
+             //Lorsqu'on sort d'une zone de drop.
+            if(buttonWindow.className == "Rcl_Button_Minimize")
+                {
+                    this.style.backgroundColor = 'rgb(255, 255, 255)'; // Couleur de base des blocs gris
+                }
+            else
+                {
+                    this.style.backgroundColor = 'rgb(211, 211, 211)'; // Couleur de base des blocs gris
+                }
+            console.log('Sortie de zone');
+         });
+    
 		//On gère la réception
-    	liste.addEventListener('dragover', function(e) {
+        liste.addEventListener('dragover', function(e) {
         e.preventDefault(); // Annule l'interdiction de drop
+        if(e!=this)
+            {
+                this.style.backgroundColor='rgb(196, 255, 174)';
+                console.log('Entrée dans la zone');
+            }
         console.log('Un élément survole la zone');
-    	});
+        });
 
    		liste.addEventListener('drop', function(e) {
         /*Cette fonction sert à décrire ce qui se passera pour le bloc ciblé ce qui se passera lorsqu'on lachera un objet droppable sur lui */
         
+        if(buttonWindow.className == "Rcl_Button_Minimize")
+                {
+                    this.style.backgroundColor = 'rgb(255, 255, 255)'; // Couleur de base des blocs blanc
+                }
+        else
+                {
+                    this.style.backgroundColor = 'rgb(211, 211, 211)'; // Couleur de base des blocs gris      
+                }
         var nomZoneIn=" "; //on va récupérer l'id du bloc reçu. 
         nomZoneIn=e.dataTransfer.getData('text/plain'); // Affiche le contenu du type MIME « text/plain »
         console.log('Données reçu : ' + nomZoneIn);
@@ -128,7 +156,7 @@ function BoucleFor(numero)
           
         });         
 
-	    /* Fin des modifs */
+	    /* Fin des modifs */ss
 
 		var div_forDebut = document.createElement("DIV");
 		div_forDebut.id = "forDebut" + this.nom;
@@ -167,6 +195,8 @@ function BoucleFor(numero)
                 div_forDebut.className += " Rcl_Mini_Editor_hidden";
                 div_forFin.className += " Rcl_Mini_Editor_hidden";
                 div_forInstruction.className += " Rcl_Mini_Editor_hidden";
+                
+               
 			}
 			else
 			{
@@ -177,6 +207,7 @@ function BoucleFor(numero)
                 div_forDebut.className = div_forDebut.className.replace(" Rcl_Mini_Editor_hidden","");
                 div_forFin.className = div_forFin.className.replace(" Rcl_Mini_Editor_hidden","");
                 div_forInstruction.className = div_forInstruction.className.replace(" Rcl_Mini_Editor_hidden","");
+               
 			};
 		}, 
 		true);
