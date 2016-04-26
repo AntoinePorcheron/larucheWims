@@ -30,19 +30,18 @@ EssaimJSXGraph = function (num) {
     this.numero = num;
     this.proto = "EssaimJSXGraph";
 
-    /* Probablement � mieux d�finir*/
     /* La variable mode permet de d�finir dans quel mode l'utilisateur se trouve,
      * si il souhaite dessiner (le choix de la forme), etc...
      */
 
-    this.mode = GLOB_point;
-    this.point = [];
-    this.brd;
-    this.grid = true;
-    this.axis_x = false;
-    this.axis_y = false;
-    this.saveState = [];
-	this.menu_enregistre = true;
+    this.mode = GLOB_point;			// permet de définir dans quel mode l'utilisateur se trouve
+    this.point = [];				// 
+    this.brd;						// variable 
+    this.grid = true;				// variable permettant la création de la grille
+    this.axis_x = false;			// variable permettant la création d'un axe X
+    this.axis_y = false;			// variable permettant la création d'un axe Y
+    this.saveState = [];			// variable permettant de sauvegarder l'état actuel du dessin
+	this.menu_enregistre = true;	// variable permettant de créer un menu pour enregistrer les objets
 }
 
 //------------ D�claration comme classe d�riv�e de Essaim -------------//
