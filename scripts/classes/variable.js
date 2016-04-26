@@ -223,7 +223,14 @@ Variable.prototype.ajoutBlocDansPreparation = function()
                 buttonWindow.className = "";
                 buttonWindow.className = "Rcl_Button_Maximize";
                 buttonWindow.parentNode.parentNode.parentNode.className = "";
-                buttonWindow.parentNode.parentNode.parentNode.className = "Rcl_Bloc Rcl_Closed"; document.getElementById("RidPrBloc_ValVar_"+IDvar).innerHTML=" "+document.getElementById("RidPrBloc_Content_"+IDvar).value;
+                buttonWindow.parentNode.parentNode.parentNode.className = "Rcl_Bloc Rcl_Closed";
+                if(" "+document.getElementById("RidPrBloc_Content_"+IDvar).value.length < 11)
+                    {
+                    document.getElementById("RidPrBloc_ValVar_"+IDvar).innerHTML=" "+document.getElementById("RidPrBloc_Content_"+IDvar).value;
+                    }
+                else{
+                    document.getElementById("RidPrBloc_ValVar_"+IDvar).innerHTML=" "+document.getElementById("RidPrBloc_Content_"+IDvar).value.substr(0,10)+"...";
+                }
                document.getElementById("RidPrBloc_Content_"+IDvar).className = " Rcl_Mini_Editor_hidden";
                 
             }
