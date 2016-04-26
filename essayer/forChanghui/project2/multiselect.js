@@ -71,10 +71,13 @@ var multiSelect = function (board) {
             selecting = true;
         }
     };
-
     var selectedPts = [];
-
-    var up = function(e) {
+    multiSelect.move = function(e) {
+        if (!selecting) return;
+        var coords = multiSelect.getMouseCoords(e);
+        rectEnd.moveTo([coords.usrCoords[1], coords.usrCoords[2]]);
+    };
+    multiSelect.up = function(e) {
         var i = 0;
         if (selecting) {
             var minX, maxX, minY, maxY;
@@ -126,7 +129,7 @@ var multiSelect = function (board) {
         var eles = Object.keys(board.objects);
         var res = [];
         for(var i = 0; i < eles.length; i++){
-            res.push(board.objects[eles[i]])
+            if(board.objects[eles[i]].elType == "point") res.push(board.objects[eles[i]])
         }
         return res
     })();
