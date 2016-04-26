@@ -59,12 +59,32 @@ Essaim.prototype.initBloc = function()
     //On gère la réception
     liste.addEventListener('dragover', function(e) {
         e.preventDefault(); // Annule l'interdiction de drop
+        if(e!=this)
+            {
+                this.style.backgroundColor='rgb(196, 255, 174)';
+                console.log('Entrée dans la zone');
+            }
         console.log('Un élément survole la zone');
     });
+    // On gère le changement d'apparence entre les deux fonctions. 
+    
+    liste.addEventListener('dragenter', function(e) {
+         //Lorsqu'on entre dans la zone de drop
+         console.log('Entrée dans zone !');
+     });
+                        
+    liste.addEventListener('dragleave', function(e) {
+         //Lorsqu'on sort d'une zone de drop.
+         this.style.backgroundColor = 'rgba(253,255,187,1)'; // Couleur de base des blocs
+        console.log('Sortie de zone');
+     });
+    
+    
 
    liste.addEventListener('drop', function(e) {
         /*Cette fonction sert à décrire ce qui se passera pour le bloc ciblé ce qui se passera lorsqu'on lachera un objet droppable sur lui */
         
+        this.style.backgroundColor = 'rgba(253,255,187,1)'; // On commence par remettre la couleur du bloc à sa couleur de base
         var nomZoneIn=" "; //on va récupérer l'id du bloc reçu. 
         nomZoneIn=e.dataTransfer.getData('text/plain'); // Affiche le contenu du type MIME « text/plain »
         console.log('Données reçu : ' + nomZoneIn);
