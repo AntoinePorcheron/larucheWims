@@ -43,14 +43,7 @@ function BoucleFor(numero)
     
         liste.addEventListener('dragleave', function(e) {
              //Lorsqu'on sort d'une zone de drop.
-            if(buttonWindow.className == "Rcl_Button_Minimize")
-                {
-                    this.style.backgroundColor = 'rgb(255, 255, 255)'; // Couleur de base des blocs gris
-                }
-            else
-                {
-                    this.style.backgroundColor = 'rgb(211, 211, 211)'; // Couleur de base des blocs gris
-                }
+            this.style.backgroundColor ='';
             console.log('Sortie de zone');
          });
     
@@ -68,14 +61,8 @@ function BoucleFor(numero)
    		liste.addEventListener('drop', function(e) {
         /*Cette fonction sert à décrire ce qui se passera pour le bloc ciblé ce qui se passera lorsqu'on lachera un objet droppable sur lui */
         
-        if(buttonWindow.className == "Rcl_Button_Minimize")
-                {
-                    this.style.backgroundColor = 'rgb(255, 255, 255)'; // Couleur de base des blocs blanc
-                }
-        else
-                {
-                    this.style.backgroundColor = 'rgb(211, 211, 211)'; // Couleur de base des blocs gris      
-                }
+        this.style.backgroundColor ='';
+            
         var nomZoneIn=" "; //on va récupérer l'id du bloc reçu. 
         nomZoneIn=e.dataTransfer.getData('text/plain'); // Affiche le contenu du type MIME « text/plain »
         console.log('Données reçu : ' + nomZoneIn);

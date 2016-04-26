@@ -45,7 +45,7 @@ function Condition(numero)
 
         liste.addEventListener('dragleave', function(e) {
              //Lorsqu'on sort d'une zone de drop.
-             this.style.backgroundColor = 'rgba(253,255,187,1)'; // Couleur de base des blocs
+             this.style.backgroundColor =''; // Couleur de base des blocs
             console.log('Sortie de zone');
          });
     
@@ -63,7 +63,7 @@ function Condition(numero)
 
    		liste.addEventListener('drop', function(e) {
         	/*Cette fonction sert à décrire ce qui se passera pour le bloc ciblé ce qui se passera lorsqu'on lachera un objet droppable sur lui */
-        this.style.backgroundColor = 'rgb(255,255,255)'; //On met à jour la couleur du recepteur
+        this.style.backgroundColor =''; //On met à jour la couleur du recepteur
         var nomZoneIn=" "; //on va récupérer l'id du bloc reçu. 
         nomZoneIn=e.dataTransfer.getData('text/plain'); // Affiche le contenu du type MIME « text/plain »
         console.log('Données reçu : ' + nomZoneIn);

@@ -224,7 +224,7 @@ Variable.prototype.ajoutBlocDansPreparation = function()
                 buttonWindow.className = "Rcl_Button_Maximize";
                 buttonWindow.parentNode.parentNode.parentNode.className = "";
                 buttonWindow.parentNode.parentNode.parentNode.className = "Rcl_Bloc Rcl_Closed"; document.getElementById("RidPrBloc_ValVar_"+IDvar).innerHTML=" "+document.getElementById("RidPrBloc_Content_"+IDvar).value;
-                document.getElementById("RidPrBloc_Content_"+IDvar).className += " Rcl_Mini_Editor_hidden";
+               document.getElementById("RidPrBloc_Content_"+IDvar).className = " Rcl_Mini_Editor_hidden";
                 
             }
             else 
@@ -234,7 +234,7 @@ Variable.prototype.ajoutBlocDansPreparation = function()
                 buttonWindow.parentNode.parentNode.parentNode.className = "";
                 buttonWindow.parentNode.parentNode.parentNode.className = "Rcl_Bloc";
                 document.getElementById("RidPrBloc_ValVar_"+IDvar).innerHTML=" ";
-                document.getElementById("RidPrBloc_Content_"+IDvar).className =document.getElementById(IDvar).className.replace(" Rcl_Mini_Editor_hidden","");
+                document.getElementById("RidPrBloc_Content_"+IDvar).className = "Rcl_Droppable";
             };
         }, 
         true
@@ -343,7 +343,7 @@ function drag(){
                         
     rc1_drag.addEventListener('dragleave', function(e) {
          //Lorsqu'on sort d'une zone de drop.
-         this.style.backgroundColor = 'rgb(255,255,255)';
+         this.style.backgroundColor ='';
         console.log('Sortie de zone');
      });
     
@@ -352,7 +352,7 @@ function drag(){
    rc1_drag.addEventListener('drop', function(e) {
        /*Cette fonction sert à décrire ce qui se passera pour le bloc ciblé ce qui se passera lorsqu'on lachera un objet droppable sur lui */
          
-       this.style.backgroundColor = 'rgb(255,255,255)'; //On met à jour la couleur du recepteur
+       this.style.backgroundColor =''; //On met à jour la couleur du recepteur
        
        var nomZoneIn=" "; //on va récupérer l'id du bloc reçu. 
         nomZoneIn=e.dataTransfer.getData('text/plain'); // Affiche le contenu du type MIME « text/plain »
