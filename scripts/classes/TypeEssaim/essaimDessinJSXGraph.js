@@ -1,9 +1,9 @@
 /*
- * Classe Essaim de Dessins JSXGraph : 
- * Permet de créer un bloc d'instructions générant un dessins utilisant JSXGraphe
+ * Classe Essaim de Dessin JSXGraph : 
+ * Permet de créer un bloc d'instructions générant un dessin utilisant JSXGraphe
  */
 
-/*Pseudo type �num�r�e qui permet d'avoir des nom explicite pour la variable mode*/
+/*Pseudo type énuméré qui permet d'avoir des noms explicites pour la variable mode*/
 var GLOB_libre = "libre";
 var GLOB_point = "point";
 var GLOB_ligne = "line";
@@ -19,27 +19,23 @@ EssaimJSXGraph = function (num) {
 
     //---------- ATTRIBUTS -------------//
 
-    this.nom = "JSXGraph" + num;
-    this.numero = num;
-    this.proto = "EssaimJSXGraph";
-
-    /* La variable mode permet de d�finir dans quel mode l'utilisateur se trouve,
-     * si il souhaite dessiner (le choix de la forme), etc...
-     */
+    this.nom = "JSXGraph" + num;	// nom de l'élément
+    this.numero = num;				// numéro de l'essaim
+    this.proto = "EssaimJSXGraph";	// nature de la classe
     this.mode = GLOB_point;			// permet de définir dans quel mode l'utilisateur se trouve (mode point, mode ligne...)
-    this.point = [];				// contient un ensemble de point (une ligne = 2 points par exemple). Permet de créer un objets
+    this.point = [];				// contient un ensemble de point (une ligne = 2 points par exemple). Permet de créer un objet
     this.brd;						// variable d'environnement : contient les bornes du graphe
     this.grid = true;				// variable permettant la création de la grille
     this.saveState = [];			// variable permettant de sauvegarder l'état actuel du dessin
 	this.menu_enregistre = true;	// variable permettant de créer un menu pour enregistrer les objets
 }
 
-//------------ D�claration comme classe d�riv�e de Essaim -------------//
+//------------ Déclaration comme classe dérivée de Essaim -------------//
 
 EssaimJSXGraph.prototype = Object.create(Essaim.prototype);
 EssaimJSXGraph.prototype.constructor = EssaimJSXGraph;
 
-//D�finit les nouveaux attributs
+//Définit les nouveaux attributs
 EssaimJSXGraph.prototype.nomAffiche = "Essaim : Dessin JSXGraph";
 EssaimJSXGraph.prototype.proto = "EssaimJSXGraph";
 
@@ -68,7 +64,7 @@ EssaimJSXGraph.prototype.initEnonce = function () {
         var ind = rucheSys.rechercheIndice(nomEssaim, rucheSys.listeBlocPrepa);
         var essaimFd = rucheSys.listeBlocPrepa[ind];
         if (essaimFd.gereReponse == true) {
-            alert("Probl�me , cet essaim devrait pouvoir g�rer plusieurs dessins. Contacter les d�veloppeurs");
+            alert("Problème , cet essaim devrait pouvoir gérer plusieurs dessins. Contacter les développeurs");
         } else {
             rucheSys.enonce.ajoutImageEssaim(essaimFd);
         }
@@ -95,7 +91,7 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup) {
     titreBloc.style.textAlign = "center";
 
     // **** Fabrication du contenu du bloc ****
-    // *** Barre de t�ches pour cet �diteur ***
+    // *** Barre de tâches pour cet éditeur ***
 
     var barre_tache_editJSXGraph = document.createElement("DIV");
 
@@ -138,7 +134,11 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup) {
 	 * 
 	 **/
 	 
-	/* Menu pour les actions 
+	/* ----------------------
+	  Menu pour les actions 
+	-------------------------
+	
+	 * Actions possibles : 
 	 * - grille (afficher/supprimer)
 	 * - déplacer (déplacement libre)
 	 * - save (sauvegarder des objets dans une boîte à dessins)
@@ -186,7 +186,11 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup) {
 	
 	$div_button_action.appendTo(this.divBloc);
 	
-	/* Menu pour les objets 
+	/* ----------------------
+	  Menu pour les objets 
+	-------------------------
+	
+	 * Objets disponibles :
 	 * - point
 	 * - ligne
 	 * - cercle
@@ -229,7 +233,9 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup) {
 	{essaimJSXGraph : this}, function(event){
 	    event.data.essaimJSXGraph.mode = GLOB_axe;
 	});
-    
+	
+    /* Permet de créer un axe en donnant les coordonnées des points dans une zone de texte */
+	
     /*var $form_valeur_axe = $("<form></form>").appendTo($div_button_retour_chariot_Objet);*/
     /*var $axe = $("<input type=\"text\" placeholder=\"(x1,y1);(x2,y2)\"></input>").appendTo($form_valeur_axe);*/
     /*var $button_axis = $("<button>Axe</button>").appendTo($div_button_retour_chariot_Objet).click(
@@ -250,44 +256,17 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup) {
     EssaimJSXGraph.prototype.initEnonce.call(this);
     EssaimJSXGraph.prototype.initAnalyse.call(this);
 
-    /*Cr�ation du graphe*/
+    /*Création du graphe*/
     this.brd = JXG.JSXGraph.initBoard('box' + this.numero,
 				      {axis: this.axis,
 				       keepaspectratio:true,
 				       grid:false
-				       }); /*TEST*/
+				       });
     
-    /*var board = JXG.JSXGraph.initBoard('box'+this.numero, { 
-	boundingbox:[-3,13.5, 5.5,-10],
-	axis:false,
-	showCopyright:false,
-	zoom: {
-	    factorX:1.25,
-	    factorY:1.25,
-	    wheel:true,
-	    needshift:true,
-	    eps: 0.1
-	}
-    }
-				      );
-    xaxis = board.create('axis', [[0, 0], [1,0]], 
-			 {name:'x', 
-			  withLabel: true, 
-			  label: {position: 'rt',  // possible values are 'lft', 'rt', 'top', 'bot'
-				  offset: [-15, 20]   // (in pixels)
-				 }
-			 });
-    yaxis = board.create('axis', [[0, 0], [0, 1]], 
-			 {name:'y', 
-			  withLabel: true, 
-			  label: {
-			      position: 'rt',  // possible values are 'lft', 'rt', 'top', 'bot'
-			      offset: [-20, 0]   // (in pixels)
-			  }
-			 });					
+				
     /*Gestion de la modification de la taille du bloc*/
-    /*Pour le moment, la solution trouver pour limiter le probl�me lors du resize, c'est 
-     d'inclure un delai de 200milliseconde*/
+    /*Pour le moment, la solution trouvée pour limiter le problème lors du resize, c'est 
+     d'inclure un delai de 200 millisecondes*/
     var timer;
     $(window).resize({essaimJSXGraph: this}, function (event) {
         var graph = event.data.essaimJSXGraph;
@@ -300,7 +279,7 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup) {
     });
 
     
-    /*Creation de points, � retoucher/am�liorer*/
+    /*Creation de points, à retoucher/améliorer*/
     var essaimJSXGraph = this;
     this.brd.on('up', function(event){
 	if (essaimJSXGraph.mode !== GLOB_libre){
@@ -334,7 +313,7 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup) {
 		}
 		essaimJSXGraph.point.push(point);
 	    }
-	    /*Creation de la forme souhaiter*/
+	    /*Création de la forme souhaitée*/
 	    if (essaimJSXGraph.mode === GLOB_point){
 		essaimJSXGraph.point = [];
 	    }else if (essaimJSXGraph.point.length === 2){
@@ -389,17 +368,17 @@ EssaimJSXGraph.prototype.toOEF = function(){
 
 		var hauteur = x2 - x1;
 		var largeur = y1 - y2;
-		/*On recup�re la hauteur et la largeur de la zone de dessin, en terme de 
-		  coordonn�e du dessin*/
+		/*On recupère la hauteur et la largeur de la zone de dessin, en terme de 
+		  coordonnées du dessin*/
 		
 		var coef = Math.sqrt(largeur * largeur + hauteur * hauteur);
-		/*Taille de la diagonal de la zone de dessin*/
+		/*Taille de la diagonale de la zone de dessin*/
 		
 		var a = (p2.X() - p1.X()) * coef;
 		var b = (p2.Y() - p1.Y()) * coef;
-		/*a et b correspondent au vecteur de translation des deux point qui correspondent �
-		  la ligne, car un OEF la primitive ligne ne fait qu'un segment, on translate donc 
-		  les point en dehors de la zone de dessin, pour donner l'illusion d'une droite*/
+		/*a et b correspondent au vecteur de translation des deux points qui correspondent à
+		  la ligne, car en OEF la primitive ligne ne fait qu'un segment, on translate donc 
+		  les points en dehors de la zone de dessin, pour donner l'illusion d'une droite*/
 		OEF += "line " +
 		    (a + p1.X()) + "," + (b + p1.Y()) + "," +
 		    (-a + p2.X()) + "," + (-b + p2.Y()) +
@@ -436,7 +415,7 @@ EssaimJSXGraph.prototype.toOEFFromStatement = function (idReponse) {
 };
 
 /**
- * insere un image dans un point
+ * insère une image dans un point
  * @param url" String, url de l'image
  * @param pointExiste: JSXGraph.element(point), le variable qui indique un point de JSXGraph
  * @returns JSXGraph.image
@@ -451,7 +430,7 @@ EssaimJSXGraph.prototype.fillImageIntoPoint = function (url, pointExiste) {
     board.options.layer["image"] = 10;
     // make the priority of image higher than point
     var coodsToPixel = 30;
-    //TODO to have a exact ratio
+    //TODO to have an exact ratio
     var width = getSize(pointExiste) / coodsToPixel;
     var point = (function () {
         var point = getCoord2D(pointExiste);
@@ -463,14 +442,14 @@ EssaimJSXGraph.prototype.fillImageIntoPoint = function (url, pointExiste) {
 };
 
 /**
- * supprimer un image dans le board
+ * supprimer une image dans le board
  * @param image: JSXGraph.element(image), la variable qui indique une image de JSXGraph
  */
 EssaimJSXGraph.prototype.removeImage = function (image) {
     this.brd.removeObject(image)
 };
 
-//TODO attendtion il y a un document ready ici, eviter de faire le confilict
+//TODO attention il y a un document ready ici, éviter de faire le conflit
 $(document).ready(function () {
     rucheSys.initClasseEssaim(EssaimJSXGraph)
 });
