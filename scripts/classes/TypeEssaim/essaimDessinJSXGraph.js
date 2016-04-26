@@ -148,6 +148,7 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup) {
 	var $zoneTexteAction = $("<p></p>").text("Actions").appendTo($div_button_action);
 	var $div_button_retour_chariot_Action = $("<div></div>").appendTo($div_button_action);
 	
+	/* title permet d'afficher une infobulle au survol du bouton */
     var $button_switch_grille = $("<button title=\"Affiche/enlève la grille.\">Grille</button>").appendTo($div_button_retour_chariot_Action).click(
 	{essaimJSXGraph : this}, function(event){
 	    event.data.essaimJSXGraph.grid = !event.data.essaimJSXGraph.grid;
@@ -159,7 +160,7 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup) {
 	    event.data.essaimJSXGraph.brd.fullUpdate();
 	});
 	
-	var $button_libre = $("<button title=\"Permet de déplacer des points dans le graphe.\"> Deplacer </button>").appendTo($div_button_retour_chariot_Action).click(
+	var $button_libre = $("<button title=\"Permet de déplacer des objets dans le graphe.\"> Deplacer </button>").appendTo($div_button_retour_chariot_Action).click(
 	{essaimJSXGraph : this}, function(event){
 	    event.data.essaimJSXGraph.mode = GLOB_libre
 	});
@@ -251,11 +252,9 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup) {
 	});    */
     
     $div_button_objet.appendTo(this.divBloc);
-    
 
     EssaimJSXGraph.prototype.initEnonce.call(this);
     EssaimJSXGraph.prototype.initAnalyse.call(this);
-	
 	
     /* Création du graphe */
     this.brd = JXG.JSXGraph.initBoard('box' + this.numero,
