@@ -148,7 +148,7 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup) {
 	var $zoneTexteAction = $("<p></p>").text("Actions").appendTo($div_button_action);
 	var $div_button_retour_chariot_Action = $("<div></div>").appendTo($div_button_action);
 	
-    var $button_switch_grille = $("<button>Grille</button>").appendTo($div_button_retour_chariot_Action).click(
+    var $button_switch_grille = $("<button title=\"Affiche/enlève la grille.\">Grille</button>").appendTo($div_button_retour_chariot_Action).click(
 	{essaimJSXGraph : this}, function(event){
 	    event.data.essaimJSXGraph.grid = !event.data.essaimJSXGraph.grid;
 	    if (event.data.essaimJSXGraph.grid){
@@ -159,14 +159,14 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup) {
 	    event.data.essaimJSXGraph.brd.fullUpdate();
 	});
 	
-	var $button_libre = $("<button> Deplacer </button>").appendTo($div_button_retour_chariot_Action).click(
+	var $button_libre = $("<button title=\"Permet de déplacer des points dans le graphe.\"> Deplacer </button>").appendTo($div_button_retour_chariot_Action).click(
 	{essaimJSXGraph : this}, function(event){
 	    event.data.essaimJSXGraph.mode = GLOB_libre
 	});
 	
 	var $menu_deroulant = $("<select></select>");
 	
-	var $save = $("<button>Ajout dans boîte à dessins</button>").appendTo($div_button_retour_chariot_Action).click(
+	var $save = $("<button title=\"Permet de sauvegarder des éléments du graphique dans une boite à dessin.\">Ajout dans boîte à dessins</button>").appendTo($div_button_retour_chariot_Action).click(
 	{essaimJSXGraph : this, menu_D : $menu_deroulant}, function(event){
 	    var tab = {};
 		if(event.data.essaimJSXGraph.menu_enregistre){
@@ -204,32 +204,32 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup) {
 	var $zoneTexteObjet = $("<p></p>").text("Objets").appendTo($div_button_objet);
 	var $div_button_retour_chariot_Objet = $("<div></div>").appendTo($div_button_objet);
 	
-    var $button_point = $("<button>Point</button>").appendTo($div_button_retour_chariot_Objet).click(
+    var $button_point = $("<button title=\"Permet de créer un point.\">Point</button>").appendTo($div_button_retour_chariot_Objet).click(
         {essaimJSXGraph: this}, function (event) {
             event.data.essaimJSXGraph.mode = GLOB_point;
         });
 
-    var $button_ligne = $("<button>Ligne</button>").appendTo($div_button_retour_chariot_Objet).click(
+    var $button_ligne = $("<button title=\"Permet de créer une ligne. On utilise deux points pour cela.\">Ligne</button>").appendTo($div_button_retour_chariot_Objet).click(
         {essaimJSXGraph: this}, function (event) {
             event.data.essaimJSXGraph.mode = GLOB_ligne;
         });
 
-    var $button_cercle = $("<button>Cercle</button>").appendTo($div_button_retour_chariot_Objet).click(
+    var $button_cercle = $("<button title=\"Permet de créer un cercle. On utilise deux points pour cela.\">Cercle</button>").appendTo($div_button_retour_chariot_Objet).click(
         {essaimJSXGraph: this}, function (event) {
             event.data.essaimJSXGraph.mode = GLOB_cercle;
         });
 
-    var $button_segment = $("<button>Segment</button>").appendTo($div_button_retour_chariot_Objet).click(
+    var $button_segment = $("<button title=\"Permet de créer un segment. On utilise deux points pour cela.\">Segment</button>").appendTo($div_button_retour_chariot_Objet).click(
         {essaimJSXGraph: this}, function (event) {
             event.data.essaimJSXGraph.mode = GLOB_segment;
         });
 
-    var $button_arrow = $("<button>Vecteur</button>").appendTo($div_button_retour_chariot_Objet).click(
+    var $button_arrow = $("<button title=\"Permet de créer un segment. On utilise deux points pour cela.\">Vecteur</button>").appendTo($div_button_retour_chariot_Objet).click(
 	{essaimJSXGraph : this}, function(event){
 	    event.data.essaimJSXGraph.mode = GLOB_arrow;
 	});
 
-    var $button_axis = $("<button>Axe</button>").appendTo($div_button_retour_chariot_Objet).click(
+    var $button_axis = $("<button title=\"Permet de créer un axe. On utilise deux points pour cela.\">Axe</button>").appendTo($div_button_retour_chariot_Objet).click(
 	{essaimJSXGraph : this}, function(event){
 	    event.data.essaimJSXGraph.mode = GLOB_axe;
 	});
@@ -255,8 +255,9 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup) {
 
     EssaimJSXGraph.prototype.initEnonce.call(this);
     EssaimJSXGraph.prototype.initAnalyse.call(this);
-
-    /*Création du graphe*/
+	
+	
+    /* Création du graphe */
     this.brd = JXG.JSXGraph.initBoard('box' + this.numero,
 				      {axis: this.axis,
 				       keepaspectratio:true,
