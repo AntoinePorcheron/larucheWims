@@ -231,7 +231,7 @@ Variable.prototype.ajoutBlocDansPreparation = function()
                 else{
                     document.getElementById("RidPrBloc_ValVar_"+IDvar).innerHTML=" "+document.getElementById("RidPrBloc_Content_"+IDvar).value.substr(0,10)+"...";
                 }
-               document.getElementById("RidPrBloc_Content_"+IDvar).className = " Rcl_Mini_Editor_hidden";
+               document.getElementById("RidPrBloc_Content_"+IDvar).className = "Rcl_Droppable Rcl_Mini_Editor_hidden";
                 
             }
             else 
