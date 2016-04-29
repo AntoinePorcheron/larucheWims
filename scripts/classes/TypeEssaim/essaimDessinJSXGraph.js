@@ -351,12 +351,15 @@ EssaimJSXGraph.prototype.detruitBloc = function () {
     Essaim.prototype.detruitBloc.call(this);
 }
 
-/* Changer le nom de certaines variables */
+/* -------------------------------------------------
+	Génération du code OEF 
+----------------------------------------------------
+*/
 EssaimJSXGraph.prototype.toOEF = function(){
-    var bord_gauche = this.brd.getBoundingBox()[0];		// remplacer x1 par bord_gauche
-    var bord_haut = this.brd.getBoundingBox()[1];		// remplacer y1 par bord_haut
-    var bord_droit = this.brd.getBoundingBox()[2];		// remplacer x2 par bord_droit
-    var bord_bas = this.brd.getBoundingBox()[3];		// remplacer y2 par bord_bas
+    var bord_gauche = this.brd.getBoundingBox()[0];		
+    var bord_haut = this.brd.getBoundingBox()[1];		
+    var bord_droit = this.brd.getBoundingBox()[2];		
+    var bord_bas = this.brd.getBoundingBox()[3];		
 
     var OEF = "\\text{rangex" + this.nom + " = " + bord_gauche + "," + bord_droit + "}\n"
     OEF += "\\text{rangey" + this.nom + " = " + bord_bas + "," + bord_haut + "}\n";
@@ -364,46 +367,37 @@ EssaimJSXGraph.prototype.toOEF = function(){
     OEF += "rangey \\rangey" + this.nom + "\n";
     
     if (!this.grid){
-	var pas_x = JXG.Options.ticks.ticksDistance * this.brd.zoomX;
-	var pas_y = JXG.Options.ticks.ticksDistance * this.brd.zoomY;
+		var pas_x = JXG.Options.ticks.ticksDistance * this.brd.zoomX;
+		var pas_y = JXG.Options.ticks.ticksDistance * this.brd.zoomY;
 
-	if (bord_gauche > 0){
-	    var n = Math.round(bord_haut / pas_x);
-	}else if (bord_droit < 0){
-	    var n = Math.round( bord_bas / pas_y);
-	}else{
-	    var n = Math.round() + Math.round();
-	}
+		if (bord_gauche > 0){
+			var n = Math.round(bord_haut / pas_x);
+		}
+		else if (bord_droit < 0){
+			var n = Math.round( bord_bas / pas_y);
+		}
+		else {
+			var n = Math.round() + Math.round();
+		}
 
-	if (bord_bas > 0){
-	    var n = Math.round( bord_droit / pas);
-	}else if (bord_haut < 0){
-	    var n = Math.round(bord_gauche / pas);
-	}else{
-
-	}
+		if (bord_bas > 0){
+			var n = Math.round( bord_droit / pas);
+		}
+		else if (bord_haut < 0){
+			var n = Math.round(bord_gauche / pas);
+		}
+		else {
+		}
     /*console.log(JXG.Options.axis.ticks.ticksDistance);*/
-}
+	}
 
-    
     for (element in this.brd.objects){
 		var brdElement = this.brd.objects[element];
 	
-	/*On recupère la hauteur et la largeur de la zone de dessin, en terme de 
+		/*On recupère la hauteur et la largeur de la zone de dessin, en terme de 
 	  coordonnées du dessin*/
-	var largeur = bord_droit - bord_gauche;
-	var hauteur = bord_haut - bord_bas;
-	
-	/*if (brdElement.getAttribute("visible")){
-	    switch (brdElement.getType()){
-	    case GLOB_point :
-		OEF +=  "point " + brdElement.X() + "," + brdElement.Y() + ",black\n";
-		break;
-	    case GLOB_ligne :
-		var p1 = brdElement.point1;
-		var p2 = brdElement.point2;*/
-		
-		
+		var largeur = bord_droit - bord_gauche;
+		var hauteur = bord_haut - bord_bas;
 		
 		/*Taille de la diagonale de la zone de dessin*/
 		var coef = Math.sqrt(largeur * largeur + hauteur * hauteur);
@@ -464,7 +458,7 @@ EssaimJSXGraph.prototype.toOEF = function(){
 					// Cas où les deux points sont sur une ligne horizontale
 					if (p1.Y() === p2.Y()){
 						// On compare les abscisses pour agrandir correctement le trait
-						if (p1.X() > p2.X){
+						if ( p1.X() > p2.X() ){
 							pointFinalDroite.x = bord_droit;
 							pointFinalDroite.y = p1.Y();
 							
@@ -479,8 +473,10 @@ EssaimJSXGraph.prototype.toOEF = function(){
 							pointFinalFleche.y = p2.Y();
 						}
 					}
+					
+					// --------------- Fonctionne jusqu'ici ------------------------
 					else {
-						var coef_dir = ( p1.X() - p2.X() ) /( p1.Y() - p2.Y() );
+						var coef_dir = ( p2.Y() - p1.Y() ) /( p2.X() - p1.X() );
 
 						// Si l'axe est orienté vers le bas
 						if ( p2.Y() < p1.Y() ){
@@ -585,7 +581,7 @@ EssaimJSXGraph.prototype.toOEF = function(){
 						}
 						// Si les deux points sont identiques
 						else {
-							console.log("Les deux points sont identique, or il en faut deux différents pour un axe.");
+							console.log("Les deux points sont identiques, or il en faut deux différents pour un axe.");
 						}
 					}
 					OEF += "arrow " +
@@ -600,7 +596,7 @@ EssaimJSXGraph.prototype.toOEF = function(){
     OEF += "hline black,0,0\nvline black,0,0}\n"
     OEF += "\\text{url" + this.nom + " = draw(200,200\n\\" + this.nom + ")}"
     return OEF;
-	
+	 
 }
 
 EssaimJSXGraph.prototype.toOEFFromStatement = function (idReponse) {
