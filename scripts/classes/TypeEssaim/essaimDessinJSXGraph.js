@@ -336,15 +336,12 @@ EssaimJSXGraph.prototype.detruitBloc = function () {
     Essaim.prototype.detruitBloc.call(this);
 }
 
-/* -------------------------------------------------
-	Génération du code OEF 
-----------------------------------------------------
-*/
+/* Changer le nom de certaines variables */
 EssaimJSXGraph.prototype.toOEF = function(){
-    var bord_gauche = this.brd.getBoundingBox()[0];		
-    var bord_haut = this.brd.getBoundingBox()[1];		
-    var bord_droit = this.brd.getBoundingBox()[2];		
-    var bord_bas = this.brd.getBoundingBox()[3];		
+    var bord_gauche = this.brd.getBoundingBox()[0];		// remplacer x1 par bord_gauche
+    var bord_haut = this.brd.getBoundingBox()[1];		// remplacer y1 par bord_haut
+    var bord_droit = this.brd.getBoundingBox()[2];		// remplacer x2 par bord_droit
+    var bord_bas = this.brd.getBoundingBox()[3];		// remplacer y2 par bord_bas
 
     var OEF = "\\text{rangex" + this.nom + " = " + bord_gauche + "," + bord_droit + "}\n"
     OEF += "\\text{rangey" + this.nom + " = " + bord_bas + "," + bord_haut + "}\n";
@@ -352,232 +349,236 @@ EssaimJSXGraph.prototype.toOEF = function(){
     OEF += "rangey \\rangey" + this.nom + "\n";
     
     if (!this.grid){
-		var pas_x = JXG.Options.ticks.ticksDistance * this.brd.zoomX;
-		var pas_y = JXG.Options.ticks.ticksDistance * this.brd.zoomY;
-		var n_bas;
-		var n_haut;
-		var n_bas;
-		var n_gauche;
-		var n_droite;
+	/*console.log(this.brd.getBoundingBox());*/
+	var pas_x = JXG.Options.ticks.ticksDistance;
+	var pas_y = JXG.Options.ticks.ticksDistance;
+	
+	/*On recupere les position des première ligne de la grille*/
+	var deb_x = (bord_gauche - (bord_gauche%JXG.Options.ticks.ticksDistance));
+	var deb_y = (bord_bas - (bord_bas%JXG.Options.ticks.ticksDistance));
 		
-		if (bord_gauche > 0){
-			var n = Math.round(bord_haut / pas_x);
-		}else if (bord_droit < 0){
-			var n = -Math.round( bord_bas / pas_y);
-		}else{
-			/*var n = Math.round() + Math.round();*/
-		}
-		
-		if (bord_bas > 0){
-			var n = Math.round( bord_droit / pas);
-		}else if (bord_haut < 0){
-			var n = -Math.round(bord_gauche / pas);
-		}else{
-
-		}
+	var nb_x = Math.ceil(bord_droit - bord_gauche / pas_x);
+	var nb_y = Math.ceil(bord_haut - bord_bas / pas_x);
+	console.log(nb_x, nb_y);
+	console.log(pas_x, pas_y);
+	OEF += "parallel " + 
+	    deb_x + "," + bord_haut + "," + 
+	    deb_x + "," +  bord_bas + "," + 
+	    pas_x     + "," +  0  + "," + 
+	    nb_x + ",grey\n";
+	
+	OEF += "parallel " + 
+	    bord_gauche + "," + deb_y + "," + 
+	    bord_droit  + "," + deb_y + "," + 
+	    0  + "," +    pas_y    + "," + 
+	    nb_y + ",grey\n";
+	
     }
-
     for (element in this.brd.objects){
-			var brdElement = this.brd.objects[element];
-			
-				/*On recupère la hauteur et la largeur de la zone de dessin, en terme de 
-			  coordonnées du dessin*/
-			var largeur = bord_droit - bord_gauche;
-			var hauteur = bord_haut - bord_bas;
-			
-				
-			/*Taille de la diagonale de la zone de dessin*/
-			var coef = Math.sqrt(largeur * largeur + hauteur * hauteur);
+	var brdElement = this.brd.objects[element];
+	
+	/*On recupère la hauteur et la largeur de la zone de dessin, en terme de 
+	  coordonnées du dessin*/
+	var largeur = bord_droit - bord_gauche;
+	var hauteur = bord_haut - bord_bas;
+	
 		
+	/*Taille de la diagonale de la zone de dessin*/
+	var coef = Math.sqrt(largeur * largeur + hauteur * hauteur);
+	
 
-		if (brdElement.getAttribute("visible")){
-			switch (brdElement.getType()){
-				case GLOB_point :
-				OEF +=  "point " + brdElement.X() + "," + brdElement.Y() + ",black\n";
-				break;
-			case GLOB_ligne :
-				var p1 = brdElement.point1;
-				var p2 = brdElement.point2;
-				
-				/*Taille de la diagonale de la zone de dessin*/
-				var coef = Math.sqrt(largeur * largeur + hauteur * hauteur);
-				
-				/*a et b correspondent aux vecteurs de translation des deux points qui correspondent à
-				  la ligne, car en OEF la primitive ligne ne fait qu'un segment, on translate donc 
-				  les points en dehors de la zone de dessin, pour donner l'illusion d'une droite*/
-				var a = (p2.X() - p1.X()) * coef;
-				var b = (p2.Y() - p1.Y()) * coef;
-				
-				OEF += "line " +
-					(a + p1.X()) + "," + (b + p1.Y()) + "," +
-					(-a + p2.X()) + "," + (-b + p2.Y()) +
-					",black\n";
-				break;
-			case GLOB_cercle :
-				OEF += "circle " + brdElement.center.X() + "," + brdElement.center.Y() +
-					"," + (brdElement.Radius() * this.brd.unitX) + ",black\n";
-				break;
-			case GLOB_segment :
-				var p1 = brdElement.point1;
-				var p2 = brdElement.point2;
+	if (brdElement.getAttribute("visible")){
+	    switch (brdElement.getType()){
+	    case GLOB_point :
+		OEF +=  "point " + brdElement.X() + "," + brdElement.Y() + ",black\n";
+		break;
+	    case GLOB_ligne :
+		var p1 = brdElement.point1;
+		var p2 = brdElement.point2;
+		
+		/*Taille de la diagonale de la zone de dessin*/
+		var coef = Math.sqrt(largeur * largeur + hauteur * hauteur);
+		
+		/*a et b correspondent aux vecteurs de translation des deux points qui correspondent à
+		  la ligne, car en OEF la primitive ligne ne fait qu'un segment, on translate donc 
+		  les points en dehors de la zone de dessin, pour donner l'illusion d'une droite*/
+		var a = (p2.X() - p1.X()) * coef;
+		var b = (p2.Y() - p1.Y()) * coef;
+		
+		OEF += "line " +
+		    (a + p1.X()) + "," + (b + p1.Y()) + "," +
+		    (-a + p2.X()) + "," + (-b + p2.Y()) +
+		    ",black\n";
+		break;
+	    case GLOB_cercle :
+		OEF += "circle " + brdElement.center.X() + "," + brdElement.center.Y() +
+		    "," + (brdElement.Radius() * this.brd.unitX) + ",black\n";
+		break;
+	    case GLOB_segment :
+		var p1 = brdElement.point1;
+		var p2 = brdElement.point2;
 
-				OEF += "segment " +
-					p1.X() + "," + p1.Y()+ "," +
-					p2.X() + "," + p2.Y() + ",black\n";
-				break;
-			case GLOB_arrow : 
-				var p1 = brdElement.point1;
-				var p2 = brdElement.point2;
-				
-				OEF += "arrow " +
-					p1.X() + "," + p1.Y()+ "," +
-					p2.X() + "," + p2.Y() + ",7,black\n";
-				break;
-			case GLOB_axe : 
-				var p1 = brdElement.point1;
-				var p2 = brdElement.point2;
-				
-				var pointInter_1 = { x : p1.X(), y : p1.Y() };
-				var pointInter_2 = { x : p2.X(), y : p2.Y() };
-				var pointFinalFleche = { x : 0, y : 0 };
-				var pointFinalDroite = { x : 0, y : 0 };
-				
-				// Cas où les deux points sont sur une ligne horizontale
-				if (p1.Y() === p2.Y()){
-					// On compare les abscisses pour agrandir correctement le trait
-					if (p1.X() > p2.X){
-					pointFinalDroite.x = bord_droit;
-					pointFinalDroite.y = p1.Y();
-					
-					pointFinalFleche.x = bord_gauche;
-					pointFinalFleche.y = p2.Y();
-					}
-					else {
-					pointFinalDroite.x = bord_gauche;
-					pointFinalDroite.y = p1.Y();
-					
-					pointFinalFleche.x = bord_droit;
-					pointFinalFleche.y = p2.Y();
-					}
-				}
-				else {
-					var coef_dir = ( p1.X() - p2.X() ) /( p1.Y() - p2.Y() );
+		OEF += "segment " +
+		    p1.X() + "," + p1.Y()+ "," +
+		    p2.X() + "," + p2.Y() + ",black\n";
+		break;
+	    case GLOB_arrow : 
+		var p1 = brdElement.point1;
+		var p2 = brdElement.point2;
+		
+		OEF += "arrow " +
+		    p1.X() + "," + p1.Y()+ "," +
+		    p2.X() + "," + p2.Y() + ",7,black\n";
+		break;
+	    case GLOB_axe : 
+		var p1 = brdElement.point1;
+		var p2 = brdElement.point2;
+		
+		var pointInter_1 = { x : p1.X(), y : p1.Y() };
+		var pointInter_2 = { x : p2.X(), y : p2.Y() };
+		var pointFinalFleche = { x : 0, y : 0 };
+		var pointFinalDroite = { x : 0, y : 0 };
+		
+		// Cas où les deux points sont sur une ligne horizontale
+		if (p1.Y() === p2.Y()){
+		    // On compare les abscisses pour agrandir correctement le trait
+		    if (p1.X() > p2.X){
+			pointFinalDroite.x = bord_droit;
+			pointFinalDroite.y = p1.Y();
+			
+			pointFinalFleche.x = bord_gauche;
+			pointFinalFleche.y = p2.Y();
+		    }
+		    else {
+			pointFinalDroite.x = bord_gauche;
+			pointFinalDroite.y = p1.Y();
+			
+			pointFinalFleche.x = bord_droit;
+			pointFinalFleche.y = p2.Y();
+		    }
+		}
+		else {
+		    var coef_dir = ( p1.X() - p2.X() ) /( p1.Y() - p2.Y() );
 
-					// Si l'axe est orienté vers le bas
-					if ( p2.Y() < p1.Y() ){
-					// On cherche les deux intersections possibles avec le bord du graphe...
-						if (coef_dir > 0){
-							pointInter_1.x = ( -(bord_bas) / coef_dir );
-							pointInter_1.y = -( bord_bas );
-							
-							pointInter_2.x = -( bord_gauche );
-							pointInter_2.y = ( -(bord_gauche) / coef_dir );
-							
-							//... on garde seulement celle avec le x le plus grand
-							if (pointInter_1.x > pointInter_2.x ){
-							pointFinalFleche.x = pointInter_1.x;
-							pointFinalFleche.y = pointInter_1.y;
-							
-							pointFinalDroite.x = p1.X();
-							pointFinalDroite.y = p1.Y();
-							}
-							else {
-							pointFinalFleche.x = pointInter_2.x;
-							pointFinalFleche.y = pointInter_2.y;
-							
-							pointFinalDroite.x = p1.X();
-							pointFinalDroite.y = p1.Y();
-							}
-						}
-						else {
-						pointInter_1.x = ( (bord_haut) / coef_dir );
-						pointInter_1.y = bord_haut;
-						
-						pointInter_2.x = bord_droit;
-						pointInter_2.y = ( bord_droit / coef_dir ); 
-						
-						//... on garde seulement celle avec le x le plus petit
-						if (pointInter_1.x < pointInter_2.x ){
-						pointFinalFleche.x = pointInter_1.x;
-						pointFinalFleche.y = pointInter_1.y;
-						
-						pointFinalDroite.x = p1.X();
-						pointFinalDroite.y = p1.Y();
-						}
-						else {
-						pointFinalFleche.x = pointInter_2.x;
-						pointFinalFleche.y = pointInter_2.y;
-						
-						pointFinalDroite.x = p1.X();
-						pointFinalDroite.y = p1.Y();
-						}
-					}
-					}
-					
-					// Si l'axe est orienté vers le haut
-					else if ( p2.Y() > p1.Y() ){ 
-					// On cherche les deux intersections possibles avec le bord du graphe...
-						if (coef_dir > 0){
-						pointInter_1.x = ( bord_haut / coef_dir );
-						pointInter_1.y = bord_haut;
-						
-						pointInter_2.x = bord_droit;
-						pointInter_2.y = ( bord_droit / coef_dir );
-						
-						//... on garde seulement celle avec le x le plus grand
-						if (pointInter_1.x > pointInter_2.x ){
-						pointFinalFleche.x = pointInter_1.x;
-						pointFinalFleche.y = pointInter_1.y;
-						
-						pointFinalDroite.x = p1.X();
-						pointFinalDroite.y = p1.Y();
-						}
-						else {
-						pointFinalFleche.x = pointInter_2.x;
-						pointFinalFleche.y = pointInter_2.y;
-						
-						pointFinalDroite.x = p1.X();
-						pointFinalDroite.y = p1.Y();
-						}
-					}
-						else if (coef_dir <0 ){
-						pointInter_1.x = ( bord_haut / coef_dir );
-						pointInter_1.y = bord_haut;
-						
-						pointInter_2.x = -( bord_gauche );
-						pointInter_2.y = ( -(bord_gauche) / coef_dir ); 
-						
-						//... on garde seulement celle avec le x le plus petit
-						if (pointInter_1.x < pointInter_2.x ){
-						pointFinalFleche.x = pointInter_1.x;
-						pointFinalFleche.y = pointInter_1.y;
-						
-						pointFinalDroite.x = p1.X();
-						pointFinalDroite.y = p1.Y();
-						}
-						else {
-						pointFinalFleche.x = pointInter_2.x;
-						pointFinalFleche.y = pointInter_2.y;
-						}
-					}
-						// Si les deux points sont identiques
-						else {
-					console.log("Les deux points sont identique, or il en faut deux différents pour un axe.");
-					}
-				}
-				}
-				OEF += "arrow " +
-					pointFinalDroite.x + "," + pointFinalDroite.y + "," +
-					pointFinalFleche.x + "," + pointFinalFleche.y + ",7,black\n";
-				break;
-			default :
-				console.log("Si ceci s'affiche, c'est qu'il y a un problème.");
+		    // Si l'axe est orienté vers le bas
+		    if ( p2.Y() < p1.Y() ){
+			// On cherche les deux intersections possibles avec le bord du graphe...
+			if (coef_dir > 0){
+			    pointInter_1.x = ( -(bord_bas) / coef_dir );
+			    pointInter_1.y = -( bord_bas );
+			    
+			    pointInter_2.x = -( bord_gauche );
+			    pointInter_2.y = ( -(bord_gauche) / coef_dir );
+			    
+			    //... on garde seulement celle avec le x le plus grand
+			    if (pointInter_1.x > pointInter_2.x ){
+				pointFinalFleche.x = pointInter_1.x;
+				pointFinalFleche.y = pointInter_1.y;
+				
+				pointFinalDroite.x = p1.X();
+				pointFinalDroite.y = p1.Y();
+			    }
+			    else {
+				pointFinalFleche.x = pointInter_2.x;
+				pointFinalFleche.y = pointInter_2.y;
+				
+				pointFinalDroite.x = p1.X();
+				pointFinalDroite.y = p1.Y();
+			    }
 			}
-		}	
-	}
+			else {
+			    pointInter_1.x = ( (bord_haut) / coef_dir );
+			    pointInter_1.y = bord_haut;
+			    
+			    pointInter_2.x = bord_droit;
+			    pointInter_2.y = ( bord_droit / coef_dir ); 
+			    
+			    //... on garde seulement celle avec le x le plus petit
+			    if (pointInter_1.x < pointInter_2.x ){
+				pointFinalFleche.x = pointInter_1.x;
+				pointFinalFleche.y = pointInter_1.y;
+				
+				pointFinalDroite.x = p1.X();
+				pointFinalDroite.y = p1.Y();
+			    }
+			    else {
+				pointFinalFleche.x = pointInter_2.x;
+				pointFinalFleche.y = pointInter_2.y;
+				
+				pointFinalDroite.x = p1.X();
+				pointFinalDroite.y = p1.Y();
+			    }
+			}
+		    }
+		    
+		    // Si l'axe est orienté vers le haut
+		    else if ( p2.Y() > p1.Y() ){ 
+			// On cherche les deux intersections possibles avec le bord du graphe...
+			if (coef_dir > 0){
+			    pointInter_1.x = ( bord_haut / coef_dir );
+			    pointInter_1.y = bord_haut;
+			    
+			    pointInter_2.x = bord_droit;
+			    pointInter_2.y = ( bord_droit / coef_dir );
+			    
+			    //... on garde seulement celle avec le x le plus grand
+			    if (pointInter_1.x > pointInter_2.x ){
+				pointFinalFleche.x = pointInter_1.x;
+				pointFinalFleche.y = pointInter_1.y;
+				
+				pointFinalDroite.x = p1.X();
+				pointFinalDroite.y = p1.Y();
+			    }
+			    else {
+				pointFinalFleche.x = pointInter_2.x;
+				pointFinalFleche.y = pointInter_2.y;
+				
+				pointFinalDroite.x = p1.X();
+				pointFinalDroite.y = p1.Y();
+			    }
+			}
+			else {
+			    pointInter_1.x = ( bord_haut / coef_dir );
+			    pointInter_1.y = bord_haut;
+			    
+			    pointInter_2.x = -( bord_gauche );
+			    pointInter_2.y = ( -(bord_gauche) / coef_dir ); 
+			    
+			    //... on garde seulement celle avec le x le plus petit
+			    if (pointInter_1.x < pointInter_2.x ){
+				pointFinalFleche.x = pointInter_1.x;
+				pointFinalFleche.y = pointInter_1.y;
+				
+				pointFinalDroite.x = p1.X();
+				pointFinalDroite.y = p1.Y();
+			    }
+			    else {
+				pointFinalFleche.x = pointInter_2.x;
+				pointFinalFleche.y = pointInter_2.y;
+				
+				pointFinalDroite.x = p1.X();
+				pointFinalDroite.y = p1.Y()	;
+			    }
+			}
+		    }
+		    // Si les deux points sont identiques
+		    else {
+			console.log("Les deux points sont identique, or il en faut deux différents pour un axe.");
+		    }
+		}
+		OEF += "arrow " +
+		    pointFinalDroite.x + "," + pointFinalDroite.y + "," +
+		    pointFinalFleche.x + "," + pointFinalFleche.y + ",7,black\n";
+		break;
+	    default:
+		break;
+	    }
+	}	
+    }
     OEF += "hline black,0,0\nvline black,0,0}\n"
     OEF += "\\text{url" + this.nom + " = draw(200,200\n\\" + this.nom + ")}"
     return OEF;
+    
 }
 
 EssaimJSXGraph.prototype.toOEFFromStatement = function (idReponse) {
