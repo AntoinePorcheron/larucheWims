@@ -116,6 +116,7 @@ $(document).ready(function () {
     //ligne-------------------------------------------------------------------------------
     //creer point2 pour avoir une ligne ou le coordonee de point comme li2
     var p2 = board.create('point', [2, -1], {name: 'point2', size: 2, face: 'x'});
+    console.log(p1);
     //var li1 = board.create('line',[p1,p2],
     //{straightFirst:false, straightLast:false, strokeWidth:2, dash:4});
     var li2 = board.create('line', [[3, 1], [0, 0]], {straightFirst: false, straightLast: false, strokeWidth: 2})
