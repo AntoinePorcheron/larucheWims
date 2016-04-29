@@ -27,7 +27,7 @@ EssaimJSXGraph = function (num) {
     this.brd;						// variable d'environnement : contient les bornes du graphe
     this.grid = true;				// variable permettant la création de la grille
     this.saveState = [];			// variable permettant de sauvegarder l'état actuel du dessin
-	this.menu_enregistre = true;	// variable permettant de créer un menu pour enregistrer les objets
+    this.menu_enregistre = true;	// variable permettant de créer un menu pour enregistrer les objets
 }
 
 //------------ Déclaration comme classe dérivée de Essaim -------------//
@@ -118,95 +118,95 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup) {
         height: 400
     }).appendTo($(this.divBloc));
 
-	
-	/* -----------------------------------
-	Création des blocs div pour les menus
-	--------------------------------------
-	*/
-	
-	/* On crée deux blocs correspondant aux deux menus : 
-	 * - div_button_action :  bloc pour le menu des actions
-	 * - div_button_objet : bloc pour le menu des objets
-	 **/
-	/*
-	 * Pour chacun de ces menus, on crée un bloc div supplémentaire pour le retour à la ligne : 
-	 * - le bloc div_button_retour_chariot_Action
-	 * - le bloc div_button_retour_chariot_Objet
-	 * 
-	 **/
-	 
-	/* ----------------------
-	  Menu pour les actions 
-	-------------------------
-	
-	 * Actions possibles : 
-	 * - grille (afficher/supprimer)
-	 * - déplacer (déplacement libre)
-	 * - save (sauvegarder des objets dans une boîte à dessins)
-	 **/
-	 
+    
+    /* -----------------------------------
+       Création des blocs div pour les menus
+       --------------------------------------
+    */
+    
+    /* On crée deux blocs correspondant aux deux menus : 
+     * - div_button_action :  bloc pour le menu des actions
+     * - div_button_objet : bloc pour le menu des objets
+     **/
+    /*
+     * Pour chacun de ces menus, on crée un bloc div supplémentaire pour le retour à la ligne : 
+     * - le bloc div_button_retour_chariot_Action
+     * - le bloc div_button_retour_chariot_Objet
+     * 
+     **/
+    
+    /* ----------------------
+       Menu pour les actions 
+       -------------------------
+       
+       * Actions possibles : 
+       * - grille (afficher/supprimer)
+       * - déplacer (déplacement libre)
+       * - save (sauvegarder des objets dans une boîte à dessins)
+       **/
+    
     var $div_button_action = $("<div></div>");
-	var $zoneTexteAction = $("<p></p>").text("Actions").appendTo($div_button_action);
-	var $div_button_retour_chariot_Action = $("<div></div>").appendTo($div_button_action);
-	
-	/* title permet d'afficher une infobulle au survol du bouton */
+    var $zoneTexteAction = $("<p></p>").text("Actions").appendTo($div_button_action);
+    var $div_button_retour_chariot_Action = $("<div></div>").appendTo($div_button_action);
+    
+    /* title permet d'afficher une infobulle au survol du bouton */
     var $button_switch_grille = $("<button title=\"Affiche/enlève la grille.\">Grille</button>").appendTo($div_button_retour_chariot_Action).click(
 	{essaimJSXGraph : this}, function(event){
-		event.data.essaimJSXGraph.grid = !event.data.essaimJSXGraph.grid;
-		if (event.data.essaimJSXGraph.grid){
+	    event.data.essaimJSXGraph.grid = !event.data.essaimJSXGraph.grid;
+	    if (event.data.essaimJSXGraph.grid){
 		event.data.essaimJSXGraph.brd.removeGrids();	
-		}
-		else {
+	    }
+	    else {
 		event.data.essaimJSXGraph.brd.create('grid', []);
-		}
-		event.data.essaimJSXGraph.brd.fullUpdate();
+	    }
+	    event.data.essaimJSXGraph.brd.fullUpdate();
 	});
-	
-	var $button_libre = $("<button title=\"Permet de déplacer des objets dans le graphe.\"> Deplacer </button>").appendTo($div_button_retour_chariot_Action).click(
+    
+    var $button_libre = $("<button title=\"Permet de déplacer des objets dans le graphe.\"> Deplacer </button>").appendTo($div_button_retour_chariot_Action).click(
 	{essaimJSXGraph : this}, function(event){
-		event.data.essaimJSXGraph.mode = GLOB_libre
+	    event.data.essaimJSXGraph.mode = GLOB_libre
 	});
-	
-	var $menu_deroulant = $("<select></select>");
-	
-	var $save = $("<button title=\"Permet de sauvegarder des éléments du graphique dans une boite à dessin.\">Ajout dans boîte à dessin </button>").appendTo($div_button_retour_chariot_Action).click(
+    
+    var $menu_deroulant = $("<select></select>");
+    
+    var $save = $("<button title=\"Permet de sauvegarder des éléments du graphique dans une boite à dessin.\">Ajout dans boîte à dessin </button>").appendTo($div_button_retour_chariot_Action).click(
 	{essaimJSXGraph : this, menu_D : $menu_deroulant}, function(event){
 	    var tab = {};
-		if(event.data.essaimJSXGraph.menu_enregistre){
-			event.data.menu_D.appendTo($div_button_retour_chariot_Action);
-			event.data.essaimJSXGraph.menu_enregistre = false;
-		}
+	    if(event.data.essaimJSXGraph.menu_enregistre){
+		event.data.menu_D.appendTo($div_button_retour_chariot_Action);
+		event.data.essaimJSXGraph.menu_enregistre = false;
+	    }
 	    for (i in event.data.essaimJSXGraph.brd.objects){
-			if (i.toLowerCase() !== "jxgBoard1_infobox".toLowerCase()){
-				tab[i] = event.data.essaimJSXGraph.brd.objects[i];
-			}
+		if (i.toLowerCase() !== "jxgBoard1_infobox".toLowerCase()){
+		    tab[i] = event.data.essaimJSXGraph.brd.objects[i];
+		}
 	    }
 	    event.data.essaimJSXGraph.saveState.push(tab);
 	    var clef = Object.keys(tab);
 	    var nom_objet = clef[clef.length - 2];
 	    event.data.menu_D.append("<option value"+ nom_objet +">" + nom_objet + "</option>");
 	});
-	
-	$div_button_action.appendTo(this.divBloc);
-	
-	/* ----------------------
-	  Menu pour les objets 
-	-------------------------
-	
-	 * Objets disponibles :
-	 * - point
-	 * - ligne
-	 * - cercle
-	 * - segment
-	 * - flèche
-	 * - axe X (horizontal)
-	 * - axe Y (vertical)
-	 **/ 
-	 
-	var $div_button_objet = $("<div></div>");
-	var $zoneTexteObjet = $("<p></p>").text("Objets").appendTo($div_button_objet);
-	var $div_button_retour_chariot_Objet = $("<div></div>").appendTo($div_button_objet);
-	
+    
+    $div_button_action.appendTo(this.divBloc);
+    
+    /* ----------------------
+       Menu pour les objets 
+       -------------------------
+       
+       * Objets disponibles :
+       * - point
+       * - ligne
+       * - cercle
+       * - segment
+       * - flèche
+       * - axe X (horizontal)
+       * - axe Y (vertical)
+       **/ 
+    
+    var $div_button_objet = $("<div></div>");
+    var $zoneTexteObjet = $("<p></p>").text("Objets").appendTo($div_button_objet);
+    var $div_button_retour_chariot_Objet = $("<div></div>").appendTo($div_button_objet);
+    
     var $button_point = $("<button title=\"Permet de créer un point.\">Point</button>").appendTo($div_button_retour_chariot_Objet).click(
         {essaimJSXGraph: this}, function (event) {
             event.data.essaimJSXGraph.mode = GLOB_point;
@@ -228,47 +228,47 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup) {
         });
 
     var $button_arrow = $("<button title=\"Permet de créer un vecteur. On utilise deux points pour cela.\">Vecteur</button>").appendTo($div_button_retour_chariot_Objet).click(
-		{essaimJSXGraph : this}, function(event){
-			event.data.essaimJSXGraph.mode = GLOB_arrow;
-		});
+	{essaimJSXGraph : this}, function(event){
+	    event.data.essaimJSXGraph.mode = GLOB_arrow;
+	});
 
     var $button_axis = $("<button title=\"Permet de créer un axe. On utilise deux points pour cela.\">Axe</button>").appendTo($div_button_retour_chariot_Objet).click(
-		{essaimJSXGraph : this}, function(event){
-			event.data.essaimJSXGraph.mode = GLOB_axe;
-		});
-	
+	{essaimJSXGraph : this}, function(event){
+	    event.data.essaimJSXGraph.mode = GLOB_axe;
+	});
+    
     /* Permet de créer un axe en donnant les coordonnées des points dans une zone de texte */
-	
+    
     /*var $form_valeur_axe = $("<form></form>").appendTo($div_button_retour_chariot_Objet);*/
     /*var $axe = $("<input type=\"text\" placeholder=\"(x1,y1);(x2,y2)\"></input>").appendTo($form_valeur_axe);*/
     /*var $button_axis = $("<button>Axe</button>").appendTo($div_button_retour_chariot_Objet).click(
-	{essaimJSXGraph : this}, function(event){
-	    event.data.essaimJSXGraph.axis = !event.data.essaimJSXGraph.axis;   
-	    if (event.data.essaimJSXGraph.axis_x){
-		event.data.essaimJSXGraph.brd.create('axis', [[0, 0], [1, 0]],
-						     {ticks: {insertTicks: true,
-							      ticksDistance: 1,
-							      label: {offset: [-20, -20]}}});
-		event.data.essaimJSXGraph.brd.fullUpdate();
-	    }
-	});    */
+      {essaimJSXGraph : this}, function(event){
+      event.data.essaimJSXGraph.axis = !event.data.essaimJSXGraph.axis;   
+      if (event.data.essaimJSXGraph.axis_x){
+      event.data.essaimJSXGraph.brd.create('axis', [[0, 0], [1, 0]],
+      {ticks: {insertTicks: true,
+      ticksDistance: 1,
+      label: {offset: [-20, -20]}}});
+      event.data.essaimJSXGraph.brd.fullUpdate();
+      }
+      });    */
     
     $div_button_objet.appendTo(this.divBloc);
 
     EssaimJSXGraph.prototype.initEnonce.call(this);
     EssaimJSXGraph.prototype.initAnalyse.call(this);
-	
+    
     /* Création du graphe */
     this.brd = JXG.JSXGraph.initBoard('box' + this.numero,
 				      {axis: this.axis,
 				       keepaspectratio:true,
 				       grid:false
-				       });
+				      });
     
-				
+    
     /*Gestion de la modification de la taille du bloc*/
     /*Pour le moment, la solution trouvée pour limiter le problème lors du resize, c'est 
-     d'inclure un delai de 200 millisecondes*/
+      d'inclure un delai de 200 millisecondes*/
     var timer;
     $(window).resize({essaimJSXGraph: this}, function (event) {
         var graph = event.data.essaimJSXGraph;
@@ -284,53 +284,62 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup) {
     /*Creation de points, à retoucher/améliorer*/
     var essaimJSXGraph = this;
     this.brd.on('up', function(event){
-		if (essaimJSXGraph.mode !== GLOB_libre){
-			var point = undefined;
-			var brd = essaimJSXGraph.brd;
-			if (brd.drag_dx !== 0 || brd.drag_dy !== 0){
-				essaimJSXGraph.point = [];
-				}
-				else{
-					var getMouseCoords = function(event) {
-						var cPos = brd.getCoordsTopLeftCorner(event,0),
-							absPos = JXG.getPosition(event, 0),
-							dx = absPos[0]-cPos[0],
-							dy = absPos[1]-cPos[1];
-						return new JXG.Coords(JXG.COORDS_BY_SCREEN, [dx, dy], brd);
-					}
-				
-				var parent = undefined;
-				var coords = getMouseCoords(event);
-		
-				for (element in brd.objects){
-					if (JXG.isPoint(brd.objects[element])
-					&& brd.objects[element].hasPoint(coords.scrCoords[1],coords.scrCoords[2])){
-						point = element;
-					}
-				}
-				if (point === undefined){
-					point = brd.create("point", brd.getUsrCoordsOfMouse(event));
-					if (parent !== undefined){
-						point.ancestors[0] = 0;
-					}
-				}
-				else if (!brd.objects[point].getAttribute("visible")){
-					brd.objects[point].setAttribute({visible : true});
-				}
-				essaimJSXGraph.point.push(point);
-			}
-		
-			/*Création de la forme souhaitée*/
-			if (essaimJSXGraph.mode === GLOB_point){
-				essaimJSXGraph.point = [];
-			}
-			else if (essaimJSXGraph.point.length === 2){
-				brd.create(essaimJSXGraph.mode, essaimJSXGraph.point);
-				essaimJSXGraph.point = [];
-			}
+	if (essaimJSXGraph.mode !== GLOB_libre){
+	    var point = undefined;
+	    var brd = essaimJSXGraph.brd;
+	    if (brd.drag_dx !== 0 || brd.drag_dy !== 0){
+		essaimJSXGraph.point = [];
+	    }
+	    else{
+		var getMouseCoords = function(event) {
+		    var cPos = brd.getCoordsTopLeftCorner(event,0),
+		    absPos = JXG.getPosition(event, 0),
+		    dx = absPos[0]-cPos[0],
+		    dy = absPos[1]-cPos[1];
+		    return new JXG.Coords(JXG.COORDS_BY_SCREEN, [dx, dy], brd);
 		}
-    });
-}
+		
+		var parent = undefined;
+		var coords = getMouseCoords(event);
+		
+		for (element in brd.objects){
+		    if (JXG.isPoint(brd.objects[element])
+			&& brd.objects[element].hasPoint(coords.scrCoords[1],coords.scrCoords[2])){
+			point = element;
+		    }
+		}
+		if (point === undefined){
+		    point = brd.create("point", brd.getUsrCoordsOfMouse(event));
+		    if (parent !== undefined){
+			point.ancestors[0] = 0;
+		    }
+		}
+		else if (!brd.objects[point].getAttribute("visible")){
+		    brd.objects[point].setAttribute({visible : true});
+		}
+		essaimJSXGraph.point.push(point);
+	    }
+	    
+	    /*Création de la forme souhaitée*/
+	    if (essaimJSXGraph.mode === GLOB_point){
+		essaimJSXGraph.point = [];
+	    }
+	    else if (essaimJSXGraph.point.length === 2){
+		var newElement = brd.create(essaimJSXGraph.mode, essaimJSXGraph.point);
+		essaimJSXGraph.point = [];
+		if (essaimJSXGraph.mode === GLOB_axe){
+		    /*Sert à ne pas crée les grilles lorsque on crée un axe*/
+		    newElement.removeAllTicks();
+		    newElement.isDraggable = true;
+		    for (var i in newElement.ancestors){
+			newElement.ancestors[i].isDraggable = true;
+			newElement.ancestors[i].on('drag',function(){essaimJSXGraph.brd.fullUpdate()});
+		    }
+		}
+	    }
+	}
+    }
+	       )};
 
 
 EssaimJSXGraph.prototype.nouveauComposant = function (classeComposant) {
@@ -349,30 +358,57 @@ EssaimJSXGraph.prototype.toOEF = function(){
     var bord_droit = this.brd.getBoundingBox()[2];		// remplacer x2 par bord_droit
     var bord_bas = this.brd.getBoundingBox()[3];		// remplacer y2 par bord_bas
 
-    console.log(this.brd.getBoundingBox());
-
     var OEF = "\\text{rangex" + this.nom + " = " + bord_gauche + "," + bord_droit + "}\n"
     OEF += "\\text{rangey" + this.nom + " = " + bord_bas + "," + bord_haut + "}\n";
     OEF += "\\text{" + this.nom + " = rangex \\rangex" + this.nom + "\n";
     OEF += "rangey \\rangey" + this.nom + "\n";
     
     if (!this.grid){
-		console.log(JXG.Options.axis.ticks.ticksDistance);
-		
-		for (var i = 0; i < this.brd.grids.length; i++){
-			console.log(this.brd.grids[i]);
-		}
-    }
+	var pas_x = JXG.Options.ticks.ticksDistance * this.brd.zoomX;
+	var pas_y = JXG.Options.ticks.ticksDistance * this.brd.zoomY;
+
+	if (bord_gauche > 0){
+	    var n = Math.round(bord_haut / pas_x);
+	}else if (bord_droit < 0){
+	    var n = Math.round( bord_bas / pas_y);
+	}else{
+	    var n = Math.round() + Math.round();
+	}
+
+	if (bord_bas > 0){
+	    var n = Math.round( bord_droit / pas);
+	}else if (bord_haut < 0){
+	    var n = Math.round(bord_gauche / pas);
+	}else{
+
+	}
+    /*console.log(JXG.Options.axis.ticks.ticksDistance);*/
+}
 
     
     for (element in this.brd.objects){
 		var brdElement = this.brd.objects[element];
+	
+	/*On recupère la hauteur et la largeur de la zone de dessin, en terme de 
+	  coordonnées du dessin*/
+	var largeur = bord_droit - bord_gauche;
+	var hauteur = bord_haut - bord_bas;
+	
+	/*if (brdElement.getAttribute("visible")){
+	    switch (brdElement.getType()){
+	    case GLOB_point :
+		OEF +=  "point " + brdElement.X() + "," + brdElement.Y() + ",black\n";
+		break;
+	    case GLOB_ligne :
+		var p1 = brdElement.point1;
+		var p2 = brdElement.point2;*/
 		
-		/*On recupère la hauteur et la largeur de la zone de dessin, en terme de 
-		coordonnées du dessin*/
-		var largeur = bord_droit - bord_gauche;
-		var hauteur = bord_haut - bord_bas;
 		
+		
+		/*Taille de la diagonale de la zone de dessin*/
+		var coef = Math.sqrt(largeur * largeur + hauteur * hauteur);
+		
+
 		if (brdElement.getAttribute("visible")){
 			switch (brdElement.getType()){
 				case GLOB_point :
@@ -564,6 +600,7 @@ EssaimJSXGraph.prototype.toOEF = function(){
     OEF += "hline black,0,0\nvline black,0,0}\n"
     OEF += "\\text{url" + this.nom + " = draw(200,200\n\\" + this.nom + ")}"
     return OEF;
+	
 }
 
 EssaimJSXGraph.prototype.toOEFFromStatement = function (idReponse) {
