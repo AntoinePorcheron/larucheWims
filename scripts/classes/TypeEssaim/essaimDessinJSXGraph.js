@@ -780,7 +780,9 @@ EssaimJSXGraph.prototype.buildMenu = function (element) {
 EssaimJSXGraph.prototype.context = function () {
     var self = this;
     this.brd.on("up", function (event) {
-        self.buildMenu(self.getTopUnderMouse())
+        var element = self.getTopUnderMouse();
+        self.$divMenu.html("Menu Contextuel de " + element.elType + " " +element.name);
+        self.buildMenu(element)
     })
 };
 
