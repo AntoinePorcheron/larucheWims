@@ -28,8 +28,7 @@ EssaimJSXGraph = function (num) {
     this.grid = true;				// variable permettant la création de la grille
     this.saveState = [];			// variable permettant de sauvegarder l'état actuel du dessin
     this.menu_enregistre = true;	// variable permettant de créer un menu pour enregistrer les objets
-
-};
+}
 
 //------------ Déclaration comme classe dérivée de Essaim -------------//
 
@@ -46,12 +45,10 @@ EssaimJSXGraph.prototype.gereReponse = false;
 Essaim.prototype.aUneAide = false;
 EssaimJSXGraph.prototype.gereTailleImageEnonce = true;
 
-
 EssaimJSXGraph.prototype.$divMenu = $("<div></div>")
     .html($("<div></div>").html("Menu Contextuel"));
 
 EssaimJSXGraph.prototype.$menuButtons = $("<div></div>");
-
 
 //------------ METHODES -----------------//
 
@@ -131,15 +128,15 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup) {
      --------------------------------------
      */
 
-    /* On crée deux blocs correspondant aux deux menus : 
+    /* On crée deux blocs correspondant aux deux menus :
      * - div_button_action :  bloc pour le menu des actions
      * - div_button_objet : bloc pour le menu des objets
      **/
     /*
-     * Pour chacun de ces menus, on crée un bloc div supplémentaire pour le retour à la ligne : 
+     * Pour chacun de ces menus, on crée un bloc div supplémentaire pour le retour à la ligne :
      * - le bloc div_button_retour_chariot_Action
      * - le bloc div_button_retour_chariot_Objet
-     * 
+     *
      **/
 
     /* ----------------------
@@ -259,7 +256,7 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup) {
 
 
     /*Gestion de la modification de la taille du bloc*/
-    /*Pour le moment, la solution trouvée pour limiter le problème lors du resize, c'est 
+    /*Pour le moment, la solution trouvée pour limiter le problème lors du resize, c'est
      d'inclure un delai de 200 millisecondes, sinon la taille du graphe change trops vite par rapport à la fenetre*/
     var timer;
     $(window).resize({essaimJSXGraph: this}, function (event) {
@@ -336,7 +333,7 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup) {
                 }
             }
         }
-    );
+    )
     var self = this;
     this.$divMenu.appendTo(self.divBloc);
     this.$menuButtons.appendTo(self.divBloc);
@@ -353,16 +350,15 @@ EssaimJSXGraph.prototype.detruitBloc = function () {
     Essaim.prototype.detruitBloc.call(this);
 }
 
-/* Changer le nom de certaines variables */
 /* -------------------------------------------------
  Génération du code OEF
  ----------------------------------------------------
  */
 EssaimJSXGraph.prototype.toOEF = function () {
-    var bord_gauche = this.brd.getBoundingBox()[0];		// remplacer x1 par bord_gauche
-    var bord_haut = this.brd.getBoundingBox()[1];		// remplacer y1 par bord_haut
-    var bord_droit = this.brd.getBoundingBox()[2];		// remplacer x2 par bord_droit
-    var bord_bas = this.brd.getBoundingBox()[3];		// remplacer y2 par bord_bas
+    var bord_gauche = this.brd.getBoundingBox()[0];
+    var bord_haut = this.brd.getBoundingBox()[1];
+    var bord_droit = this.brd.getBoundingBox()[2];
+    var bord_bas = this.brd.getBoundingBox()[3];
 
     var OEF = "\\text{rangex" + this.nom + " = " + bord_gauche + "," + bord_droit + "}\n"
     OEF += "\\text{rangey" + this.nom + " = " + bord_bas + "," + bord_haut + "}\n";
@@ -370,31 +366,31 @@ EssaimJSXGraph.prototype.toOEF = function () {
     OEF += "rangey \\rangey" + this.nom + "\n";
 
     if (!this.grid) {
-        /*console.log(this.brd.getBoundingBox());*/
-        var pas_x = JXG.Options.ticks.ticksDistance;
-        var pas_y = JXG.Options.ticks.ticksDistance;
+        var pas_x = JXG.Options.ticks.ticksDistance * this.brd.zoomX;
+        var pas_y = JXG.Options.ticks.ticksDistance * this.brd.zoomY;
+        var n_bas;
+        var n_haut;
+        var n_bas;
+        var n_gauche;
+        var n_droite;
 
-        /*On recupere les position des première ligne de la grille*/
-        var deb_x = (bord_gauche - (bord_gauche % JXG.Options.ticks.ticksDistance));
-        var deb_y = (bord_bas - (bord_bas % JXG.Options.ticks.ticksDistance));
+        if (bord_gauche > 0) {
+            var n = Math.round(bord_haut / pas_x);
+        } else if (bord_droit < 0) {
+            var n = -Math.round(bord_bas / pas_y);
+        } else {
+            /*var n = Math.round() + Math.round();*/
+        }
 
-        var nb_x = Math.ceil(bord_droit - bord_gauche / pas_x);
-        var nb_y = Math.ceil(bord_haut - bord_bas / pas_x);
-        console.log(nb_x, nb_y);
-        console.log(pas_x, pas_y);
-        OEF += "parallel " +
-            deb_x + "," + bord_haut + "," +
-            deb_x + "," + bord_bas + "," +
-            pas_x + "," + 0 + "," +
-            nb_x + ",grey\n";
+        if (bord_bas > 0) {
+            var n = Math.round(bord_droit / pas);
+        } else if (bord_haut < 0) {
+            var n = -Math.round(bord_gauche / pas);
+        } else {
 
-        OEF += "parallel " +
-            bord_gauche + "," + deb_y + "," +
-            bord_droit + "," + deb_y + "," +
-            0 + "," + pas_y + "," +
-            nb_y + ",grey\n";
-
+        }
     }
+
     for (element in this.brd.objects) {
         var brdElement = this.brd.objects[element];
 
@@ -592,13 +588,10 @@ EssaimJSXGraph.prototype.toOEF = function () {
                     console.log("Si ceci s'affiche, c'est qu'il y a un problème.");
             }
         }
-        /*>>>>>>> f0e6c935e78d4179ae64044197422240081e461b*/
     }
     OEF += "hline black,0,0\nvline black,0,0}\n"
     OEF += "\\text{url" + this.nom + " = draw(200,200\n\\" + this.nom + ")}"
     return OEF;
-
-
 }
 
 EssaimJSXGraph.prototype.toOEFFromStatement = function (idReponse) {
@@ -617,10 +610,9 @@ EssaimJSXGraph.prototype.removeImage = function (image) {
 
 //TODO attention il y a un document ready ici, éviter de faire le conflit
 $(document).ready(function () {
-    rucheSys.initClasseEssaim(EssaimJSXGraph);
-
-
+    rucheSys.initClasseEssaim(EssaimJSXGraph)
 });
+
 
 /**
  * ici on definir les options de menu
@@ -785,5 +777,3 @@ EssaimJSXGraph.prototype.context = function () {
         self.buildMenu(element)
     })
 };
-
-
