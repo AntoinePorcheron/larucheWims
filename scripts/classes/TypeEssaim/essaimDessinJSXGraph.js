@@ -28,7 +28,8 @@ EssaimJSXGraph = function (num) {
     this.grid = true;				// variable permettant la création de la grille
     this.saveState = [];			// variable permettant de sauvegarder l'état actuel du dessin
     this.menu_enregistre = true;	// variable permettant de créer un menu pour enregistrer les objets
-}
+
+};
 
 //------------ Déclaration comme classe dérivée de Essaim -------------//
 
@@ -44,6 +45,12 @@ EssaimJSXGraph.prototype.imageEnonce = "images_essaims/graphe.gif";
 EssaimJSXGraph.prototype.gereReponse = false;
 Essaim.prototype.aUneAide = false;
 EssaimJSXGraph.prototype.gereTailleImageEnonce = true;
+
+
+EssaimJSXGraph.prototype.$divMenu = $("<div></div>")
+    .html($("<div></div>").html("Menu Contextuel"));
+
+EssaimJSXGraph.prototype.$menuButtons = $("<div></div>");
 
 
 //------------ METHODES -----------------//
@@ -329,7 +336,11 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup) {
                 }
             }
         }
-    )
+    );
+    var self = this;
+    this.$divMenu.appendTo(self.divBloc);
+    this.$menuButtons.appendTo(self.divBloc);
+    this.context()
 };
 
 
@@ -347,7 +358,7 @@ EssaimJSXGraph.prototype.detruitBloc = function () {
  Génération du code OEF
  ----------------------------------------------------
  */
-EssaimJSXGraph.prototype.toOEF = function(){
+EssaimJSXGraph.prototype.toOEF = function () {
     var bord_gauche = this.brd.getBoundingBox()[0];		// remplacer x1 par bord_gauche
     var bord_haut = this.brd.getBoundingBox()[1];		// remplacer y1 par bord_haut
     var bord_droit = this.brd.getBoundingBox()[2];		// remplacer x2 par bord_droit
@@ -357,32 +368,32 @@ EssaimJSXGraph.prototype.toOEF = function(){
     OEF += "\\text{rangey" + this.nom + " = " + bord_bas + "," + bord_haut + "}\n";
     OEF += "\\text{" + this.nom + " = rangex \\rangex" + this.nom + "\n";
     OEF += "rangey \\rangey" + this.nom + "\n";
-    
-    if (!this.grid){
-	/*console.log(this.brd.getBoundingBox());*/
-	var pas_x = JXG.Options.ticks.ticksDistance;
-	var pas_y = JXG.Options.ticks.ticksDistance;
-	
-	/*On recupere les position des première ligne de la grille*/
-	var deb_x = (bord_gauche - (bord_gauche%JXG.Options.ticks.ticksDistance));
-	var deb_y = (bord_bas - (bord_bas%JXG.Options.ticks.ticksDistance));
-		
-	var nb_x = Math.ceil(bord_droit - bord_gauche / pas_x);
-	var nb_y = Math.ceil(bord_haut - bord_bas / pas_x);
-	console.log(nb_x, nb_y);
-	console.log(pas_x, pas_y);
-	OEF += "parallel " + 
-	    deb_x + "," + bord_haut + "," + 
-	    deb_x + "," +  bord_bas + "," + 
-	    pas_x     + "," +  0  + "," + 
-	    nb_x + ",grey\n";
-	
-	OEF += "parallel " + 
-	    bord_gauche + "," + deb_y + "," + 
-	    bord_droit  + "," + deb_y + "," + 
-	    0  + "," +    pas_y    + "," + 
-	    nb_y + ",grey\n";
-	
+
+    if (!this.grid) {
+        /*console.log(this.brd.getBoundingBox());*/
+        var pas_x = JXG.Options.ticks.ticksDistance;
+        var pas_y = JXG.Options.ticks.ticksDistance;
+
+        /*On recupere les position des première ligne de la grille*/
+        var deb_x = (bord_gauche - (bord_gauche % JXG.Options.ticks.ticksDistance));
+        var deb_y = (bord_bas - (bord_bas % JXG.Options.ticks.ticksDistance));
+
+        var nb_x = Math.ceil(bord_droit - bord_gauche / pas_x);
+        var nb_y = Math.ceil(bord_haut - bord_bas / pas_x);
+        console.log(nb_x, nb_y);
+        console.log(pas_x, pas_y);
+        OEF += "parallel " +
+            deb_x + "," + bord_haut + "," +
+            deb_x + "," + bord_bas + "," +
+            pas_x + "," + 0 + "," +
+            nb_x + ",grey\n";
+
+        OEF += "parallel " +
+            bord_gauche + "," + deb_y + "," +
+            bord_droit + "," + deb_y + "," +
+            0 + "," + pas_y + "," +
+            nb_y + ",grey\n";
+
     }
     for (element in this.brd.objects) {
         var brdElement = this.brd.objects[element];
@@ -581,12 +592,13 @@ EssaimJSXGraph.prototype.toOEF = function(){
                     console.log("Si ceci s'affiche, c'est qu'il y a un problème.");
             }
         }
-/*>>>>>>> f0e6c935e78d4179ae64044197422240081e461b*/
+        /*>>>>>>> f0e6c935e78d4179ae64044197422240081e461b*/
     }
     OEF += "hline black,0,0\nvline black,0,0}\n"
     OEF += "\\text{url" + this.nom + " = draw(200,200\n\\" + this.nom + ")}"
     return OEF;
-    
+
+
 }
 
 EssaimJSXGraph.prototype.toOEFFromStatement = function (idReponse) {
@@ -605,86 +617,20 @@ EssaimJSXGraph.prototype.removeImage = function (image) {
 
 //TODO attention il y a un document ready ici, éviter de faire le conflit
 $(document).ready(function () {
-    rucheSys.initClasseEssaim(EssaimJSXGraph)
+    rucheSys.initClasseEssaim(EssaimJSXGraph);
+
+
 });
 
-
-// Une groupe de fonctions
-(function (fn) {
-    /**
-     * Important:
-     * En changer le numero de layer de image, on met image le plus haut que les autre
-     */
-    board.options.layer["image"] = 10;
-
-    /**
-     * insère une image dans un point
-     * @param url" String, url de l'image
-     * @param pointExiste: JSXGraph.element(point), le variable qui indique un point de JSXGraph
-     * @returns {*}
-     */
-    fn.fillImageIntoPoint = function (url, pointExiste) {
-        function getCoord2D(paint) {
-            return getCoord(paint).slice(1)
-        }
-
-        function getSize(paint) {
-            return paint.visProp.size
-        }
-
-        var coodsToPixel = 30;
-        //TODO to have an exact ratio
-        var width = getSize(pointExiste) / coodsToPixel;
-        var point = (function () {
-            var point = getCoord2D(pointExiste);
-            point[0] -= width / 2;
-            point[1] -= width / 2;
-            return point
-        })();
-        return this.brd.create("image", [url, point, [width, width]])
-    };
-
-    /**
-     * Obtenir la premiere element, a partir du texte*
-     * * les textes ont le moins prioritaire juste dans cette fonction,
-     * dont le layer n'est pas globalement modifie
-     * @returns {*}
-     */
-    fn.getTopUnderMouse = function () {
-        //var layer = board.options.layer;
-        var layer = {
-            point: 9,
-            arc: 8,
-            line: 7,
-            circle: 6,
-            curve: 5,
-            polygon: 4,
-            sector: 3,
-            angle: 2,
-            grid: 1,
-            image: 10,
-            text: -1
-        };
-        var ele = this.brd.getAllUnderMouse();
-        if (!ele.length) return null;
-        var level = layer[ele[0].elType];
-        var top = ele[0];
-        for (var i = 0; i < ele.length; i++) {
-            if (level < layer[ele[i].elType]) {
-                level = layer[ele[i].elType];
-                top = ele[i]
-            }
-        }
-        return top
-    };
-
-    fn.buildMenu = function (element) {
-        // Pour indiquer les options dans le menu par rapport aux types des elements
-        var options = {};
-
-        // et les definitions
-
-        var EXEMPLE_FONCTION = {
+/**
+ * ici on definir les options de menu
+ * @param element, callback argument
+ * @returns {{}}
+ */
+EssaimJSXGraph.prototype.menuOptions = function (element) {
+    var options = {};
+    options.common = {
+        changeNom: {
             nom: "Changer le nom",
             callback: function () {
                 var $input = $("<input />").appendTo(this.divBloc);
@@ -693,25 +639,149 @@ $(document).ready(function () {
                         element.name = $input.val();
                         $input.remove();
                         $submit.remove();
-                        fn.brd.update()
+                        EssaimJSXGraph.prototype.brd.update()
                     })
             }
-        };
+        }
+    };
+    return options
+};
 
-        options.common = {
-            changeNom: {
-                nom: "Changer le nom",
-                callback: function () {
-                    var $input = $("<input />").appendTo(this.divBloc);
-                    var $submit = $("<input />").appendTo(this.divBloc)
-                        .click(function () {
-                            element.name = $input.val();
-                            $input.remove();
-                            $submit.remove();
-                            fn.brd.update()
-                        })
-                }
-            }
+
+// Une groupe de fonctions
+
+
+/**
+ * insère une image dans un point
+ * @param url" String, url de l'image
+ * @param pointExiste: JSXGraph.element(point), le variable qui indique un point de JSXGraph
+ * @returns {*}
+ */
+EssaimJSXGraph.prototype.fillImageIntoPoint = function (url, pointExiste) {
+    /**
+     * Important:
+     * En changer le numero de layer de image, on met image le plus haut que les autre
+     */
+    this.brd.options.layer["image"] = 10;
+    function getCoord2D(paint) {
+        return getCoord(paint).slice(1)
+    }
+
+    function getSize(paint) {
+        return paint.visProp.size
+    }
+
+    var coodsToPixel = 30;
+    //TODO to have an exact ratio
+    var width = getSize(pointExiste) / coodsToPixel;
+    var point = (function () {
+        var point = getCoord2D(pointExiste);
+        point[0] -= width / 2;
+        point[1] -= width / 2;
+        return point
+    })();
+    return this.brd.create("image", [url, point, [width, width]])
+};
+
+EssaimJSXGraph.prototype.popupImageUploader = function (board, paint) {
+    var self = this;
+    if (!FileReader) throw "A Newer Version of Browser is Required.";
+    var $input = $("<input />")
+        .attr("type", "file");
+    var $img = $("<img />").attr({
+        src: "",
+        alt: "image"
+    });
+    /*var $div = $("<div></div>").css({
+     position: "absolute"
+     })
+     .html($input)
+     //.append($img)
+     .appendTo("body");
+     */
+    $input.trigger("click");
+    function readFile(file) {
+        var reader = new FileReader();
+        reader.onload = readSuccess;
+        function readSuccess(event) {
+            //$img.attr("src", event.target.result);
+            //$div.hide();
+            self.fillImageIntoPoint(event.target.result, paint)
+        }
+
+        reader.readAsDataURL(file);
+    }
+
+    $input.get(0).onchange = function (event) {
+        readFile(event.srcElement.files[0])
+    }
+};
+
+/**
+ * Obtenir la premiere element, a partir du texte*
+ * * les textes ont le moins prioritaire juste dans cette fonction,
+ * dont le layer n'est pas globalement modifie
+ * @returns {*}
+ */
+EssaimJSXGraph.prototype.getTopUnderMouse = function () {
+    //var layer = board.options.layer;
+    var layer = {
+        point: 9,
+        arc: 8,
+        line: 7,
+        circle: 6,
+        curve: 5,
+        polygon: 4,
+        sector: 3,
+        angle: 2,
+        grid: 1,
+        image: 10,
+        text: -1
+    };
+    var ele = this.brd.getAllUnderMouse();
+    if (!ele.length) return null;
+    var level = layer[ele[0].elType];
+    var top = ele[0];
+    for (var i = 0; i < ele.length; i++) {
+        if (level < layer[ele[i].elType]) {
+            level = layer[ele[i].elType];
+            top = ele[i]
         }
     }
-})(EssaimJSXGraph.prototype);
+    return top
+};
+
+EssaimJSXGraph.prototype.buildMenu = function (element) {
+    // Pour indiquer les options dans le menu par rapport aux types des elements
+    var buildButton = function (option) {
+        console.log(option)
+        return $("<button></button>")
+            .html(option.nom)
+            .click(option.callback)
+    };
+    var options = this.menuOptions();
+    var self = this;
+    this.$menuButtons.html("");
+    (function (list) {
+        for (var key = 0; key < list.length; key++) {
+            if (options[list[key]]) {
+                var option = Object.keys(options[list[key]]);
+                for (var i = 0; i < option.length; i++) {
+                    self.$menuButtons.append(buildButton(options[list[key]][option[i]]))
+                }
+            }
+
+        }
+    })(["common", element.elType])
+
+
+};
+
+EssaimJSXGraph.prototype.context = function () {
+    var self = this;
+    this.brd.on("up", function (event) {
+        self.buildMenu(self.getTopUnderMouse())
+    })
+};
+
+
