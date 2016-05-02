@@ -182,6 +182,10 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup) {
             event.data.essaimJSXGraph.brd.fullUpdate();
         });
 
+	var modeSelect = function (event) {
+		event.data.essaimJSXGraph.mode = GLOB_libre
+	};
+
     var $button_libre = $("<button title=\"Permet de déplacer des objets dans le graphe.\"> Deplacer </button>").appendTo($div_button_retour_chariot_Action).click(
         {essaimJSXGraph: this}, function (event) {
             event.data.essaimJSXGraph.mode = GLOB_libre
@@ -206,11 +210,23 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup) {
             var nom_objet = clef[clef.length - 2];
             event.data.menu_D.append("<option value" + nom_objet + ">" + nom_objet + "</option>");
         });
-		
+
 		var $supprimer = $("<button title = \"Permet de supprimer un élément.\">Supprimer un élément</button>").appendTo($div_button_retour_chariot_Action).click(
 		{essaimJSXGraph: this}, function (event) {
-			/*var objet_courant = this.brd.getAllUnderMouse.click(
-			{essaimJXSGraph: this}, )*/
+				modeSelect(event);
+				essaimJSXGraph.brd.on("up", function () {
+					var element = essaimJSXGraph.getTopUnderMouse();
+					if(element.elType){
+						essaimJSXGraph.brd.removeObject(element);
+					}else {
+						alert("element invalide.")
+					}
+					essaimJSXGraph.brd.update();
+					essaimJSXGraph.brd.off("up");
+					essaimJSXGraph.brd.on("up", function () {
+						essaimJSXGraph.selection()
+					})
+				})
 			
 		});
 		
@@ -679,7 +695,7 @@ EssaimJSXGraph.prototype.getTopUnderMouse = function () {
         text: -1
     };
     var ele = this.brd.getAllUnderMouse();
-    console.log("ici");
+    //console.log("ici");
     if (!ele.length) return null;
     var level = layer[ele[0].elType];
     var top = ele[0];
@@ -724,18 +740,25 @@ EssaimJSXGraph.prototype.buildMenu = function (element) {
 };
 
 /**
+ * Function: selection mode
+ */
+EssaimJSXGraph.prototype.selection = function () {
+		var element = this.getTopUnderMouse();
+		if(element.elType){
+			this.$divMenu.html("Menu Contextuel de " + element.elType + " " +element.name);
+			this.buildMenu(element)
+		}
+};
+
+/**
  * Interface function
  * effectuer le menu contextuel a la page
  */
 EssaimJSXGraph.prototype.context = function () {
     var self = this;
-    this.brd.on("up", function (event) {
-        var element = self.getTopUnderMouse();
-        if(element.elType){
-			self.$divMenu.html("Menu Contextuel de " + element.elType + " " +element.name);
-			self.buildMenu(element)
-		}
-    })
+    this.brd.on("up", function () {
+		self.selection()
+	})
 };
 
 /**
@@ -765,8 +788,8 @@ EssaimJSXGraph.prototype.multiSelect = function () {
  */
 EssaimJSXGraph.prototype.buildMultiSelectMenu = function () {
 	var menu = {};
-	menu.changeNom = {
-		nom: "Changer les nom",
+	menu.grouper = {
+		nom: "grouper",
 		callback: function () {
 		    //TODO
 		}
