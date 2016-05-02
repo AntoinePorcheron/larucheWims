@@ -45,10 +45,15 @@ EssaimJSXGraph.prototype.gereReponse = false;
 Essaim.prototype.aUneAide = false;
 EssaimJSXGraph.prototype.gereTailleImageEnonce = true;
 
-EssaimJSXGraph.prototype.$divMenu = $("<div></div>")
-    .html($("<div></div>").html("Menu Contextuel"));
+EssaimJSXGraph.prototype.$divMenu = $("<div></div>").html("Menu Contextuel");
 
 EssaimJSXGraph.prototype.$menuButtons = $("<div></div>");
+
+EssaimJSXGraph.prototype.stackMultiSelect = [];
+EssaimJSXGraph.prototype.$multiSelect = $("<div></div>")
+	.html("Multi-Select");
+EssaimJSXGraph.prototype.$selection = $("<div></div>");
+EssaimJSXGraph.prototype.$multiSelectMenu = $("<div></div>");
 
 //------------ METHODES -----------------//
 
@@ -591,6 +596,12 @@ EssaimJSXGraph.prototype.fillImageIntoPoint = function (url, pointExiste) {
     return this.brd.create("image", [url, point, [width, width]])
 };
 
+/**
+ * Interface function
+ * pop up un fenetre a upload un image
+ * @param board
+ * @param paint
+ */
 EssaimJSXGraph.prototype.popupImageUploader = function (board, paint) {
     var self = this;
     if (!FileReader) throw "A Newer Version of Browser is Required.";
@@ -662,10 +673,15 @@ EssaimJSXGraph.prototype.getTopUnderMouse = function () {
     return top
 };
 
+/**
+ * Interface function
+ * construire un menu, voir doc
+ * @param element, callback argument
+ */
 EssaimJSXGraph.prototype.buildMenu = function (element) {
     // Pour indiquer les options dans le menu par rapport aux types des elements
     var buildButton = function (option) {
-        console.log(option)
+        console.log(option);
         return $("<button></button>")
             .html(option.nom)
             .click(option.callback)
@@ -686,6 +702,10 @@ EssaimJSXGraph.prototype.buildMenu = function (element) {
     })(["common", element.elType])
 };
 
+/**
+ * Interface function
+ * effectuer le menu contextuel a la page
+ */
 EssaimJSXGraph.prototype.context = function () {
     var self = this;
     this.brd.on("up", function (event) {
@@ -693,4 +713,61 @@ EssaimJSXGraph.prototype.context = function () {
         self.$divMenu.html("Menu Contextuel de " + element.elType + " " +element.name);
         self.buildMenu(element)
     })
+};
+
+/**
+ * associer un evenement de souris a multi-select
+ */
+EssaimJSXGraph.prototype.multiSelect = function () {
+	this.stackMultiSelect = [];
+	this.$multiSelect.appendTo(this.divBloc);
+	this.$selection.appendTo(this.divBloc);
+	this.$multiSelectMenu.appendTo(this.divBloc);
+	var self = this;
+	this.brd.on("up", function () {
+		var element = self.getTopUnderMouse();
+		var tmp = self.stackMultiSelect.indexOf(element);
+		if(tmp >= 0){
+			self.stackMultiSelect.splice(tmp, 1)
+		}else {
+			self.stackMultiSelect.push(element)
+		}
+		self.$selection.html(JSON.stringify(self.stackMultiSelect))
+	})
+};
+
+/**
+ * Interface function
+ * construire les button dans le menu
+ */
+EssaimJSXGraph.prototype.buildMultiSelectMenu = function () {
+	var menu = {};
+	menu.changeNom = {
+		nom: "Changer les nom",
+		callback: function () {
+			//TODO
+		}
+	};
+
+	var self = this;
+	var key = Object.keys(menu);
+	var buildButton = function (option) {
+		console.log(option);
+		return $("<button></button>")
+			.html(option.nom)
+			.click(option.callback)
+	};
+	for(var i = 0; i < key.length; i++){
+		self.$multiSelectMenu.append(buildButton(menu[key[i]]))
+	}
+};
+
+/**
+ * effacer les selections multiples
+ */
+EssaimJSXGraph.prototype.cleanMultiSelection = function () {
+	this.stackMultiSelect = [];
+	this.$multiSelect.html("").remove();
+	this.$selection.html("").remove();
+	this.$multiSelectMenu.html("").remove();
 };
