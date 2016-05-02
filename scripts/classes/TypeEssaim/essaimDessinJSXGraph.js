@@ -317,7 +317,7 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup) {
                     var newElement = brd.create(essaimJSXGraph.mode, essaimJSXGraph.point);
                     essaimJSXGraph.point = [];
                     if (essaimJSXGraph.mode === GLOB_axe) {
-                        /*Sert à ne pas crée les grilles lorsque on crée un axe*/
+                        /*Sert à ne pas créer les grilles lorsque on crée un axe*/
                         newElement.removeAllTicks();
                         newElement.isDraggable = true;
                         newElement.on('drag', function () {
