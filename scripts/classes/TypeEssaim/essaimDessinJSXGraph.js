@@ -191,16 +191,14 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup) {
             event.data.essaimJSXGraph.mode = GLOB_libre
         });
 
-    var $menu_deroulant = $("<select></select>").click({}, function(){
-	console.log($($menu_deroulant).val())/*console.log(this.text())*/;
-
-});
+    var $menu_deroulant = $("<select></select>");
     var $charger = $("<button>Charger</button>")
 	.click({essaimJSXGraph: this, md:$menu_deroulant}, function(event){
 	    var ejsx = event.data.essaimJSXGraph;
 	    var $m = event.data.md;
 	    console.log(saveState[$($m).val()]);
     });
+
 
     var $save = $("<button title=\"Permet de sauvegarder des éléments du graphique dans une boite à dessin.\">Ajout dans boîte à dessin </button>").appendTo($div_button_retour_chariot_Action).click(
         {essaimJSXGraph: this, menu_D: $menu_deroulant, charge:$charger}, function (event) {
@@ -790,16 +788,32 @@ EssaimJSXGraph.prototype.context = function () {
 EssaimJSXGraph.prototype.multiSelect = function () {
 	this.stackMultiSelect = [];
 	this.$multiSelect.appendTo(this.divBloc);
+	var self = this;
+	// ok button
+	$("<button></button>").appendTo(this.$multiSelect)
+		.html("ok")
+		.click(function (event) {
+			self.brd.off("up", tmp);
+			self.$button_libre.trigger("click")
+		});
+	// clean button
+	$("<button></button>").appendTo(this.$multiSelect)
+		.html("clean")
+		.click(function () {
+			self.cleanMultiSelection()
+		});
 	this.$selection.appendTo(this.divBloc);
 	this.$multiSelectMenu.appendTo(this.divBloc);
-	var self = this;
-	this.brd.on("up", function () {
+	var tmp = function () {
+		self.$button_libre.trigger("click");
 		var element = self.getTopUnderMouse();
-		var tmp = self.stackMultiSelect.indexOf(element);
-		if(tmp >= 0){
-			self.stackMultiSelect.splice(tmp, 1)
-		}else {
-			self.stackMultiSelect.push(element)
+		if(element.elType) {
+			var tmp = self.stackMultiSelect.indexOf(element);
+			if (tmp >= 0) {
+				self.stackMultiSelect.splice(tmp, 1)
+			} else {
+				self.stackMultiSelect.push(element)
+			}
 		}
 		//interface
 		self.$selection.html("");
@@ -809,7 +823,8 @@ EssaimJSXGraph.prototype.multiSelect = function () {
 			html.push(select[i].elType + " " + select[i].name)
 		}
 		self.$selection.html(JSON.stringify(html))
-	})
+	};
+	this.brd.on("up", tmp)
 };
 
 /**
@@ -843,9 +858,8 @@ EssaimJSXGraph.prototype.buildMultiSelectMenu = function () {
  */
 EssaimJSXGraph.prototype.cleanMultiSelection = function () {
 	this.stackMultiSelect = [];
-	this.$multiSelect.html("").remove();
-	this.$selection.html("").remove();
-	this.$multiSelectMenu.html("").remove();
+	this.$selection.html("");
+	this.$multiSelectMenu.html("")
 };
 
 /**
