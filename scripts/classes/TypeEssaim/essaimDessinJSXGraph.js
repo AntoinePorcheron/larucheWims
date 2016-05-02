@@ -191,12 +191,15 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup) {
             event.data.essaimJSXGraph.mode = GLOB_libre
         });
 
-    var $menu_deroulant = $("<select></select>");
+    var $menu_deroulant = $("<select></select>").click({}, function(){
+	console.log($($menu_deroulant).val())/*console.log(this.text())*/;
+
+});
     var $charger = $("<button>Charger</button>")
 	.click({essaimJSXGraph: this, md:$menu_deroulant}, function(event){
 	    var ejsx = event.data.essaimJSXGraph;
-	    var m = event.data.md;
-	    console.log(event.data.md).val();
+	    var $m = event.data.md;
+	    console.log(event.data.md);
     });
 
     var $save = $("<button title=\"Permet de sauvegarder des éléments du graphique dans une boite à dessin.\">Ajout dans boîte à dessin </button>").appendTo($div_button_retour_chariot_Action).click(
@@ -216,7 +219,7 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup) {
             /*event.data.essaimJSXGraph.*/saveState.push(tab);
             var clef = Object.keys(tab);
             var nom_objet = clef[clef.length - 2];
-            event.data.menu_D.append("<option value" + nom_objet + ">" + nom_objet + "</option>");
+            event.data.menu_D.append("<option value=\"" + nom_objet + "\">" + nom_objet + "</option>");
         });
 
 		var $supprimer = $("<button title = \"Permet de supprimer un élément.\">Supprimer un élément</button>").appendTo($div_button_retour_chariot_Action).click(
