@@ -221,23 +221,33 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup) {
             var nom_objet = clef[clef.length - 2];
             event.data.menu_D.append("<option value=\"" + nom_objet + "\">" + nom_objet + "</option>");
         });
-
+	/**
+	 * button supprimer
+	 * supprimer un element en click,
+	 * si cliquer sur un element non valide, il va alert un message de error,
+	 * si valide, il va supprimer l'element.
+	 * il marche une fois et puis revient en mode selection
+	 * @type {*|{trigger, _default}|jQuery}
+     */
 		var $supprimer = $("<button title = \"Permet de supprimer un élément.\">Supprimer un élément</button>").appendTo($div_button_retour_chariot_Action).click(
 		{essaimJSXGraph: this}, function (event) {
 				modeSelect(event);
+			var tmp = function () {
+				var element = essaimJSXGraph.getTopUnderMouse();
+				if(element.elType){
+					essaimJSXGraph.brd.removeObject(element);
+				}else {
+					alert("element invalide.")
+				}
+				essaimJSXGraph.brd.update();
+				essaimJSXGraph.brd.off("up", tmp)
+				/*
 				essaimJSXGraph.brd.on("up", function () {
-					var element = essaimJSXGraph.getTopUnderMouse();
-					if(element.elType){
-						essaimJSXGraph.brd.removeObject(element);
-					}else {
-						alert("element invalide.")
-					}
-					essaimJSXGraph.brd.update();
-					essaimJSXGraph.brd.off("up");
-					essaimJSXGraph.brd.on("up", function () {
-						essaimJSXGraph.selection()
-					})
+					essaimJSXGraph.selection()
 				})
+				*/
+			};
+				essaimJSXGraph.brd.on("up", tmp)
 			
 		});
 		
