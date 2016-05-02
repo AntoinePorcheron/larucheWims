@@ -191,6 +191,8 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup) {
             event.data.essaimJSXGraph.mode = GLOB_libre
         });
 
+	EssaimJSXGraph.prototype.$button_libre = $button_libre;
+
     var $menu_deroulant = $("<select></select>");
     var $charger = $("<button>Charger</button>")
 	.click({essaimJSXGraph: this, md:$menu_deroulant}, function(event){
@@ -793,15 +795,17 @@ EssaimJSXGraph.prototype.multiSelect = function () {
 	this.$multiSelect.appendTo(this.divBloc);
 	var self = this;
 	// ok button
-	$("<button></button>").appendTo(this.$multiSelect)
+	var $ok = $("<button></button>").appendTo(this.$multiSelect)
 		.html("ok")
 		.click(function (event) {
 			self.brd.off("up", tmp);
 			self.$button_libre.trigger("click");
+			$ok.remove();
+			$clean.remove();
 			self.buildMultiSelectMenu()
 		});
 	// clean button
-	$("<button></button>").appendTo(this.$multiSelect)
+	var $clean = $("<button></button>").appendTo(this.$multiSelect)
 		.html("clean")
 		.click(function () {
 			self.cleanMultiSelection()
