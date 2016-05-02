@@ -445,211 +445,18 @@ EssaimJSXGraph.prototype.toOEF = function () {
 					p2.X() + "," + p2.Y() + ",7,black\n";
 				break;
 			case GLOB_axe : 
-				var p1 = brdElement.point1;
-				var p2 = brdElement.point2;
-				/*
-				// On suppose un point imaginaire correspondant à l'intersection entre 
-				// l'axe (on regarde son orientation) et le bord du graphe
-				var pointImaginaire = { x : 0, y : 0 };
-				
-				// on calcule le coefficient directeur de l'axe grâce aux deux points p1 et p2
-				var coeff_dir = ( p2.Y() - p1.Y() ) / ( p2.X() - p1.X() );
-				
-				/* Il y a 6 cas à traiter : 
-				 * - le cas où l'axe pointe vers le coin haut droit 
-				 * - le cas où l'axe pointe vers le coin haut gauche
-				 * - le cas où l'axe pointe vers le coin bas droit
-				 * - le cas où l'axe pointe vers le coin bas gauche
-				 * - le cas où l'axe est totalement horizontal
-				 * - le cas où l'axe est totalement vertical
-				 * 
-				 * Pour chacun des cas, il y a deux possibilités d'intersection : 
-				 * - le bord du graphe selon une largeur (bord_gauche, bord_droit)
-				 * - le bord du graphe selon une hauteur (bord_haut, bord_bas)
-				 *
-				 
-				
-				/* On cherche sur quel côté sera le point d'intersection. 
-				 * Pour cela on calcule l'équation de la droite décrite par l'axe.
-				 * L'équation est de la forme y = a*x + b où :
-				 * - a est le coefficient directeur
-				 * - x est la coordonnée en x d'un point de la droite
-				 * - b est l'ordonnée à l'origine
-				 *
-				 
-				 var ordonneOrigine = coeff_dir * p1.X() - p1.Y();
-				 var equa_axe = coeff_dir * p1.X() + ordonneOrigine;
-				 
-				 // On crée 4 points correspondants aux 4 angles du graphe
-				 var coin_haut_gauche = { x : bord_gauche, y : bord_haut };
-				 var coin_bas_gauche = { x : bord_gauche, y : bord_bas };
-				 var coin_bas_droit = { x : bord_droit, y : bord_bas };
-				 var coin_haut_droit = { x : bord_droit, y : bord_haut };
-				 
-				 // On récupère les coefficients directeurs des côtés droite, gauche, haut et bas
-				 var coeff_dir_cote_droit = ( coin_haut_droit.y - coin_bas_droit.y ) / (coin_haut_droit.x - coin_bas_droit.x );
-				 var coeff_dir_cote_gauche = ( coin_haut_gauche.y - coin_bas_gauche.y ) / (coin_haut_gauche.x - coin_bas_gauche.x );
-				 var coeff_dir_cote_haut = ( coin_haut_droit.y - coin_haut_gauche.y ) / (coin_haut_droit.x - coin_haut_gauche.x );
-				 var coeff_dir_cote_bas = ( coin_bas_droit.y - coin_bas_gauche.y ) / (coin_bas_droit.x - coin_bas_gauche.x );
-				 
-				 // On calcule les équations de droite
-				 var equa_cote_droit = ( coeff_dir_cote_droit * coin_haut_droit.x ) + coin_haut_droit.y;
-				 var equa_cote_gauche = ( coeff_dir_cote_gauche * coin_haut_gauche.x ) + coin_haut_gauche.y;
-				 var equa_cote_bas = ( coeff_dir_cote_bas * coin_bas_droit.x ) + coin_bas_droit.y;
-				 var equa_cote_haut = ( coeff_dir_cote_haut * coin_haut_droit.x ) + coin_haut_droit.y;
-				 
-				 // On crée un point qui aura les coordonnées du point d'intersection
-				 var croisement = { x : 0, y : 0 };
-				 
-				 // Axe orienté vers le coin haut droit
-				 // Les possibilités d'intersection sont donc le bord_haut et le bord_droit
-				 // On commence par tester si l'intersection avec l'un des bords est dans le graphe
-				 // Si c'est le cas on arrête, sinon on teste avec l'autre bord 
-				if ( coeff_dir > 0 && p1.X() < p2.X() ){
-					// Si l'axe et le bord du graphe sont parallèles
-					if ( coeff_dir_cote_haut === coeff_dir ){
-						
-					}
-				}
-				
-				
-				/*
-				var pointInter_1 = { x : p1.X(), y : p1.Y() };
-				var pointInter_2 = { x : p2.X(), y : p2.Y() };
-				var pointFinalFleche = { x : 0, y : 0 };
-				var pointFinalDroite = { x : 0, y : 0 };
-				
-				// Cas où les deux points sont sur une ligne horizontale
-				if (p1.Y() === p2.Y()){
-					// On compare les abscisses pour agrandir correctement le trait
-					if (p1.X() > p2.X){
-					pointFinalDroite.x = bord_droit;
-					pointFinalDroite.y = p1.Y();
-					
-					pointFinalFleche.x = bord_gauche;
-					pointFinalFleche.y = p2.Y();
-					}
-					else {
-					pointFinalDroite.x = bord_gauche;
-					pointFinalDroite.y = p1.Y();
-					
-					pointFinalFleche.x = bord_droit;
-					pointFinalFleche.y = p2.Y();
-					}
-				}
-				else {
-					var coef_dir = ( p1.X() - p2.X() ) /( p1.Y() - p2.Y() );
-
-					// Si l'axe est orienté vers le bas
-					if ( p2.Y() < p1.Y() ){
-					// On cherche les deux intersections possibles avec le bord du graphe...
-						if (coef_dir > 0){
-							pointInter_1.x = ( -(bord_bas) / coef_dir );
-							pointInter_1.y = -( bord_bas );
-							
-							pointInter_2.x = -( bord_gauche );
-							pointInter_2.y = ( -(bord_gauche) / coef_dir );
-							
-							//... on garde seulement celle avec le x le plus grand
-							if (pointInter_1.x > pointInter_2.x ){
-							pointFinalFleche.x = pointInter_1.x;
-							pointFinalFleche.y = pointInter_1.y;
-							
-							pointFinalDroite.x = p1.X();
-							pointFinalDroite.y = p1.Y();
-							}
-							else {
-							pointFinalFleche.x = pointInter_2.x;
-							pointFinalFleche.y = pointInter_2.y;
-							
-							pointFinalDroite.x = p1.X();
-							pointFinalDroite.y = p1.Y();
-							}
-						}
-						else {
-						pointInter_1.x = ( (bord_haut) / coef_dir );
-						pointInter_1.y = bord_haut;
-						
-						pointInter_2.x = bord_droit;
-						pointInter_2.y = ( bord_droit / coef_dir ); 
-						
-						//... on garde seulement celle avec le x le plus petit
-						if (pointInter_1.x < pointInter_2.x ){
-						pointFinalFleche.x = pointInter_1.x;
-						pointFinalFleche.y = pointInter_1.y;
-						
-						pointFinalDroite.x = p1.X();
-						pointFinalDroite.y = p1.Y();
-						}
-						else {
-						pointFinalFleche.x = pointInter_2.x;
-						pointFinalFleche.y = pointInter_2.y;
-						
-						pointFinalDroite.x = p1.X();
-						pointFinalDroite.y = p1.Y();
-						}
-					}
-					}
-					
-					// Si l'axe est orienté vers le haut
-					else if ( p2.Y() > p1.Y() ){ 
-					// On cherche les deux intersections possibles avec le bord du graphe...
-						if (coef_dir > 0){
-						pointInter_1.x = ( bord_haut / coef_dir );
-						pointInter_1.y = bord_haut;
-						
-						pointInter_2.x = bord_droit;
-						pointInter_2.y = ( bord_droit / coef_dir );
-						
-						//... on garde seulement celle avec le x le plus grand
-						if (pointInter_1.x > pointInter_2.x ){
-						pointFinalFleche.x = pointInter_1.x;
-						pointFinalFleche.y = pointInter_1.y;
-						
-						pointFinalDroite.x = p1.X();
-						pointFinalDroite.y = p1.Y();
-						}
-						else {
-						pointFinalFleche.x = pointInter_2.x;
-						pointFinalFleche.y = pointInter_2.y;
-						
-						pointFinalDroite.x = p1.X();
-						pointFinalDroite.y = p1.Y();
-						}
-					}
-						else if (coef_dir < 0 ){
-						pointInter_1.x = ( bord_haut / coef_dir );
-						pointInter_1.y = bord_haut;
-						
-						pointInter_2.x = -( bord_gauche );
-						pointInter_2.y = ( -(bord_gauche) / coef_dir ); 
-						
-						//... on garde seulement celle avec le x le plus petit
-						if (pointInter_1.x < pointInter_2.x ){
-						pointFinalFleche.x = pointInter_1.x;
-						pointFinalFleche.y = pointInter_1.y;
-						
-						pointFinalDroite.x = p1.X();
-						pointFinalDroite.y = p1.Y();
-						}
-						else {
-						pointFinalFleche.x = pointInter_2.x;
-						pointFinalFleche.y = pointInter_2.y;
-						}
-					}
-						// Si les deux points sont identiques
-						else {
-					console.log("Les deux points sont identique, or il en faut deux différents pour un axe.");
-					}
-				}
-				}
-				OEF += "arrow " +
-					pointFinalDroite.x + "," + pointFinalDroite.y + "," +
-					pointFinalFleche.x + "," + pointFinalFleche.y + ",7,black\n";*/
+			    /*On recupère les deux points qui définisse un axe*/
+			    var p1 = brdElement.point1;
+			    var p2 = brdElement.point2;
+			    
+			    /*Inverted sert à gerer les axes qui pointent vers la gauche, 
+			      lorsque c'est -1 une inversion à lieu, sinon on fait normalement*/
 			    var inverted = 1;
 			    if (p2.X() < p1.X()){
 				inverted = -1;
 			    } 
+
+			    /**/
 			    var coef_dir = inverted * (p2.Y() - p1.Y()) /(p2.X() - p1.X());
 			    var bord_1;
 			    var bord_2;
@@ -734,8 +541,8 @@ EssaimJSXGraph.prototype.menuOptions = function (element) {
         changeNom: {
             nom: "Changer le nom",
             callback: function () {
-                var $input = $("<input />").appendTo(this.divBloc);
-                var $submit = $("<input />").appendTo(this.divBloc)
+                var $input = $("<input />").appendTo(this.divMenu);
+                var $submit = $("<input />").appendTo(this.divMenu)
                     .click(function () {
                         element.name = $input.val();
                         $input.remove();
@@ -877,8 +684,6 @@ EssaimJSXGraph.prototype.buildMenu = function (element) {
 
         }
     })(["common", element.elType])
-
-
 };
 
 EssaimJSXGraph.prototype.context = function () {
