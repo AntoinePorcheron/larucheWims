@@ -45,12 +45,15 @@ EssaimJSXGraph.prototype.gereReponse = false;
 Essaim.prototype.aUneAide = false;
 EssaimJSXGraph.prototype.gereTailleImageEnonce = true;
 
-EssaimJSXGraph.prototype.$divMenu = $("<div></div>")
-    .html($("<div></div>").html("Menu Contextuel"));
+EssaimJSXGraph.prototype.$divMenu = $("<div></div>").html("Menu Contextuel");
 
 EssaimJSXGraph.prototype.$menuButtons = $("<div></div>");
 
 EssaimJSXGraph.prototype.stackMultiSelect = [];
+EssaimJSXGraph.prototype.$multiSelect = $("<div></div>")
+	.html("Multi-Select");
+EssaimJSXGraph.prototype.$selection = $("<div></div>");
+EssaimJSXGraph.prototype.$multiSelectMenu = $("<div></div>");
 
 //------------ METHODES -----------------//
 
@@ -912,6 +915,9 @@ EssaimJSXGraph.prototype.context = function () {
  */
 EssaimJSXGraph.prototype.multiSelect = function () {
 	this.stackMultiSelect = [];
+	this.$multiSelect.appendTo(this.divBloc);
+	this.$selection.appendTo(this.divBloc);
+	this.$multiSelectMenu.appendTo(this.divBloc);
 	var self = this;
 	this.brd.on("up", function () {
 		var element = self.getTopUnderMouse();
@@ -921,6 +927,42 @@ EssaimJSXGraph.prototype.multiSelect = function () {
 		}else {
 			self.stackMultiSelect.push(element)
 		}
+		self.$selection.html(JSON.stringify(self.stackMultiSelect))
 	})
 };
 
+/**
+ * Interface function
+ * construire les button dans le menu
+ */
+EssaimJSXGraph.prototype.buildMultiSelectMenu = function () {
+	var menu = {};
+	menu.changeNom = {
+		nom: "Changer les nom",
+		callback: function () {
+			//TODO
+		}
+	};
+
+	var self = this;
+	var key = Object.keys(menu);
+	var buildButton = function (option) {
+		console.log(option);
+		return $("<button></button>")
+			.html(option.nom)
+			.click(option.callback)
+	};
+	for(var i = 0; i < key.length; i++){
+		self.$multiSelectMenu.append(buildButton(menu[key[i]]))
+	}
+};
+
+/**
+ * effacer les selections multiples
+ */
+EssaimJSXGraph.prototype.cleanMultiSelection = function () {
+	this.stackMultiSelect = [];
+	this.$multiSelect.html("").remove();
+	this.$selection.html("").remove();
+	this.$multiSelectMenu.html("").remove();
+};
