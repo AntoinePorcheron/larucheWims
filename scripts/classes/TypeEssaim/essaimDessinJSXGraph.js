@@ -242,12 +242,12 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup) {
 					alert("element invalide.")
 				}
 				essaimJSXGraph.brd.update();
-				essaimJSXGraph.brd.off("up", tmp)
-				/*
+				essaimJSXGraph.brd.off("up", tmp);
+
 				essaimJSXGraph.brd.on("up", function () {
 					essaimJSXGraph.selection()
 				})
-				*/
+
 			};
 				essaimJSXGraph.brd.on("up", tmp)
 			
@@ -255,7 +255,7 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup) {
 		
 		var $multiSelect = $("<button title = \"Action de multi-sélection\">Multi-select</button>").appendTo($div_button_retour_chariot_Action).click(
 		{essaimJSXGraph: this}, function (event) {
-			
+			essaimJSXGraph.multiSelect()
 		});
 
     $div_button_action.appendTo(this.divBloc);
@@ -801,7 +801,14 @@ EssaimJSXGraph.prototype.multiSelect = function () {
 		}else {
 			self.stackMultiSelect.push(element)
 		}
-		self.$selection.html(JSON.stringify(self.stackMultiSelect))
+		//interface
+		self.$selection.html("");
+		var html = [];
+		var select = self.stackMultiSelect;
+		for(var i = 0; i < select.length; i++){
+			html.push(select[i].elType + " " + select[i].name)
+		}
+		self.$selection.html(JSON.stringify(html))
 	})
 };
 
