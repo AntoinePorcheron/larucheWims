@@ -11,7 +11,7 @@ var GLOB_cercle = "circle";
 var GLOB_arrow = "arrow";
 var GLOB_segment = "segment";
 var GLOB_axe = "axis";
-var saveState = [];
+var saveState = {};
 EssaimJSXGraph = function (num) {
 
     //Appelle le constructeur parent
@@ -199,7 +199,7 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup) {
 	.click({essaimJSXGraph: this, md:$menu_deroulant}, function(event){
 	    var ejsx = event.data.essaimJSXGraph;
 	    var $m = event.data.md;
-	    console.log(event.data.md);
+	    console.log(saveState[$($m).val()]);
     });
 
     var $save = $("<button title=\"Permet de sauvegarder des éléments du graphique dans une boite à dessin.\">Ajout dans boîte à dessin </button>").appendTo($div_button_retour_chariot_Action).click(
@@ -212,13 +212,15 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup) {
             }
             for (i in event.data.essaimJSXGraph.brd.objects) {
                 if (i.toLowerCase() !== "jxgBoard1_infobox".toLowerCase()) {
-                    tab[i] = event.data.essaimJSXGraph.brd.objects[i];
+		    if (event.data.essaimJSXGraph.brd.objects[i].show){
+			tab[i] = event.data.essaimJSXGraph.brd.objects[i];
+			}
                 }
             }
-	    /*TODO MODIFY HERE*/
-            /*event.data.essaimJSXGraph.*/saveState.push(tab);
             var clef = Object.keys(tab);
             var nom_objet = clef[clef.length - 2];
+	    saveState[nom_objet] = tab;
+
             event.data.menu_D.append("<option value=\"" + nom_objet + "\">" + nom_objet + "</option>");
         });
 	/**
