@@ -359,37 +359,34 @@ EssaimJSXGraph.prototype.toOEF = function () {
     var bord_haut = this.brd.getBoundingBox()[1];
     var bord_droit = this.brd.getBoundingBox()[2];
     var bord_bas = this.brd.getBoundingBox()[3];
-
+    console.log(this.brd.getBoundingBox());
     var OEF = "\\text{rangex" + this.nom + " = " + bord_gauche + "," + bord_droit + "}\n"
     OEF += "\\text{rangey" + this.nom + " = " + bord_bas + "," + bord_haut + "}\n";
     OEF += "\\text{" + this.nom + " = rangex \\rangex" + this.nom + "\n";
     OEF += "rangey \\rangey" + this.nom + "\n";
 
-    if (!this.grid) {
-        var pas_x = JXG.Options.ticks.ticksDistance * this.brd.zoomX;
-        var pas_y = JXG.Options.ticks.ticksDistance * this.brd.zoomY;
-        var n_bas;
-        var n_haut;
-        var n_bas;
-        var n_gauche;
-        var n_droite;
-
-        if (bord_gauche > 0) {
-            var n = Math.round(bord_haut / pas_x);
-        } else if (bord_droit < 0) {
-            var n = -Math.round(bord_bas / pas_y);
-        } else {
-            /*var n = Math.round() + Math.round();*/
-        }
-
-        if (bord_bas > 0) {
-            var n = Math.round(bord_droit / pas);
-        } else if (bord_haut < 0) {
-            var n = -Math.round(bord_gauche / pas);
-        } else {
-
-        }
-    }
+     if (!this.grid){
+ 	var pas_x = JXG.Options.ticks.ticksDistance;
+ 	var pas_y = JXG.Options.ticks.ticksDistance;
+ 	
+ 	/*On recupere les position des première ligne de la grille*/
+ 	var deb_x = (bord_gauche - (bord_gauche%JXG.Options.ticks.ticksDistance));
+ 	var deb_y = (bord_bas - (bord_bas%JXG.Options.ticks.ticksDistance));
+ 		
+ 	var nb_x = Math.ceil(bord_droit - bord_gauche / pas_x);
+ 	var nb_y = Math.ceil(bord_haut - bord_bas / pas_x);
+ 	 OEF += "parallel " + 
+ 	     deb_x + "," + bord_haut + "," + 
+ 	     deb_x + "," +  bord_bas + "," + 
+ 	     pas_x     + "," +  0  + "," + 
+ 	     nb_x + ",grey\n";
+ 	 
+ 	 OEF += "parallel " + 
+ 	     bord_gauche + "," + deb_y + "," + 
+ 	     bord_droit  + "," + deb_y + "," + 
+ 	     0  + "," +    pas_y    + "," + 
+  	     nb_y + ",grey\n";
+     }
 
     for (element in this.brd.objects){
 			var brdElement = this.brd.objects[element];
@@ -649,7 +646,53 @@ EssaimJSXGraph.prototype.toOEF = function () {
 				OEF += "arrow " +
 					pointFinalDroite.x + "," + pointFinalDroite.y + "," +
 					pointFinalFleche.x + "," + pointFinalFleche.y + ",7,black\n";*/
-				break;
+			    var inverted = 1;
+			    if (p2.X() < p1.X()){
+				inverted = -1;
+			    } 
+			    var coef_dir = inverted * (p2.Y() - p1.Y()) /(p2.X() - p1.X());
+			    var bord_1;
+			    var bord_2;
+			    if (coef_dir < 0){
+				if (inverted === -1){
+				    dist_bord_1 = Math.abs(bord_haut   - p2.Y());
+				    dist_bord_2 = Math.abs(bord_gauche - p2.X());
+
+				}else{
+				    dist_bord_1 = Math.abs( bord_bas  - p2.Y());
+				    dist_bord_2 = Math.abs(bord_droit - p2.X());
+
+				}
+				
+			    }else{
+				if (inverted === -1){
+				    dist_bord_1 = Math.abs( bord_bas  - p2.Y());
+				    dist_bord_2 = Math.abs(bord_droit - p2.X());
+				}else{	
+				    dist_bord_1 = Math.abs(bord_haut   - p2.Y());
+				    dist_bord_2 = Math.abs(bord_gauche - p2.X());
+				}
+			    }
+			    var dist_1 = inverted * coef_dir * dist_bord_1;
+			    var dist_2 = inverted * coef_dir * dist_bord_2;
+			    
+			    var pyth_1 = Math.sqrt(dist_1 * dist_1 + dist_bord_1 * dist_bord_1);
+			    var pyth_2 = Math.sqrt(dist_2 * dist_2 + dist_bord_2 * dist_bord_2);
+
+			    var point_final = {x:p2.X(), y:p2.Y()};
+			    if (pyth_1 < pyth_2){
+				point_final.y += inverted * dist_1;
+				point_final.x += inverted * dist_bord_1;
+			    }else{
+				point_final.y += inverted * dist_2;
+				point_final.x += inverted * dist_bord_2;
+			    }
+
+			    console.log(point_final);
+			    OEF += "arrow " +
+					p1.X() + "," + p1.Y() + "," +
+					point_final.x + "," + point_final.y + ",7,black\n";
+			    break;
 			default :
 			}
 		}	
