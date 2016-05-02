@@ -529,7 +529,6 @@ EssaimJSXGraph.prototype.removeImage = function (image) {
     this.brd.removeObject(image)
 };
 
-//TODO attention il y a un document ready ici, éviter de faire le conflit
 $(document).ready(function () {
     rucheSys.initClasseEssaim(EssaimJSXGraph)
 });
@@ -541,19 +540,21 @@ $(document).ready(function () {
  * @returns {{}}
  */
 EssaimJSXGraph.prototype.menuOptions = function (element) {
+	console.log(element);
     var options = {};
+	var self = this;
     options.common = {
         changeNom: {
             nom: "Changer le nom",
             callback: function () {
-                var $input = $("<input />").appendTo(this.divMenu);
-                var $submit = $("<input />").appendTo(this.divMenu)
-                    .click(function () {
-                        element.name = $input.val();
-                        $input.remove();
-                        $submit.remove();
-                        EssaimJSXGraph.prototype.brd.update()
-                    })
+				$.when(self.inputbox("Entrer un nom : "))
+					.done(function (nom) {
+						element.name = nom;
+						self.brd.update()
+					})
+					.fail(function (err) {
+						alert(err)
+					})
             }
         }
     };
@@ -686,7 +687,7 @@ EssaimJSXGraph.prototype.buildMenu = function (element) {
             .html(option.nom)
             .click(option.callback)
     };
-    var options = this.menuOptions();
+    var options = this.menuOptions(element);
     var self = this;
     this.$menuButtons.html("");
     (function (list) {
@@ -710,8 +711,10 @@ EssaimJSXGraph.prototype.context = function () {
     var self = this;
     this.brd.on("up", function (event) {
         var element = self.getTopUnderMouse();
-        self.$divMenu.html("Menu Contextuel de " + element.elType + " " +element.name);
-        self.buildMenu(element)
+        if(element.elType){
+			self.$divMenu.html("Menu Contextuel de " + element.elType + " " +element.name);
+			self.buildMenu(element)
+		}
     })
 };
 
@@ -770,4 +773,36 @@ EssaimJSXGraph.prototype.cleanMultiSelection = function () {
 	this.$multiSelect.html("").remove();
 	this.$selection.html("").remove();
 	this.$multiSelectMenu.html("").remove();
+};
+
+/**
+ * popup un input box pour recuperer le valeur
+ * @param label: le titre du input
+ * @param type: le type du input
+ * @returns {*}, $.Deferred.promise()
+ */
+EssaimJSXGraph.prototype.inputbox = function (label, type) {
+	label = label || "";
+	type = type || "text";
+	var def = $.Deferred();
+	var $box = $("<div></div>")
+		.appendTo(this.divBloc);
+	var $label = $("<div></div>")
+		.html("Input: "+label)
+		.appendTo($box);
+	var $input = $("<input />")
+		.attr("type", type)
+		.appendTo($box);
+	var $submit = $("<button></button>")
+		.html("ok")
+		.click(function (event) {
+			if(!$input.val() || !$input.val().length){
+				def.reject("le valeur n'est pas defini")
+			}else {
+				$box.remove();
+				def.resolve($input.val())
+			}
+		})
+		.appendTo($box);
+	return def.promise()
 };
