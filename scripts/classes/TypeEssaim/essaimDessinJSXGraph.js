@@ -191,26 +191,17 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup) {
             event.data.essaimJSXGraph.mode = GLOB_libre
         });
 
-<<<<<<< HEAD
     var $menu_deroulant = $("<select></select>").click({}, function(){
 	console.log($($menu_deroulant).val())/*console.log(this.text())*/;
 
 });
-=======
-	EssaimJSXGraph.prototype.$button_libre = $button_libre;
 
-    var $menu_deroulant = $("<select></select>");
->>>>>>> origin/graphe
     var $charger = $("<button>Charger</button>")
 	.click({essaimJSXGraph: this, md:$menu_deroulant}, function(event){
 	    var ejsx = event.data.essaimJSXGraph;
 	    var $m = event.data.md;
 	    console.log(saveState[$($m).val()]);
     });
-<<<<<<< HEAD
-=======
-
->>>>>>> origin/graphe
 
     var $save = $("<button title=\"Permet de sauvegarder des éléments du graphique dans une boite à dessin.\">Ajout dans boîte à dessin </button>").appendTo($div_button_retour_chariot_Action).click(
         {essaimJSXGraph: this, menu_D: $menu_deroulant, charge:$charger}, function (event) {
@@ -266,10 +257,8 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup) {
 		var $multiSelect = $("<button title = \"Action de multi-sélection\">Multi-select</button>").appendTo($div_button_retour_chariot_Action).click(
 		{essaimJSXGraph: this}, function (event) {
 			essaimJSXGraph.multiSelect()
-<<<<<<< HEAD
 			event.data.essaimJSXGraph.mode = GLOB_libre
-=======
->>>>>>> origin/graphe
+
 		});
 
     $div_button_action.appendTo(this.divBloc);
@@ -859,12 +848,8 @@ EssaimJSXGraph.prototype.multiSelect = function () {
 			html.push(select[i].elType + " " + select[i].name)
 		}
 		self.$selection.html(JSON.stringify(html))
-<<<<<<< HEAD
-	})
-=======
 	};
 	this.brd.on("up", tmp)
->>>>>>> origin/graphe
 };
 
 /**
@@ -874,10 +859,8 @@ EssaimJSXGraph.prototype.multiSelect = function () {
 EssaimJSXGraph.prototype.buildMultiSelectMenu = function () {
 	// this.stackMultiStack est le array de selection
 	var menu = {};
-<<<<<<< HEAD
-=======
 	var self = this;
->>>>>>> origin/graphe
+
 	menu.grouper = {
 		nom: "grouper",
 		callback: function () {
