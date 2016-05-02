@@ -191,16 +191,26 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup) {
             event.data.essaimJSXGraph.mode = GLOB_libre
         });
 
+<<<<<<< HEAD
     var $menu_deroulant = $("<select></select>").click({}, function(){
 	console.log($($menu_deroulant).val())/*console.log(this.text())*/;
 
 });
+=======
+	EssaimJSXGraph.prototype.$button_libre = $button_libre;
+
+    var $menu_deroulant = $("<select></select>");
+>>>>>>> origin/graphe
     var $charger = $("<button>Charger</button>")
 	.click({essaimJSXGraph: this, md:$menu_deroulant}, function(event){
 	    var ejsx = event.data.essaimJSXGraph;
 	    var $m = event.data.md;
 	    console.log(saveState[$($m).val()]);
     });
+<<<<<<< HEAD
+=======
+
+>>>>>>> origin/graphe
 
     var $save = $("<button title=\"Permet de sauvegarder des éléments du graphique dans une boite à dessin.\">Ajout dans boîte à dessin </button>").appendTo($div_button_retour_chariot_Action).click(
         {essaimJSXGraph: this, menu_D: $menu_deroulant, charge:$charger}, function (event) {
@@ -256,7 +266,10 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup) {
 		var $multiSelect = $("<button title = \"Action de multi-sélection\">Multi-select</button>").appendTo($div_button_retour_chariot_Action).click(
 		{essaimJSXGraph: this}, function (event) {
 			essaimJSXGraph.multiSelect()
+<<<<<<< HEAD
 			event.data.essaimJSXGraph.mode = GLOB_libre
+=======
+>>>>>>> origin/graphe
 		});
 
     $div_button_action.appendTo(this.divBloc);
@@ -801,20 +814,42 @@ EssaimJSXGraph.prototype.context = function () {
 
 /**
  * associer un evenement de souris a multi-select
+ * clicquer une fois un element: le select, deuxieme fois: le lache
+ * button ok: finir multi-selection, puis menu va apparaitre
+ * button clean: effacer multi-selection
  */
 EssaimJSXGraph.prototype.multiSelect = function () {
 	this.stackMultiSelect = [];
 	this.$multiSelect.appendTo(this.divBloc);
+	var self = this;
+	// ok button
+	var $ok = $("<button></button>").appendTo(this.$multiSelect)
+		.html("ok")
+		.click(function (event) {
+			self.brd.off("up", tmp);
+			self.$button_libre.trigger("click");
+			$ok.remove();
+			$clean.remove();
+			self.buildMultiSelectMenu()
+		});
+	// clean button
+	var $clean = $("<button></button>").appendTo(this.$multiSelect)
+		.html("clean")
+		.click(function () {
+			self.cleanMultiSelection()
+		});
 	this.$selection.appendTo(this.divBloc);
 	this.$multiSelectMenu.appendTo(this.divBloc);
-	var self = this;
-	this.brd.on("up", function () {
+	var tmp = function () {
+		self.$button_libre.trigger("click");
 		var element = self.getTopUnderMouse();
-		var tmp = self.stackMultiSelect.indexOf(element);
-		if(tmp >= 0){
-			self.stackMultiSelect.splice(tmp, 1)
-		}else {
-			self.stackMultiSelect.push(element)
+		if(element.elType) {
+			var tmp = self.stackMultiSelect.indexOf(element);
+			if (tmp >= 0) {
+				self.stackMultiSelect.splice(tmp, 1)
+			} else {
+				self.stackMultiSelect.push(element)
+			}
 		}
 		//interface
 		self.$selection.html("");
@@ -824,7 +859,12 @@ EssaimJSXGraph.prototype.multiSelect = function () {
 			html.push(select[i].elType + " " + select[i].name)
 		}
 		self.$selection.html(JSON.stringify(html))
+<<<<<<< HEAD
 	})
+=======
+	};
+	this.brd.on("up", tmp)
+>>>>>>> origin/graphe
 };
 
 /**
@@ -832,15 +872,19 @@ EssaimJSXGraph.prototype.multiSelect = function () {
  * construire les button dans le menu
  */
 EssaimJSXGraph.prototype.buildMultiSelectMenu = function () {
+	// this.stackMultiStack est le array de selection
 	var menu = {};
+<<<<<<< HEAD
+=======
+	var self = this;
+>>>>>>> origin/graphe
 	menu.grouper = {
 		nom: "grouper",
 		callback: function () {
-		    //TODO
+			self.brd.create("group", self.stackMultiSelect)
 		}
 	};
 
-	var self = this;
 	var key = Object.keys(menu);
 	var buildButton = function (option) {
 		console.log(option);
@@ -851,6 +895,7 @@ EssaimJSXGraph.prototype.buildMultiSelectMenu = function () {
 	for(var i = 0; i < key.length; i++){
 		self.$multiSelectMenu.append(buildButton(menu[key[i]]))
 	}
+	self.$multiSelectMenu.appendTo(self.divBloc)
 };
 
 /**
@@ -858,9 +903,8 @@ EssaimJSXGraph.prototype.buildMultiSelectMenu = function () {
  */
 EssaimJSXGraph.prototype.cleanMultiSelection = function () {
 	this.stackMultiSelect = [];
-	this.$multiSelect.html("").remove();
-	this.$selection.html("").remove();
-	this.$multiSelectMenu.html("").remove();
+	this.$selection.html("");
+	this.$multiSelectMenu.html("")
 };
 
 /**
