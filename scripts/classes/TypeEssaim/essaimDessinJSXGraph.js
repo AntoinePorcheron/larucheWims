@@ -22,7 +22,7 @@ EssaimJSXGraph = function (num) {
     this.nom = "JSXGraph" + num;	// nom de l'élément
     this.numero = num;				// numéro de l'essaim
     this.proto = "EssaimJSXGraph";	// nature de la classe
-    this.mode = GLOB_point;			// permet de définir dans quel mode l'utilisateur se trouve (mode point, mode ligne...)
+    this.mode = GLOB_libre;			// permet de définir dans quel mode l'utilisateur se trouve (mode point, mode ligne...)
     this.point = [];				// contient un ensemble de point (une ligne = 2 points par exemple). Permet de créer un objet
     this.brd;						// variable d'environnement : contient les bornes du graphe
     this.grid = true;				// variable permettant la création de la grille
@@ -731,10 +731,13 @@ EssaimJSXGraph.prototype.getTopUnderMouse = function () {
         text: -1
     };
     var ele = this.brd.getAllUnderMouse();
+    console.log("ici");
     if (!ele.length) return null;
     var level = layer[ele[0].elType];
     var top = ele[0];
+    console.log(ele.length);
     for (var i = 0; i < ele.length; i++) {
+	console.log(i);
         if (level < layer[ele[i].elType]) {
             level = layer[ele[i].elType];
             top = ele[i]

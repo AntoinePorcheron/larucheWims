@@ -13,7 +13,7 @@ Le menu est toujours temporaire, il se construit tout la fois quand il est deman
 La fonction `buildMenu` n'est pas directement appele, on modifie `fn.MenuOptions` dans cette fonction avec la parametre `element` qui est l'element qui est passe par exterieure. 
 
 ```
-Dans la version courrent, element est l'element plus haut choisi par le souris.
+Dans la version courante, element est l'element plus haut choisi par le souris.
 ```
 
 Chaque option est un object avec deux cle, `nom` qui est le nom a afficher, et `callback` le fonction a appele, voici un exemple.
