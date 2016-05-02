@@ -161,6 +161,8 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup) {
      * - grille (afficher/supprimer)
      * - déplacer (déplacement libre)
      * - save (sauvegarder des objets dans une boîte à dessins)
+	 * - supprimer (à mettre plus tard dans le menu contextuel)
+	 * - multi-selection 
      **/
 
     var $div_button_action = $("<div></div>");
@@ -204,6 +206,18 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup) {
             var nom_objet = clef[clef.length - 2];
             event.data.menu_D.append("<option value" + nom_objet + ">" + nom_objet + "</option>");
         });
+		
+		var $supprimer = $("<button title = \"Permet de supprimer un élément.\">Supprimer un élément</button>").appendTo($div_button_retour_chariot_Action).click(
+		{essaimJSXGraph: this}, function (event) {
+			/*var objet_courant = this.brd.getAllUnderMouse.click(
+			{essaimJXSGraph: this}, )*/
+			
+		});
+		
+		var $multiSelect = $("<button title = \"Action de multi-sélection\">Multi-select</button>").appendTo($div_button_retour_chariot_Action).click(
+		{essaimJSXGraph: this}, function (event) {
+			
+		});
 
     $div_button_action.appendTo(this.divBloc);
 
