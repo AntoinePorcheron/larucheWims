@@ -191,6 +191,12 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup) {
             event.data.essaimJSXGraph.mode = GLOB_libre
         });
 
+    /*******************************************************
+     * il ne faut pas supprimer cette ligne
+     */
+    EssaimJSXGraph.prototype.$button_libre = $button_libre;
+    //******************************************************
+
     var $menu_deroulant = $("<select></select>").click({}, function(){
 	console.log($($menu_deroulant).val())/*console.log(this.text())*/;
 
