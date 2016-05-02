@@ -50,6 +50,8 @@ EssaimJSXGraph.prototype.$divMenu = $("<div></div>")
 
 EssaimJSXGraph.prototype.$menuButtons = $("<div></div>");
 
+EssaimJSXGraph.prototype.stackMultiSelect = [];
+
 //------------ METHODES -----------------//
 
 EssaimJSXGraph.prototype.initEnonce = function () {
@@ -784,6 +786,12 @@ EssaimJSXGraph.prototype.fillImageIntoPoint = function (url, pointExiste) {
     return this.brd.create("image", [url, point, [width, width]])
 };
 
+/**
+ * Interface function
+ * pop up un fenetre a upload un image
+ * @param board
+ * @param paint
+ */
 EssaimJSXGraph.prototype.popupImageUploader = function (board, paint) {
     var self = this;
     if (!FileReader) throw "A Newer Version of Browser is Required.";
@@ -855,10 +863,15 @@ EssaimJSXGraph.prototype.getTopUnderMouse = function () {
     return top
 };
 
+/**
+ * Interface function
+ * construire un menu, voir doc
+ * @param element, callback argument
+ */
 EssaimJSXGraph.prototype.buildMenu = function (element) {
     // Pour indiquer les options dans le menu par rapport aux types des elements
     var buildButton = function (option) {
-        console.log(option)
+        console.log(option);
         return $("<button></button>")
             .html(option.nom)
             .click(option.callback)
@@ -881,6 +894,10 @@ EssaimJSXGraph.prototype.buildMenu = function (element) {
 
 };
 
+/**
+ * Interface function
+ * effectuer le menu contextuel a la page
+ */
 EssaimJSXGraph.prototype.context = function () {
     var self = this;
     this.brd.on("up", function (event) {
@@ -889,3 +906,21 @@ EssaimJSXGraph.prototype.context = function () {
         self.buildMenu(element)
     })
 };
+
+/**
+ * associer un evenement de souris a multi-select
+ */
+EssaimJSXGraph.prototype.multiSelect = function () {
+	this.stackMultiSelect = [];
+	var self = this;
+	this.brd.on("up", function () {
+		var element = self.getTopUnderMouse();
+		var tmp = self.stackMultiSelect.indexOf(element);
+		if(tmp >= 0){
+			self.stackMultiSelect.splice(tmp, 1)
+		}else {
+			self.stackMultiSelect.push(element)
+		}
+	})
+};
+
