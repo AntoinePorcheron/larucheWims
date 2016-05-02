@@ -436,7 +436,73 @@ EssaimJSXGraph.prototype.toOEF = function(){
 			case GLOB_axe : 
 				var p1 = brdElement.point1;
 				var p2 = brdElement.point2;
+				/*
+				// On suppose un point imaginaire correspondant à l'intersection entre 
+				// l'axe (on regarde son orientation) et le bord du graphe
+				var pointImaginaire = { x : 0, y : 0 };
 				
+				// on calcule le coefficient directeur de l'axe grâce aux deux points p1 et p2
+				var coeff_dir = ( p2.Y() - p1.Y() ) / ( p2.X() - p1.X() );
+				
+				/* Il y a 6 cas à traiter : 
+				 * - le cas où l'axe pointe vers le coin haut droit 
+				 * - le cas où l'axe pointe vers le coin haut gauche
+				 * - le cas où l'axe pointe vers le coin bas droit
+				 * - le cas où l'axe pointe vers le coin bas gauche
+				 * - le cas où l'axe est totalement horizontal
+				 * - le cas où l'axe est totalement vertical
+				 * 
+				 * Pour chacun des cas, il y a deux possibilités d'intersection : 
+				 * - le bord du graphe selon une largeur (bord_gauche, bord_droit)
+				 * - le bord du graphe selon une hauteur (bord_haut, bord_bas)
+				 *
+				 
+				
+				/* On cherche sur quel côté sera le point d'intersection. 
+				 * Pour cela on calcule l'équation de la droite décrite par l'axe.
+				 * L'équation est de la forme y = a*x + b où :
+				 * - a est le coefficient directeur
+				 * - x est la coordonnée en x d'un point de la droite
+				 * - b est l'ordonnée à l'origine
+				 *
+				 
+				 var ordonneOrigine = coeff_dir * p1.X() - p1.Y();
+				 var equa_axe = coeff_dir * p1.X() + ordonneOrigine;
+				 
+				 // On crée 4 points correspondants aux 4 angles du graphe
+				 var coin_haut_gauche = { x : bord_gauche, y : bord_haut };
+				 var coin_bas_gauche = { x : bord_gauche, y : bord_bas };
+				 var coin_bas_droit = { x : bord_droit, y : bord_bas };
+				 var coin_haut_droit = { x : bord_droit, y : bord_haut };
+				 
+				 // On récupère les coefficients directeurs des côtés droite, gauche, haut et bas
+				 var coeff_dir_cote_droit = ( coin_haut_droit.y - coin_bas_droit.y ) / (coin_haut_droit.x - coin_bas_droit.x );
+				 var coeff_dir_cote_gauche = ( coin_haut_gauche.y - coin_bas_gauche.y ) / (coin_haut_gauche.x - coin_bas_gauche.x );
+				 var coeff_dir_cote_haut = ( coin_haut_droit.y - coin_haut_gauche.y ) / (coin_haut_droit.x - coin_haut_gauche.x );
+				 var coeff_dir_cote_bas = ( coin_bas_droit.y - coin_bas_gauche.y ) / (coin_bas_droit.x - coin_bas_gauche.x );
+				 
+				 // On calcule les équations de droite
+				 var equa_cote_droit = ( coeff_dir_cote_droit * coin_haut_droit.x ) + coin_haut_droit.y;
+				 var equa_cote_gauche = ( coeff_dir_cote_gauche * coin_haut_gauche.x ) + coin_haut_gauche.y;
+				 var equa_cote_bas = ( coeff_dir_cote_bas * coin_bas_droit.x ) + coin_bas_droit.y;
+				 var equa_cote_haut = ( coeff_dir_cote_haut * coin_haut_droit.x ) + coin_haut_droit.y;
+				 
+				 // On crée un point qui aura les coordonnées du point d'intersection
+				 var croisement = { x : 0, y : 0 };
+				 
+				 // Axe orienté vers le coin haut droit
+				 // Les possibilités d'intersection sont donc le bord_haut et le bord_droit
+				 // On commence par tester si l'intersection avec l'un des bords est dans le graphe
+				 // Si c'est le cas on arrête, sinon on teste avec l'autre bord 
+				if ( coeff_dir > 0 && p1.X() < p2.X() ){
+					// Si l'axe et le bord du graphe sont parallèles
+					if ( coeff_dir_cote_haut === coeff_dir ){
+						
+					}
+				}
+				
+				
+				/*
 				var pointInter_1 = { x : p1.X(), y : p1.Y() };
 				var pointInter_2 = { x : p2.X(), y : p2.Y() };
 				var pointFinalFleche = { x : 0, y : 0 };
@@ -540,7 +606,7 @@ EssaimJSXGraph.prototype.toOEF = function(){
 						pointFinalDroite.y = p1.Y();
 						}
 					}
-						else if (coef_dir <0 ){
+						else if (coef_dir < 0 ){
 						pointInter_1.x = ( bord_haut / coef_dir );
 						pointInter_1.y = bord_haut;
 						
@@ -568,10 +634,9 @@ EssaimJSXGraph.prototype.toOEF = function(){
 				}
 				OEF += "arrow " +
 					pointFinalDroite.x + "," + pointFinalDroite.y + "," +
-					pointFinalFleche.x + "," + pointFinalFleche.y + ",7,black\n";
+					pointFinalFleche.x + "," + pointFinalFleche.y + ",7,black\n";*/
 				break;
 			default :
-				console.log("Si ceci s'affiche, c'est qu'il y a un problème.");
 			}
 		}	
 	}
