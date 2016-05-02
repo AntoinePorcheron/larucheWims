@@ -89,7 +89,7 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup) {
     var titreBloc = document.createElement("DIV");
     var txt = document.createTextNode("Dessin JSXGraph");
     titreBloc.appendChild(txt);
-    var span_txtNom = document.createElement("SPAN");
+    var span_txtNom = document.createElement("SPAN");    
 
     span_txtNom.style.backgroundColor = "#f7debc";
     span_txtNom.style.margin = "0px 0px 0px 10px";
@@ -127,7 +127,16 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup) {
         height: 400
     }).appendTo($(this.divBloc));
 
+    /* Création du graphe */
+    this.brd = JXG.JSXGraph.initBoard('box' + this.numero,
+				      {
+					  axis: this.axis,
+					  keepaspectratio: true,
+					  grid: false
+				      });
+    
 
+    
     /* -----------------------------------
      Création des blocs div pour les menus
      --------------------------------------
@@ -250,15 +259,13 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup) {
 
     EssaimJSXGraph.prototype.initEnonce.call(this);
     EssaimJSXGraph.prototype.initAnalyse.call(this);
-
-    /* Création du graphe */
-    this.brd = JXG.JSXGraph.initBoard('box' + this.numero,
-        {
-            axis: this.axis,
-            keepaspectratio: true,
-            grid: false
-        });
-
+    
+    var $div_menu_contextuelle = $("<div></div>").appendTo(this.divBloc);
+    var self = this;
+    this.$divMenu.appendTo(/*self.divBloc*/$div_menu_contextuelle);
+    this.$menuButtons.appendTo(/*self.divBloc*/$div_menu_contextuelle);
+    this.context();
+    
 
     /*Gestion de la modification de la taille du bloc*/
     /*Pour le moment, la solution trouvée pour limiter le problème lors du resize, c'est
@@ -339,10 +346,7 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup) {
             }
         }
     )
-    var self = this;
-    this.$divMenu.appendTo(self.divBloc);
-    this.$menuButtons.appendTo(self.divBloc);
-    this.context()
+   
 };
 
 
@@ -546,14 +550,15 @@ EssaimJSXGraph.prototype.menuOptions = function (element) {
         changeNom: {
             nom: "Changer le nom",
             callback: function () {
-                var $input = $("<input />").appendTo(this.divMenu);
-                var $submit = $("<input />").appendTo(this.divMenu)
-                    .click(function () {
+		console.log("yala");
+                var $input = $("<input type=\"text\"><input/>").appendTo(this.divMenu);
+		console.log($input);
+                var $submit = $("<input />").appendTo(this.divMenu).click(function (){
                         element.name = $input.val();
                         $input.remove();
                         $submit.remove();
-                        EssaimJSXGraph.prototype.brd.update()
-                    })
+                        EssaimJSXGraph.prototype.brd.update();
+                    });
             }
         }
     };
@@ -745,7 +750,7 @@ EssaimJSXGraph.prototype.buildMultiSelectMenu = function () {
 	menu.changeNom = {
 		nom: "Changer les nom",
 		callback: function () {
-			//TODO
+		    //TODO
 		}
 	};
 
