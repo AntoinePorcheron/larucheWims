@@ -722,12 +722,19 @@ EssaimJSXGraph.prototype.fillImageIntoPoint = function (url, pointExiste) {
 
 /**
  * Interface function
- * pop up un fenetre a upload un
+ * pop up un fenetre a upload un image
  * @param readSuccess
+ * @param readFail
  */
-EssaimJSXGraph.prototype.popupImageUploader = function (readSuccess) {
+EssaimJSXGraph.prototype.popupImageUploader = function (readSuccess, readFail) {
     var self = this;
-    if (!FileReader) throw "A Newer Version of Browser is Required.";
+    if (!FileReader){
+		var err = "A Newer Version of Browser is Required.";
+		if(readFail){
+			readFail(err)
+		}
+		else throw err
+	}
     var $input = $("<input />")
         .attr("type", "file");
     var $img = $("<img />").attr({
