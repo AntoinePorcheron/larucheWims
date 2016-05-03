@@ -353,7 +353,7 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup)
        * - segment
        * - flèche
        * - axe
-	   * - angle
+       * - angle
        **/
     var $button_point = $("<button title=\"Permet de créer un point.\">Point</button>")
 	.appendTo($div_button_retour_chariot_Objet).click(
@@ -396,12 +396,12 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup)
             {essaimJSXGraph: this}, function (event) {
 		event.data.essaimJSXGraph.mode = GLOB_axe;
             });   
-			
-	var $button_angle = 
+    
+    var $button_angle = 
 	$("<button title=\"Permet de créer un angle en utiliant 3 points\">Angle</button>").appendTo($div_button_retour_chariot_Objet).click(
-	{essaimJSXGraph: this}, function (event){
+	    {essaimJSXGraph: this}, function (event){
 		event.data.essaimJSXGraph.mode = GLOB_angle;
-	});
+	    });
 
     /*Gestion de l'evenementiel*/
     var timer;
@@ -416,12 +416,12 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup)
 		    graph.divBloc.clientWidth - 30,
 		    graph.divBloc.clientWidth - 30);
 	    },200);
-	});
-	/*$(window).mousemove({essaimJSXGraph:this}, function(event){
-	var graph = event.data.essaimJSXGraph;
-	
-   /* }, 200);*/
-/*});*/
+    });
+    /*$(window).mousemove({essaimJSXGraph:this}, function(event){
+      var graph = event.data.essaimJSXGraph;
+      
+      /* }, 200);*/
+    /*});*/
 
     /*Creation de points, à retoucher/améliorer*/
     var essaimJSXGraph = this;
@@ -452,24 +452,16 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup)
 	    if (essaimJSXGraph.mode === GLOB_point) {
                 essaimJSXGraph.point = [];
             }
-/*<<<<<<< HEAD*/
-            else if (essaimJSXGraph.point.length === 2) {
+            else if (essaimJSXGraph.point.length === 2 && essaimJSXGraph.mode !== GLOB_angle) {
+		/*if (essaimJSXGraph.mode !== GLOB_axe){
+		  var newElement = brd.create(essaimJSXGraph.mode, essaimJSXGraph.point);
+		  }*/
 		if (essaimJSXGraph.mode !== GLOB_axe){
 		    var newElement = brd.create(essaimJSXGraph.mode, essaimJSXGraph.point);
-/*=======*/
-		else if (essaimJSXGraph.point.length === 3) {
-			
-/*>>>>>>> 8b60977a8af6452cca8ccb9ca2d16e229b559802*/
 		}
-		
-        else if (essaimJSXGraph.point.length === 2 && essaimJSXGraph.mode !== GLOB_angle) {
-			if (essaimJSXGraph.mode !== GLOB_axe){
-				var newElement = brd.create(essaimJSXGraph.mode, essaimJSXGraph.point);
-				essaimJSXGraph.point = [];
-			}
-			if (essaimJSXGraph.mode === GLOB_axe) {
-				var newElement = 
-				brd.create(essaimJSXGraph.mode,essaimJSXGraph.point, 
+		if (essaimJSXGraph.mode === GLOB_axe) {
+		    var newElement = 
+			brd.create(essaimJSXGraph.mode,essaimJSXGraph.point, 
 				   { 
 				       name:'',
 				       withLabel:true,
@@ -477,56 +469,38 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup)
 					   position:'top'
 				       }
 				   });
-<<<<<<< HEAD
 		    /*Sert à ne pas créer les grilles lorsque on crée un axe*/                    
 		    newElement.removeAllTicks();
-                    newElement.isDraggable = true;
-                    newElement.on('drag', function () {
+		    newElement.isDraggable = true;
+		    newElement.on('drag', function () {
 			essaimJSXGraph.brd.fullUpdate()
-                    });
-                    for (var i in newElement.ancestors) {
+		    });
+		    for (var i in newElement.ancestors) {
 			newElement.ancestors[i].isDraggable = true;
 			newElement.ancestors[i].on('drag', function () {
-                            essaimJSXGraph.brd.fullUpdate()
-                        });
-                    }
+			    essaimJSXGraph.brd.fullUpdate()
+			});
+		    }
 		    newElement.needsRegularUpdate = true;
-		 
-                }
-		console.log(newElement);
+		    
+		}
 		essaimJSXGraph.point = [];
-            }
-=======
-				   
-				/*Sert à ne pas créer les grilles lorsque on crée un axe*/                    
-				newElement.removeAllTicks();
-                newElement.isDraggable = true;
-				
-                newElement.on('drag', function () {
-					essaimJSXGraph.brd.fullUpdate()
-                });
-				
-					for (var i in newElement.ancestors) {
-						newElement.ancestors[i].isDraggable = true;
-						newElement.ancestors[i].on('drag', function () {
-							essaimJSXGraph.brd.fullUpdate()
-                        });
-					}
-				}
-			}
->>>>>>> 8b60977a8af6452cca8ccb9ca2d16e229b559802
-        }
+	    }else if (essaimJSXGraph.point.length === 3) {
+		var newElement = brd.create(essaimJSXGraph.mode, essaimJSXGraph.point);
+		essaimJSXGraph.point = [];
+	    }   
+	}
     });
-
+    
     this.brd.on('move', function(event){
 	essaimJSXGraph.lastEvent = event;
     });
 
-    
-    EssaimJSXGraph.prototype.initEnonce.call(this);
 
+    EssaimJSXGraph.prototype.initEnonce.call(this);
+    
     EssaimJSXGraph.prototype.initAnalyse.call(this);    
-};
+}
 
 
 EssaimJSXGraph.prototype.nouveauComposant = function (classeComposant) {
@@ -723,9 +697,9 @@ EssaimJSXGraph.prototype.menuOptions = function (element) {
     var options = {};
     var self = this;
     options.common = {
-        changeNom: {
-            nom: "Changer le nom",
-            callback: function () {
+	changeNom: {
+	    nom: "Changer le nom",
+	    callback: function () {
 		$.when(self.inputbox("Entrer un nom : "))
 		    .done(function (nom) {
 			element.name = nom;
@@ -734,8 +708,8 @@ EssaimJSXGraph.prototype.menuOptions = function (element) {
 		    .fail(function (err) {
 			alert(err)
 		    })
-            }
-        }
+	    }
+	}
     };
     return options
 };
@@ -753,21 +727,21 @@ EssaimJSXGraph.prototype.fillImageIntoPoint = function (url, pointExiste) {
      */
     this.brd.options.layer["image"] = 10;
     function getCoord2D(paint) {
-        return getCoord(paint).slice(1)
+	return getCoord(paint).slice(1)
     }
 
     function getSize(paint) {
-        return paint.visProp.size
+	return paint.visProp.size
     }
 
     var coodsToPixel = 30;
     //TODO to have an exact ratio
     var width = getSize(pointExiste) / coodsToPixel;
     var point = (function () {
-        var point = getCoord2D(pointExiste);
-        point[0] -= width / 2;
-        point[1] -= width / 2;
-        return point
+	var point = getCoord2D(pointExiste);
+	point[0] -= width / 2;
+	point[1] -= width / 2;
+	return point
     })();
     return this.brd.create("image", [url, point, [width, width]])
 };
@@ -781,33 +755,33 @@ EssaimJSXGraph.prototype.fillImageIntoPoint = function (url, pointExiste) {
 EssaimJSXGraph.prototype.popupImageUploader = function (readSuccess, readFail) {
     var self = this;
     if (!FileReader){
-		var err = "A Newer Version of Browser is Required.";
-		if(readFail){
-			readFail(err)
-		}
-		else throw err
+	var err = "A Newer Version of Browser is Required.";
+	if(readFail){
+	    readFail(err)
 	}
+	else throw err
+    }
     var $input = $("<input />")
-        .attr("type", "file");
+	.attr("type", "file");
     var $img = $("<img />").attr({
-        src: "",
-        alt: "image"
+	src: "",
+	alt: "image"
     });
     $input.trigger("click");
     function readFile(file) {
-        var reader = new FileReader();
-        reader.onload = readSuccess;
-    /*
-        function readSuccess(event) {
-            self.fillImageIntoPoint(event.target.result, paint)
-        }
-    */
-        reader.readAsDataURL(file);
+	var reader = new FileReader();
+	reader.onload = readSuccess;
+	/*
+	  function readSuccess(event) {
+	  self.fillImageIntoPoint(event.target.result, paint)
+	  }
+	*/
+	reader.readAsDataURL(file);
     }
 
     $input.get(0).onchange = function (event) {
 	var target = event.target || event.srcElement; //Ligne de compatibilité de divers navigateur
-        readFile(target.files[0])
+	readFile(target.files[0])
     }
 };
 
@@ -820,17 +794,17 @@ EssaimJSXGraph.prototype.popupImageUploader = function (readSuccess, readFail) {
 EssaimJSXGraph.prototype.getTopUnderMouse = function () {
     //var layer = board.options.layer;
     var layer = {
-        point: 9,
-        arc: 8,
-        line: 7,
-        circle: 6,
-        curve: 5,
-        polygon: 4,
-        sector: 3,
-        angle: 2,
-        grid: 1,
-        image: 0,
-        text: -1
+	point: 9,
+	arc: 8,
+	line: 7,
+	circle: 6,
+	curve: 5,
+	polygon: 4,
+	sector: 3,
+	angle: 2,
+	grid: 1,
+	image: 0,
+	text: -1
     };
     var ele = this.brd.getAllUnderMouse(this.lastEvent);
     if (!ele.length) return null;
@@ -838,9 +812,9 @@ EssaimJSXGraph.prototype.getTopUnderMouse = function () {
     var top = ele[0];
     for (var i = 0; i < ele.length; i++) {
 	if (level < layer[ele[i].elType]) {
-            level = layer[ele[i].elType];
-            top = ele[i]
-        }
+	    level = layer[ele[i].elType];
+	    top = ele[i]
+	}
     }
     return top
 };
@@ -853,24 +827,24 @@ EssaimJSXGraph.prototype.getTopUnderMouse = function () {
 EssaimJSXGraph.prototype.buildMenu = function (element) {
     // Pour indiquer les options dans le menu par rapport aux types des elements
     var buildButton = function (option) {
-        return $("<button></button>")
-            .html(option.nom)
-            .click(option.callback)
+	return $("<button></button>")
+	    .html(option.nom)
+	    .click(option.callback)
     };
     var options = this.menuOptions(element);
     console.log(options);
     var self = this;
     this.$menuButtons.html("");
     (function (list) {
-        for (var key = 0; key < list.length; key++) {
-            if (options[list[key]]) {
-                var option = Object.keys(options[list[key]]);
-                for (var i = 0; i < option.length; i++) {
-                    self.$menuButtons.append(buildButton(options[list[key]][option[i]]))
-                }
-            }
+	for (var key = 0; key < list.length; key++) {
+	    if (options[list[key]]) {
+		var option = Object.keys(options[list[key]]);
+		for (var i = 0; i < option.length; i++) {
+		    self.$menuButtons.append(buildButton(options[list[key]][option[i]]))
+		}
+	    }
 
-        }
+	}
     })(["common", element.elType])
 };
 
@@ -962,20 +936,20 @@ EssaimJSXGraph.prototype.buildMultiSelectMenu = function () {
     var self = this;
 
     menu.grouper = {
-        nom: "grouper",
-        callback: function () {
-            self.brd.create("group", self.stackMultiSelect)
-        }
+	nom: "grouper",
+	callback: function () {
+	    self.brd.create("group", self.stackMultiSelect)
+	}
     };
 
     menu.toutsup = {
-        nom: "tout supprimer",
-        callback: function () {
-            for(var i = 0; i < self.stackMultiSelect.length; i++){
-                self.brd.removeObject(self.stackMultiSelect[i])
-            }
-            self.brd.update()
-        }
+	nom: "tout supprimer",
+	callback: function () {
+	    for(var i = 0; i < self.stackMultiSelect.length; i++){
+		self.brd.removeObject(self.stackMultiSelect[i])
+	    }
+	    self.brd.update()
+	}
     };
 
     var key = Object.keys(menu);
@@ -1037,6 +1011,7 @@ EssaimJSXGraph.prototype.selectMode = function () {
 };
 
 function getMouseCoords(event, brd){
+    
     var cPos = brd.getCoordsTopLeftCorner(event, 0),
     absPos = JXG.getPosition(event, 0),
     dx = absPos[0] - cPos[0],
