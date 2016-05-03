@@ -345,7 +345,7 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup)
             });
     
     var $button_ligne = 
-	$("<button title=\"Permet de créer une ligne. On utilise deux points pour cela.\">Ligne</button>")
+	$("<button title=\"Permet de créer une droite. On utilise deux points pour cela.\">Droite</button>")
 	.appendTo($div_button_retour_chariot_Objet).click(
             {essaimJSXGraph: this}, function (event) {
 		event.data.essaimJSXGraph.mode = GLOB_ligne;
@@ -384,16 +384,23 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup)
     /*Gestion de l'evenementiel*/
     var timer;
     $(window).resize({essaimJSXGraph: this}, function (event) {
-        var graph = event.data.essaimJSXGraph;
+	var graph = event.data.essaimJSXGraph
+	console.log(graph.brd);
         clearTimeout(timer);
         timer = setTimeout(
-            function () {
-                graph.brd.resizeContainer(
+	    function () {
+		
+		graph.brd.resizeContainer(
 		    graph.divBloc.clientWidth - 30,
 		    graph.divBloc.clientWidth - 30);
-            }, 200);
-    });
-    
+	    },200);
+	});
+	/*$(window).mousemove({essaimJSXGraph:this}, function(event){
+	var graph = event.data.essaimJSXGraph;
+	
+   /* }, 200);*/
+/*});*/
+
     /*Creation de points, à retoucher/améliorer*/
     var essaimJSXGraph = this;
     this.brd.on('up', function (event) {
@@ -437,7 +444,8 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup)
 					   position:'top'
 				       }
 				   });
-		    /*Sert à ne pas créer les grilles lorsque on crée un axe*/                    newElement.removeAllTicks();
+		    /*Sert à ne pas créer les grilles lorsque on crée un axe*/                    
+		    newElement.removeAllTicks();
                     newElement.isDraggable = true;
                     newElement.on('drag', function () {
 			essaimJSXGraph.brd.fullUpdate()
@@ -448,7 +456,10 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup)
                             essaimJSXGraph.brd.fullUpdate()
                         });
                     }
+		    newElement.needsRegularUpdate = true;
+		 
                 }
+		console.log(newElement);
 		essaimJSXGraph.point = [];
             }
         }
