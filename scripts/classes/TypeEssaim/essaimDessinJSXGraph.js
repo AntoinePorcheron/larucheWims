@@ -864,7 +864,6 @@ EssaimJSXGraph.prototype.selection = function () {
  * effectuer le menu contextuel a la page
  */
 EssaimJSXGraph.prototype.context = function () {
-    /*C'est pas compatible avec firefox la dessous, a voir pourquoi...*/
     var self = this;
     this.brd.on("up", function () {
 	self.selection()
