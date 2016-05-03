@@ -11,6 +11,7 @@ var GLOB_cercle = "circle";
 var GLOB_arrow = "arrow";
 var GLOB_segment = "segment";
 var GLOB_axe = "axis";
+var GLOB_angle = "angle";
 
 // variable permettant de sauvegarder l'état actuel du dessin*/
 var saveState = {};
@@ -352,6 +353,7 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup)
        * - segment
        * - flèche
        * - axe
+	   * - angle
        **/
     var $button_point = $("<button title=\"Permet de créer un point.\">Point</button>")
 	.appendTo($div_button_retour_chariot_Objet).click(
@@ -389,12 +391,17 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup)
             });
     
     var $button_axis = 
-	$("<button title=\"Permet de créer un axe.On utilise deux points pour cela.\">Axe</button>")
+	$("<button title=\"Permet de créer un axe. On utilise deux points pour cela.\">Axe</button>")
 	.appendTo($div_button_retour_chariot_Objet).click(
             {essaimJSXGraph: this}, function (event) {
 		event.data.essaimJSXGraph.mode = GLOB_axe;
             });   
-
+			
+	var $button_angle = 
+	$("<button title=\"Permet de créer un angle en utiliant 3 points\">Angle</button>").appendTo($div_button_retour_chariot_Objet).click(
+	{essaimJSXGraph: this}, function (event){
+		event.data.essaimJSXGraph.mode = GLOB_angle;
+	});
 
     /*Gestion de l'evenementiel*/
     var timer;
@@ -445,13 +452,24 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup)
 	    if (essaimJSXGraph.mode === GLOB_point) {
                 essaimJSXGraph.point = [];
             }
+/*<<<<<<< HEAD*/
             else if (essaimJSXGraph.point.length === 2) {
 		if (essaimJSXGraph.mode !== GLOB_axe){
 		    var newElement = brd.create(essaimJSXGraph.mode, essaimJSXGraph.point);
+/*=======*/
+		else if (essaimJSXGraph.point.length === 3) {
+			
+/*>>>>>>> 8b60977a8af6452cca8ccb9ca2d16e229b559802*/
 		}
-                if (essaimJSXGraph.mode === GLOB_axe) {
-		    var newElement = 
-			brd.create(essaimJSXGraph.mode,essaimJSXGraph.point, 
+		
+        else if (essaimJSXGraph.point.length === 2 && essaimJSXGraph.mode !== GLOB_angle) {
+			if (essaimJSXGraph.mode !== GLOB_axe){
+				var newElement = brd.create(essaimJSXGraph.mode, essaimJSXGraph.point);
+				essaimJSXGraph.point = [];
+			}
+			if (essaimJSXGraph.mode === GLOB_axe) {
+				var newElement = 
+				brd.create(essaimJSXGraph.mode,essaimJSXGraph.point, 
 				   { 
 				       name:'',
 				       withLabel:true,
@@ -459,6 +477,7 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup)
 					   position:'top'
 				       }
 				   });
+<<<<<<< HEAD
 		    /*Sert à ne pas créer les grilles lorsque on crée un axe*/                    
 		    newElement.removeAllTicks();
                     newElement.isDraggable = true;
@@ -477,6 +496,25 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup)
 		console.log(newElement);
 		essaimJSXGraph.point = [];
             }
+=======
+				   
+				/*Sert à ne pas créer les grilles lorsque on crée un axe*/                    
+				newElement.removeAllTicks();
+                newElement.isDraggable = true;
+				
+                newElement.on('drag', function () {
+					essaimJSXGraph.brd.fullUpdate()
+                });
+				
+					for (var i in newElement.ancestors) {
+						newElement.ancestors[i].isDraggable = true;
+						newElement.ancestors[i].on('drag', function () {
+							essaimJSXGraph.brd.fullUpdate()
+                        });
+					}
+				}
+			}
+>>>>>>> 8b60977a8af6452cca8ccb9ca2d16e229b559802
         }
     });
 
