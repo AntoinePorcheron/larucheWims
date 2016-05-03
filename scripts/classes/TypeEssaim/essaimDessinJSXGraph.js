@@ -183,7 +183,7 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup)
     /* On crée des blocs correspondant aux différents menus :
      * - div_button_action :  bloc pour le menu des actions
      * - div_button_objet : bloc pour le menu des objets
-	 * - div_menu_contextuelle : bloc pour le menu contextuel
+     * - div_menu_contextuelle : bloc pour le menu contextuel
      **/
     /*
      * Pour chacun de ces menus, on crée un bloc div supplémentaire pour le retour à la ligne :
@@ -203,25 +203,23 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup)
        **/
     var $div_button_action = $("<div></div>").appendTo(this.divBloc);
     var $zoneTexteAction = $("<p></p>").text("Actions").appendTo($div_button_action);
-     
+    
     var $div_button_retour_chariot_Action = $("<div></div>").appendTo($div_button_action);
     var $div_button_objet = $("<div></div>").appendTo(this.divBloc);
     
     var $zoneTexteObjet = $("<p></p>").text("Objets").appendTo($div_button_objet);
     var $div_button_retour_chariot_Objet = $("<div></div>").appendTo($div_button_objet);
     
+    
     var $div_menu_contextuelle = $("<div></div>").appendTo(this.divBloc);
-    this.$divMenu = $("<div></div>").appendTo($div_menu_contextuelle);
-    var $menuButtons = $("<div></div>").appendTo($div_menu_contextuelle);
+    this.$divMenu.appendTo($div_menu_contextuelle);
+    this.$menuButtons.appendTo($div_menu_contextuelle);
     this.context();
 
-    
-    
-     var modeSelect = function (event) {
+    var modeSelect = function (event) {
 	event.data.essaimJSXGraph.mode = GLOB_libre
     };
 
-    
     var $menu_deroulant = $("<select></select>");
     /*Ajout des différent boutton necessaire au bon fonctionnement du graphe*/
     /* title permet d'afficher une infobulle au survol du bouton */
@@ -254,7 +252,7 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup)
     var $menu_deroulant = $("<select></select>").click({}, function(){
 	console.log($($menu_deroulant).val())/*console.log(this.text())*/;
 	
-});
+    });
     
     var $charger = $("<button>Charger</button>")
 	.click({essaimJSXGraph: this, md:$menu_deroulant}, function(event){
@@ -299,7 +297,6 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup)
      * il marche une fois et puis revient en mode selection
      * @type {*|{trigger, _default}|jQuery}
      */
-
     var $supprimer = 
 	$("<button title = \"Permet de supprimer un élément.\">Supprimer un élément</button>")
 	.appendTo($div_button_retour_chariot_Action).click(
@@ -417,14 +414,13 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup)
                 if (parent !== undefined) {
                     point.ancestors[0] = 0;
                 }
-		/*<<<<<<< HEAD*/
-            }else if (!brd.objects[point].getAttribute("visible")) {
+	    }else if (!brd.objects[point].getAttribute("visible")) {
 		brd.objects[point].setAttribute({visible: true});
             }
             essaimJSXGraph.point.push(point);
-	   
+	    
             /*Création de la forme souhaitée*/
-		if (essaimJSXGraph.mode === GLOB_point) {
+	    if (essaimJSXGraph.mode === GLOB_point) {
                 essaimJSXGraph.point = [];
             }
             else if (essaimJSXGraph.point.length === 2) {
@@ -442,14 +438,14 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup)
 					   position:'top'
 				       }
 				   });
-				   /*Sert à ne pas créer les grilles lorsque on crée un axe*/                    newElement.removeAllTicks();
-                newElement.isDraggable = true;
-                newElement.on('drag', function () {
-                    essaimJSXGraph.brd.fullUpdate()
-                });
-                for (var i in newElement.ancestors) {
-                    newElement.ancestors[i].isDraggable = true;
-                    newElement.ancestors[i].on('drag', function () {
+		    /*Sert à ne pas créer les grilles lorsque on crée un axe*/                    newElement.removeAllTicks();
+                    newElement.isDraggable = true;
+                    newElement.on('drag', function () {
+			essaimJSXGraph.brd.fullUpdate()
+                    });
+                    for (var i in newElement.ancestors) {
+			newElement.ancestors[i].isDraggable = true;
+			newElement.ancestors[i].on('drag', function () {
                             essaimJSXGraph.brd.fullUpdate()
                         });
                     }
@@ -462,7 +458,7 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup)
 	essaimJSXGraph.lastEvent = event;
     });
 
-        
+    
     EssaimJSXGraph.prototype.initEnonce.call(this);
 
     EssaimJSXGraph.prototype.initAnalyse.call(this);    
@@ -799,6 +795,7 @@ EssaimJSXGraph.prototype.buildMenu = function (element) {
             .click(option.callback)
     };
     var options = this.menuOptions(element);
+    console.log(options);
     var self = this;
     this.$menuButtons.html("");
     (function (list) {
@@ -857,7 +854,7 @@ EssaimJSXGraph.prototype.multiSelect = function () {
 		$ok.remove();
 		$clean.remove();
 		self.buildMultiSelectMenu()
-	});
+	    });
 	// clean button
 	var $clean = $("<button></button>").appendTo(this.$multiSelect)
 	    .html("clean")
@@ -866,30 +863,30 @@ EssaimJSXGraph.prototype.multiSelect = function () {
 	    });
 
 	this.ms = true;
+    }
+    this.$selection.appendTo(this.divBloc);
+    this.$multiSelectMenu.appendTo(this.divBloc);
+    var tmp = function () {
+	self.$button_libre.trigger("click");
+	var element = self.getTopUnderMouse();
+	if(element.elType) {
+	    var tmp = self.stackMultiSelect.indexOf(element);
+	    if (tmp >= 0) {
+		self.stackMultiSelect.splice(tmp, 1)
+	    } else {
+		self.stackMultiSelect.push(element)
+	    }
 	}
-	this.$selection.appendTo(this.divBloc);
-	this.$multiSelectMenu.appendTo(this.divBloc);
-	var tmp = function () {
-		self.$button_libre.trigger("click");
-		var element = self.getTopUnderMouse();
-		if(element.elType) {
-			var tmp = self.stackMultiSelect.indexOf(element);
-			if (tmp >= 0) {
-				self.stackMultiSelect.splice(tmp, 1)
-			} else {
-				self.stackMultiSelect.push(element)
-			}
-		}
-		//interface
-		self.$selection.html("");
-		var html = [];
-		var select = self.stackMultiSelect;
-		for(var i = 0; i < select.length; i++){
-			html.push(select[i].elType + " " + select[i].name)
-		}
-		self.$selection.html(JSON.stringify(html))
-	};
-	this.brd.on("up", tmp)
+	//interface
+	self.$selection.html("");
+	var html = [];
+	var select = self.stackMultiSelect;
+	for(var i = 0; i < select.length; i++){
+	    html.push(select[i].elType + " " + select[i].name)
+	}
+	self.$selection.html(JSON.stringify(html))
+    };
+    this.brd.on("up", tmp)
 };
 
 /**
@@ -897,28 +894,28 @@ EssaimJSXGraph.prototype.multiSelect = function () {
  * construire les button dans le menu
  */
 EssaimJSXGraph.prototype.buildMultiSelectMenu = function () {
-	// this.stackMultiStack est le array de selection
-	var menu = {};
-	var self = this;
+    // this.stackMultiStack est le array de selection
+    var menu = {};
+    var self = this;
 
-	menu.grouper = {
-		nom: "grouper",
-		callback: function () {
-			self.brd.create("group", self.stackMultiSelect)
-		}
-	};
-
-	var key = Object.keys(menu);
-	var buildButton = function (option) {
-		console.log(option);
-		return $("<button></button>")
-			.html(option.nom)
-			.click(option.callback)
-	};
-	for(var i = 0; i < key.length; i++){
-		self.$multiSelectMenu.append(buildButton(menu[key[i]]))
+    menu.grouper = {
+	nom: "grouper",
+	callback: function () {
+	    self.brd.create("group", self.stackMultiSelect)
 	}
-	self.$multiSelectMenu.appendTo(self.divBloc)
+    };
+
+    var key = Object.keys(menu);
+    var buildButton = function (option) {
+	console.log(option);
+	return $("<button></button>")
+	    .html(option.nom)
+	    .click(option.callback)
+    };
+    for(var i = 0; i < key.length; i++){
+	self.$multiSelectMenu.append(buildButton(menu[key[i]]))
+    }
+    self.$multiSelectMenu.appendTo(self.divBloc)
 };
 
 /**
