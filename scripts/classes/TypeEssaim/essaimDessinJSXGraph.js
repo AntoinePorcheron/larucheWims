@@ -15,6 +15,7 @@ var GLOB_axe = "axis";
 // variable permettant de sauvegarder l'état actuel du dessin*/
 var saveState = {};
 var selectListener = [];
+
 EssaimJSXGraph = function (num) {
 
     //Appelle le constructeur parent
@@ -26,10 +27,12 @@ EssaimJSXGraph = function (num) {
     this.numero = num;		   // numéro de l'essaim
     this.proto = "EssaimJSXGraph"; // nature de la classe
     
-    // permet de définir dans quel mode l'utilisateur se trouve (mode point, mode ligne...)
+    // permet de définir dans quel mode l'utilisateur se trouve 
+    //(mode point, mode ligne...)
     this.mode = GLOB_libre;
     
-    // contient un ensemble de point (une ligne = 2 points par exemple). Permet de créer un objet
+    // contient un ensemble de point (une ligne = 2 points par exemple). 
+    //Permet de créer un objet
     this.point = [];
 
     // variable d'environnement : contient les bornes du graphe
@@ -765,7 +768,8 @@ EssaimJSXGraph.prototype.popupImageUploader = function (readSuccess, readFail) {
     }
 
     $input.get(0).onchange = function (event) {
-        readFile(event.srcElement.files[0])
+	var target = event.target || event.srcElement; //Ligne de compatibilité de divers navigateur
+        readFile(target.files[0])
     }
 };
 
