@@ -267,12 +267,12 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup)
 
     var $save = 
 	$("<button title=\"Permet de sauvegarder des éléments du graphique dans une boite à dessin.\">Ajout dans boîte à dessin </button>")
-	.appendTo(this.$div_button_retour_chariot_Action).click(
-            {essaimJSXGraph: this, menu_D: this.$menu_deroulant, charge:$charger}, function (event) {
+	.appendTo($div_button_retour_chariot_Action).click(
+            {essaimJSXGraph: this, menu_D: $menu_deroulant, charge:$charger}, function (event) {
 		var tab = {};
 		if (event.data.essaimJSXGraph.menu_enregistre) {
-                    event.data.menu_D.appendTo(this.$div_button_retour_chariot_Action);
-		    event.data.charge.appendTo(this.$div_button_retour_chariot_Action);
+                    event.data.menu_D.appendTo($div_button_retour_chariot_Action);
+		    event.data.charge.appendTo($div_button_retour_chariot_Action);
                     event.data.essaimJSXGraph.menu_enregistre = false;
 		}
 		for (i in event.data.essaimJSXGraph.brd.objects) {
@@ -426,7 +426,6 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup)
             else if (essaimJSXGraph.point.length === 2) {
 		if (essaimJSXGraph.mode !== GLOB_axe){
 		    var newElement = brd.create(essaimJSXGraph.mode, essaimJSXGraph.point);
-		    essaimJSXGraph.point = [];
 		}
                 if (essaimJSXGraph.mode === GLOB_axe) {
 		    var newElement = 
@@ -450,6 +449,7 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup)
                         });
                     }
                 }
+		essaimJSXGraph.point = [];
             }
         }
     });
@@ -940,7 +940,7 @@ EssaimJSXGraph.prototype.inputbox = function (label, type) {
     var $box = $("<div></div>")
 	.appendTo(this.divBloc);
     var $label = $("<div></div>")
-	.html("Input: "+label)
+	.html(label)
 	.appendTo($box);
     var $input = $("<input />")
 	.attr("type", type)
