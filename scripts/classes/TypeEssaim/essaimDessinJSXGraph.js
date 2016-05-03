@@ -318,6 +318,18 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup)
 		};
 		essaimJSXGraph.brd.on("up", tmp)	
 	    });
+
+    var $button_image = $("<button></button>")
+        .html("upload image")
+        .appendTo($div_button_retour_chariot_Action)
+        .click(function (event) {
+            var self = essaimJSXGraph;
+            self.popupImageUploader(function (event) {
+                var result = event.target.result;
+                self.brd.create("image", [result, [0, 0], [5, 5]]);
+                self.brd.update()
+            })
+        });
     
     var $multiselect = 
 	$("<button title = \"Action de multi-sélection\">Multi-select</button>")
@@ -325,7 +337,7 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup)
 	    {essaimJSXGraph: this}, function (event) {
 		essaimJSXGraph.multiSelect();
 	    });
-    
+
 
     /* ----------------------
        Menu pour les objets
@@ -710,11 +722,10 @@ EssaimJSXGraph.prototype.fillImageIntoPoint = function (url, pointExiste) {
 
 /**
  * Interface function
- * pop up un fenetre a upload un image
- * @param board
- * @param paint
+ * pop up un fenetre a upload un
+ * @param readSuccess
  */
-EssaimJSXGraph.prototype.popupImageUploader = function (board, paint) {
+EssaimJSXGraph.prototype.popupImageUploader = function (readSuccess) {
     var self = this;
     if (!FileReader) throw "A Newer Version of Browser is Required.";
     var $input = $("<input />")
@@ -723,23 +734,15 @@ EssaimJSXGraph.prototype.popupImageUploader = function (board, paint) {
         src: "",
         alt: "image"
     });
-    /*var $div = $("<div></div>").css({
-      position: "absolute"
-      })
-      .html($input)
-      //.append($img)
-      .appendTo("body");
-    */
     $input.trigger("click");
     function readFile(file) {
         var reader = new FileReader();
         reader.onload = readSuccess;
+    /*
         function readSuccess(event) {
-            //$img.attr("src", event.target.result);
-            //$div.hide();
             self.fillImageIntoPoint(event.target.result, paint)
         }
-
+    */
         reader.readAsDataURL(file);
     }
 
@@ -766,7 +769,7 @@ EssaimJSXGraph.prototype.getTopUnderMouse = function () {
         sector: 3,
         angle: 2,
         grid: 1,
-        image: 10,
+        image: 0,
         text: -1
     };
     var ele = this.brd.getAllUnderMouse(this.lastEvent);
@@ -967,6 +970,10 @@ EssaimJSXGraph.prototype.inputbox = function (label, type) {
 	})
 	.appendTo($box);
     return def.promise()
+};
+
+EssaimJSXGraph.prototype.selectMode = function () {
+    this.$button_libre.trigger("click")
 };
 
 function getMouseCoords(event, brd){
