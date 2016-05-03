@@ -899,10 +899,20 @@ EssaimJSXGraph.prototype.buildMultiSelectMenu = function () {
     var self = this;
 
     menu.grouper = {
-	nom: "grouper",
-	callback: function () {
-	    self.brd.create("group", self.stackMultiSelect)
-	}
+        nom: "grouper",
+        callback: function () {
+            self.brd.create("group", self.stackMultiSelect)
+        }
+    };
+
+    menu.toutsup = {
+        nom: "tout supprimer",
+        callback: function () {
+            for(var i = 0; i < self.stackMultiSelect.length; i++){
+                self.brd.removeObject(self.stackMultiSelect[i])
+            }
+            self.brd.update()
+        }
     };
 
     var key = Object.keys(menu);
