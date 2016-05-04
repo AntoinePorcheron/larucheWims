@@ -697,15 +697,21 @@ EssaimJSXGraph.prototype.toOEF = function () {
 		    p1.X() + "," + p1.Y() + "," +
 		    point_final.x + "," + point_final.y + ",7,black\n";
 		break;
-		case GLOB_angle :
-			var p1 = brdElement.point1;
-			var p2 = brdElement.point2;
-			var p3 = brdElement.point3;
-			var valAngle = ( brdElement.Value() * 360 )  / ( 2 * Math.PI );
-			
-			OEF += "arc " + 
-				p1.X() + "," + p1.Y() + "," + "1,1,0," + valAngle + ",black\n";
-			break;
+	    case GLOB_angle :
+		
+		var p1 = brdElement.point1;
+		var p2 = brdElement.point2;
+		var p3 = brdElement.point3;
+		
+		var tmpLine = this.brd.create("line", [p1,p2]);
+		var valAngleAxeX = (tmpLine.getAngle() * 360) / (2 * Math.PI);
+		this.brd.removeObject(tmpLine);
+		/*console.log(tmpLine.getAngle());*/
+		
+		var valAngle = ( brdElement.Value() * 360 )  / ( 2 * Math.PI );
+		OEF += "arc " + 
+		    p1.X() + "," + p1.Y() + "," + "2,2," + valAngleAxeX + "," + valAngle + ",black\n";
+		break;
 	    default :
 	    }
 	}	
@@ -746,14 +752,14 @@ EssaimJSXGraph.prototype.menuOptions = function (element) {
         changeNom: {
             nom: "Changer le nom",
             callback: function () {
-            $.when(self.inputbox("Entrer un nom : "))
-                .done(function (nom) {
-                    element.name = nom;
-                    self.brd.update()
-                })
-                .fail(function (err) {
-                    alert(err)
-                })
+		$.when(self.inputbox("Entrer un nom : "))
+                    .done(function (nom) {
+			element.name = nom;
+			self.brd.update()
+                    })
+                    .fail(function (err) {
+			alert(err)
+                    })
             }
         }
     };
@@ -928,8 +934,8 @@ EssaimJSXGraph.prototype.selection = function () {
     var element = this.getTopUnderMouse();
     var self = this;
     if(element.elType){
-	    this.$divMenu.html("Menu Contextuel de " + element.elType + " " +element.name);
-	    this.buildMenu(element)
+	this.$divMenu.html("Menu Contextuel de " + element.elType + " " +element.name);
+	this.buildMenu(element)
     }
 };
 
@@ -1085,10 +1091,9 @@ EssaimJSXGraph.prototype.selectMode = function () {
 };
 
 function getMouseCoords(event, brd){
-    
     var cPos = brd.getCoordsTopLeftCorner(event, 0),
     absPos = JXG.getPosition(event, 0),
     dx = absPos[0] - cPos[0],
     dy = absPos[1] - cPos[1];
     return new JXG.Coords(JXG.COORDS_BY_SCREEN, [dx, dy], brd);
-}
+};
