@@ -301,7 +301,6 @@ Variable.prototype.ajoutBlocDansPreparation = function()
     $("#Rid_Prep_Blocs").append(li);
     drag();
 }
-
 function drag(){ 
     /* Gestion du drag and drop xcvb*/
     /* Cette fonction fait en sorte que les blocs de variable soient droppables */
@@ -310,16 +309,22 @@ function drag(){
     console.log(cpt);
     var T_rc1_drag =document.querySelectorAll(".Rcl_Bloc");
     var rc1_drag = T_rc1_drag[T_rc1_drag.length-1];
-    
+
     
 
     console.log(rc1_drag.id);
     cpt++;
 
-    //var rc1_drag =document.querySelector("#Rid_Prep_Blocs");
-   //rc1_drag.draggable = true;
+    var bloc_pere =document.getElementById("Rid_Prep_Blocs");
+    var posDrag = document.createAttribute("posdrag");
+    posDrag.value=0;
+    bloc_pere.setAttributeNode(posDrag);
+    
     rc1_drag.addEventListener('dragstart', function(e) {
-
+        if(bloc_pere.getAttribute("posdrag")==0){
+                    bloc_pere.setAttribute("posdrag",""+e.clientY);
+                }
+        
         e.dataTransfer.setData('text/plain', rc1_drag.id);
         //e.dataTransfer.setDragImage(dragImg, 40, 40); // Une position de 40x40 pixels centrera l'image (de 80x80 pixels) sous le curseur
         
@@ -331,11 +336,25 @@ function drag(){
     rc1_drag.addEventListener('dragover', function(e) {
         //Lorsqu'on survole la zone avec l'élément droppé
         e.preventDefault(); // Annule l'interdiction de drop
-        
+        e.stopPropagation;
         if(e!=this)
             {
-                this.style.backgroundColor='rgb(196, 255, 174)';
-                console.log('Entrée dans la zone');
+                //###############################################################
+       console.log("start : "+bloc_pere.getAttribute("posdrag"));
+        console.log("over : "+e.clientY);
+        if(bloc_pere.getAttribute("posdrag")<e.clientY)
+        {
+            this.style.marginBottom = "50px"; //Marge ajoutée
+            this.style.borderBottom="2px dotted red";
+        }
+        else
+        {
+            this.style.marginTop = "0px";
+            this.style.borderTop="2px dotted red";
+        }
+                
+                //###############################################################
+                
             }
         
         console.log('Un élément survole la zone');
@@ -350,7 +369,10 @@ function drag(){
                         
     rc1_drag.addEventListener('dragleave', function(e) {
          //Lorsqu'on sort d'une zone de drop.
-         this.style.backgroundColor ='';
+        this.style.marginBottom = ""; 
+        this.style.borderBottom="";      
+        this.style.marginTop = "";
+        this.style.borderTop="";
         console.log('Sortie de zone');
      });
     
@@ -359,7 +381,13 @@ function drag(){
    rc1_drag.addEventListener('drop', function(e) {
        /*Cette fonction sert à décrire ce qui se passera pour le bloc ciblé ce qui se passera lorsqu'on lachera un objet droppable sur lui */
          
-       this.style.backgroundColor =''; //On met à jour la couleur du recepteur
+       this.style.marginBottom = ""; 
+        this.style.borderBottom="";
+       this.style.marginTop = "";
+        this.style.borderTop="";
+       if(bloc_pere.getAttribute("posdrag")!=""+0){
+           bloc_pere.setAttribute("posdrag",0);
+        }
        
        var nomZoneIn=" "; //on va récupérer l'id du bloc reçu. 
         nomZoneIn=e.dataTransfer.getData('text/plain'); // Affiche le contenu du type MIME « text/plain »

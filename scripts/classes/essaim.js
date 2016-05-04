@@ -42,12 +42,19 @@ Essaim.prototype.initBloc = function()
     var liste = document.createElement("LI");
     liste.id = "RidPrBloc_"+this.nom;
     liste.className = "Rcl_Bloc_Essaim Rcl_Bloc";
+    var posDrag = document.createAttribute("posdrag");
+    posDrag.value=0;
+    bloc_pere.setAttributeNode(posDrag);
     
     /* début des modifs pour le drap and drop */
     liste.draggable = true;
+    var posDrag=0;
 
     liste.addEventListener('dragstart', function(e) {
-
+        
+        if(bloc_pere.getAttribute("posdrag")==0){
+                    bloc_pere.setAttribute("posdrag",""+e.clientY);
+                }
         e.dataTransfer.setData('text/plain', liste.id);
         e.dataTransfer.setDragImage(dragImg, 40, 40); // Une position de 40x40 pixels centrera l'image (de 80x80 pixels) sous le curseur
         
@@ -61,8 +68,16 @@ Essaim.prototype.initBloc = function()
         e.preventDefault(); // Annule l'interdiction de drop
         if(e!=this)
             {
-                this.style.backgroundColor='rgb(196, 255, 174)';
-                console.log('Entrée dans la zone');
+                if(bloc_pere.getAttribute("posdrag")<e.clientY)
+        {
+            this.style.marginBottom = "50px"; //Marge ajoutée
+            this.style.borderBottom="2px dotted red";
+        }
+        else
+        {
+            this.style.marginTop = "0px";
+            this.style.borderTop="2px dotted red";
+        }
             }
         console.log('Un élément survole la zone');
     });
@@ -75,7 +90,10 @@ Essaim.prototype.initBloc = function()
                         
     liste.addEventListener('dragleave', function(e) {
          //Lorsqu'on sort d'une zone de drop.
-         this.style.backgroundColor =''; // Couleur de base des blocs
+         this.style.marginBottom = ""; 
+        this.style.borderBottom="";      
+        this.style.marginTop = "";
+        this.style.borderTop="";
         console.log('Sortie de zone');
      });
     
@@ -84,7 +102,13 @@ Essaim.prototype.initBloc = function()
    liste.addEventListener('drop', function(e) {
         /*Cette fonction sert à décrire ce qui se passera pour le bloc ciblé ce qui se passera lorsqu'on lachera un objet droppable sur lui */
         
-        this.style.backgroundColor =''; // On commence par remettre la couleur du bloc à sa couleur de base
+        this.style.marginBottom = ""; 
+        this.style.borderBottom="";      
+        this.style.marginTop = "";
+        this.style.borderTop="";
+       if(bloc_pere.getAttribute("posdrag")!=""+0){
+            bloc_pere.setAttribute("posdrag",0);
+        }
         var nomZoneIn=" "; //on va récupérer l'id du bloc reçu. 
         nomZoneIn=e.dataTransfer.getData('text/plain'); // Affiche le contenu du type MIME « text/plain »
         console.log('Données reçu : ' + nomZoneIn);
