@@ -714,19 +714,46 @@ EssaimJSXGraph.prototype.menuOptions = function (element) {
     var options = {};
     var self = this;
     options.common = {
-	changeNom: {
-	    nom: "Changer le nom",
-	    callback: function () {
-		$.when(self.inputbox("Entrer un nom : "))
-		    .done(function (nom) {
-			element.name = nom;
-			self.brd.update()
-		    })
-		    .fail(function (err) {
-			alert(err)
-		    })
-	    }
-	}
+        changeNom: {
+            nom: "Changer le nom",
+            callback: function () {
+            $.when(self.inputbox("Entrer un nom : "))
+                .done(function (nom) {
+                    element.name = nom;
+                    self.brd.update()
+                })
+                .fail(function (err) {
+                    alert(err)
+                })
+            }
+        }
+    };
+
+    options.image = {
+        resize: {
+            nom: "changer le size",
+            callback: function () {
+                $.when(self.inputbox("Entrer width et height, separer par , "))
+                    .done(function (data) {
+                        var width = parseInt(data.match(/^ *[^,]* *,/)[0].replace(/,/, ""));
+                        var height = parseInt(data.match(/, *[^,]*$/)[0].replace(/,/, ""));
+                        element.updateSize();
+                        element.updateRenderer();
+                        console.log([width, height])
+                        console.log(element)
+                        self.brd.fullUpdate()
+                    })
+            }
+        },
+        haut: {
+            nom: "remettre en haut",
+            callback: function () {
+                var tmp = element;
+                console.log(tmp);
+                self.brd.removeObject(element);
+                self.brd.create("image", [tmp.url, [tmp.X(), tmp.Y()], tmp.usrSize])
+            }
+        }
     };
     return options
 };
@@ -849,7 +876,7 @@ EssaimJSXGraph.prototype.buildMenu = function (element) {
 	    .click(option.callback)
     };
     var options = this.menuOptions(element);
-    console.log(options);
+    //console.log(options);
     var self = this;
     this.$menuButtons.html("");
     (function (list) {
@@ -870,9 +897,10 @@ EssaimJSXGraph.prototype.buildMenu = function (element) {
  */
 EssaimJSXGraph.prototype.selection = function () {
     var element = this.getTopUnderMouse();
+    var self = this;
     if(element.elType){
-	this.$divMenu.html("Menu Contextuel de " + element.elType + " " +element.name);
-	this.buildMenu(element)
+	    this.$divMenu.html("Menu Contextuel de " + element.elType + " " +element.name);
+	    this.buildMenu(element)
     }
 };
 
@@ -882,6 +910,7 @@ EssaimJSXGraph.prototype.selection = function () {
  */
 EssaimJSXGraph.prototype.context = function () {
     var self = this;
+
     this.brd.on("down", function () {
 	self.selection();
     })
