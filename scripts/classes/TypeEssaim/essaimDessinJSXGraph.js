@@ -410,8 +410,7 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup)
     var timer;
     $(window).resize({essaimJSXGraph: this}, function (event) {
 	var graph = event.data.essaimJSXGraph
-	console.log(graph.brd);
-        clearTimeout(timer);
+	clearTimeout(timer);
         timer = setTimeout(
 	    function () {
 		
@@ -703,14 +702,14 @@ EssaimJSXGraph.prototype.toOEF = function () {
 		var p2 = brdElement.point2;
 		var p3 = brdElement.point3;
 		
+		/*On créé une ligne temporaire pour obtenir l'angle de "base" à partir de l'axe X*/
 		var tmpLine = this.brd.create("line", [p1,p2]);
 		var valAngleAxeX = (tmpLine.getAngle() * 360) / (2 * Math.PI);
 		this.brd.removeObject(tmpLine);
-		/*console.log(tmpLine.getAngle());*/
 		
-		var valAngle = ( brdElement.Value() * 360 )  / ( 2 * Math.PI );
+		var valAngle = ( brdElement.Value() * 360 )  / ( 2 * Math.PI ) + valAngleAxeX;
 		OEF += "arc " + 
-		    p1.X() + "," + p1.Y() + "," + "2,2," + valAngleAxeX + "," + valAngle + ",black\n";
+		    p1.X() + "," + p1.Y() + "," + "1,1," + valAngleAxeX + "," + valAngle+ ",black\n";
 		break;
 	    default :
 	    }
