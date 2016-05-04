@@ -192,7 +192,7 @@ Essaim.prototype.initBloc = function()
         {
             buttonWindow.className = "";
             buttonWindow.className = "Rcl_Button_Maximize";
-            buttonWindow.parentNode.parentNode.className = "Rcl_Bloc_Essaim Rcl_Bloc Rcl_Closed";
+            buttonWindow.parentNode.parentNode.className = "Rcl_Bloc_Essaim Rcl_Closed";
         }
         else
         {

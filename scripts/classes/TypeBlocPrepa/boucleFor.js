@@ -178,7 +178,7 @@ function BoucleFor(numero)
 			{
 				buttonWindow.className = "";
 				buttonWindow.className = "Rcl_Button_Maximize";
-				buttonWindow.parentNode.parentNode.className = "Rcl_Bloc Rcl_Closed";
+				buttonWindow.parentNode.parentNode.className = "Rcl_Closed";
                 div_forDebut.className += " Rcl_Mini_Editor_hidden";
                 div_forFin.className += " Rcl_Mini_Editor_hidden";
                 div_forInstruction.className += " Rcl_Mini_Editor_hidden";

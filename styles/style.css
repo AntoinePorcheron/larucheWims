@@ -68,6 +68,12 @@ h3 {
 	height: 44px;
 	overflow: hidden;
     background-color:lightgray;
+    margin-bottom: 0px;
+	box-shadow: 2px 1px 5px rgba(0,0,0,0.2);
+	border: 1px solid #E5E5E5;
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    border-radius: 10px;
 }
 @media screen and (max-width: 960px) {
 	.Rcl_Closed {

@@ -179,7 +179,7 @@ function Condition(numero)
 				buttonWindow.className = "";
 				buttonWindow.className = "Rcl_Button_Maximize";
 				buttonWindow.parentNode.parentNode.className = "";
-				buttonWindow.parentNode.parentNode.className = "Rcl_Bloc Rcl_Closed";
+				buttonWindow.parentNode.parentNode.className = "Rcl_Closed";
                 //cache les zones d'edition
                 div_condition.className += " Rcl_Mini_Editor_hidden";
                 div_conditionTrue.className += " Rcl_Mini_Editor_hidden";
