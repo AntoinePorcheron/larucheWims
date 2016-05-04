@@ -429,20 +429,28 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup)
     var essaimJSXGraph = this;
     
     this.brd.on('down', function (event) {
-	console.log(event);
+	/*console.log(event);*/
 	/*Event.buttons donne la valeur du clic*/
         if (essaimJSXGraph.mode !== GLOB_libre) {
             var point = undefined;
             var brd = essaimJSXGraph.brd;
             var parent = undefined;
             var coords = getMouseCoords(event, essaimJSXGraph.brd);
-	    
-            for (element in brd.objects) {
-                if (JXG.isPoint(brd.objects[element])
-                    && brd.objects[element].hasPoint(coords.scrCoords[1], coords.scrCoords[2])) {
-                    point = element;
-                }
-            }
+	
+	    if (essaimJSXGraph.mode !== GLOB_cercle || essaimJSXGraph.point.length < 1){
+		for (element in brd.objects) {
+                    if (JXG.isPoint(brd.objects[element])
+			&& brd.objects[element].hasPoint(coords.scrCoords[1], coords.scrCoords[2])) {
+			point = element;
+                    }
+		}
+	    }else{
+		point = essaimJSXGraph.getSecondUnderMouse(event);
+		if (point === undefined){
+		    point = brd.create("point", brd.getUsrCoordsOfMouse(event));
+		}
+		
+	    }
             if (point === undefined) {
                 point = brd.create("point", brd.getUsrCoordsOfMouse(event));
                 if (parent !== undefined) {
@@ -459,12 +467,9 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup)
             }
 	    else if (essaimJSXGraph.point.length === 1 && essaimJSXGraph.mode === GLOB_cercle){
 		essaimJSXGraph.previsualisedObject = brd.create(essaimJSXGraph.mode, [essaimJSXGraph.point[0], brd.getUsrCoordsOfMouse(event)]);
-		/*this.previsualisation = true;*/
 	    }
             else if (essaimJSXGraph.point.length === 2 && essaimJSXGraph.mode !== GLOB_angle && essaimJSXGraph.mode != GLOB_cercle) {
-		/*if (essaimJSXGraph.mode !== GLOB_axe){
-		  var newElement = brd.create(essaimJSXGraph.mode, essaimJSXGraph.point);
-		  }*/
+		
 		if (essaimJSXGraph.mode !== GLOB_axe){
 		    var newElement = brd.create(essaimJSXGraph.mode, essaimJSXGraph.point);
 		}
@@ -495,6 +500,8 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup)
 		}
 		essaimJSXGraph.point = [];
 	    }else if (essaimJSXGraph.point.length === 2 && essaimJSXGraph.mode === GLOB_cercle){
+		essaimJSXGraph.brd.removeObject(essaimJSXGraph.previsualisedObject);
+		essaimJSXGraph.brd.create(essaimJSXGraph.mode, essaimJSXGraph.point);
 		essaimJSXGraph.point = [];
 		essaimJSXGraph.previsualisedObject = undefined;
 	    }else if (essaimJSXGraph.point.length === 3) {
@@ -1062,4 +1069,10 @@ function getMouseCoords(event, brd){
     dx = absPos[0] - cPos[0],
     dy = absPos[1] - cPos[1];
     return new JXG.Coords(JXG.COORDS_BY_SCREEN, [dx, dy], brd);
+}
+
+EssaimJSXGraph.prototype.getSecondUnderMouse = function(event){
+    var ele = this.brd.getAllUnderMouse(event);
+    /*console.log(ele);*/
+    return ele[1];
 }
