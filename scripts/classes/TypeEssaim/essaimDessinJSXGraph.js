@@ -406,6 +406,7 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup)
 	    });
 
     /*Gestion de l'evenementiel*/
+
     var timer;
     $(window).resize({essaimJSXGraph: this}, function (event) {
 	var graph = event.data.essaimJSXGraph
@@ -419,95 +420,103 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup)
 		    graph.divBloc.clientWidth - 30);
 	    },200);
     });
-    /*$(window).mousemove({essaimJSXGraph:this}, function(event){
-      var graph = event.data.essaimJSXGraph;
-      
-      /* }, 200);*/
-    /*});*/
-
     /*Creation de points, à retoucher/améliorer*/
-    var essaimJSXGraph = this;
-    
+    var self = this, essaimJSXGraph = this;
     this.brd.on('down', function (event) {
-	/*console.log(event);*/
-	/*Event.buttons donne la valeur du clic*/
-        if (essaimJSXGraph.mode !== GLOB_libre) {
-            var point = undefined;
-            var brd = essaimJSXGraph.brd;
-            var parent = undefined;
-            var coords = getMouseCoords(event, essaimJSXGraph.brd);
+	var brd = self.brd;
+	var mode = self.mode;
+	var coords = getMouseCoords(event, self.brd);
+	var userCoord = brd.getUsrCoordsOfMouse(event)
 	
-	    if (essaimJSXGraph.mode !== GLOB_cercle || essaimJSXGraph.point.length < 1){
-		for (element in brd.objects) {
-                    if (JXG.isPoint(brd.objects[element])
-			&& brd.objects[element].hasPoint(coords.scrCoords[1], coords.scrCoords[2])) {
-			point = element;
-                    }
+	if (self.mode !== GLOB_libre){
+	    var point = undefined;
+	    for (element in brd.objects){
+		if (brd.objects[element].hasPoint(coords.scrCoords[1], coords.scrCoords[2]) && 
+		    brd.objects[element].getAttribute("visible") &&
+		    JXG.isPoint(brd.objects[element])){
+		    
+		    point = element;
 		}
-	    }else{
-		point = essaimJSXGraph.getSecondUnderMouse(event);
-		if (point === undefined){
-		    point = brd.create("point", brd.getUsrCoordsOfMouse(event));
-		}
-		
 	    }
-            if (point === undefined) {
-                point = brd.create("point", brd.getUsrCoordsOfMouse(event));
-                if (parent !== undefined) {
-                    point.ancestors[0] = 0;
-                }
-	    }else if (!brd.objects[point].getAttribute("visible")) {
-		brd.objects[point].setAttribute({visible: true});
-            }
-            essaimJSXGraph.point.push(point);
+	    if (point === undefined){
+		point = brd.create("point",  userCoord);
+	    }
+	    self.point.push(point);
 	    
-            /*Création de la forme souhaitée*/
-	    if (essaimJSXGraph.mode === GLOB_point) {
-                essaimJSXGraph.point = [];
-            }
-	    else if (essaimJSXGraph.point.length === 1 && essaimJSXGraph.mode === GLOB_cercle){
-		essaimJSXGraph.previsualisedObject = brd.create(essaimJSXGraph.mode, [essaimJSXGraph.point[0], brd.getUsrCoordsOfMouse(event)]);
-	    }
-            else if (essaimJSXGraph.point.length === 2 && essaimJSXGraph.mode !== GLOB_angle && essaimJSXGraph.mode != GLOB_cercle) {
-		
-		if (essaimJSXGraph.mode !== GLOB_axe){
-		    var newElement = brd.create(essaimJSXGraph.mode, essaimJSXGraph.point);
+	    switch (mode){
+
+	    case GLOB_point:
+		self.point = [];
+		break;
+
+	    case GLOB_ligne:
+		if (self.point.length === 2){
+		    brd.create(self.mode, self.point);
+		    self.point = [];
 		}
-		if (essaimJSXGraph.mode === GLOB_axe) {
-		    var newElement = 
-			brd.create(essaimJSXGraph.mode,essaimJSXGraph.point, 
-				   { 
-				       name:'',
-				       withLabel:true,
-				       label:{
-					   position:'top'
-				       }
-				   });
-		    /*Sert à ne pas créer les grilles lorsque on crée un axe*/                    
-		    newElement.removeAllTicks();
-		    newElement.isDraggable = true;
-		    newElement.on('drag', function () {
-			essaimJSXGraph.brd.fullUpdate()
+		break;
+
+	    case GLOB_cercle:
+		if (self.point.length === 1){
+		    self.previsualisedObject = self.brd.create(self.mode, [self.point[0],userCoord] )
+		    
+		}else if (self.point.length === 2){
+		    brd.removeObject(self.previsualisedObject);
+		    brd.create(self.mode, self.point);
+		    self.point = [];
+		}
+		break;
+
+	    case GLOB_arrow:
+		if (self.point.length === 2){
+		    brd.create(self.mode, self.point);
+		    self.point = [];
+		}
+		break;
+
+	    case GLOB_segment:
+		if (self.point.length === 2){
+		    brd.create(self.mode, self.point);
+		    self.point = [];
+		}
+		break;
+
+	    case GLOB_axe:
+		if (self.point.length === 2){
+		    var axis = brd.create(self.mode, self.point,{
+			name:'',
+			withLabel:true,
+			label:{
+			    position:'top'
+			}
 		    });
-		    for (var i in newElement.ancestors) {
-			newElement.ancestors[i].isDraggable = true;
-			newElement.ancestors[i].on('drag', function () {
+		    
+		    /*Sert à ne pas créer les grilles lorsque on crée un axe*/                    
+		    axis.removeAllTicks();
+		    axis.isDraggable = true;
+		    axis.on('drag', function () {essaimJSXGraph.brd.fullUpdate()});
+		    
+		    for (var i in axis.ancestors) {
+			axis.ancestors[i].isDraggable = true;
+			axis.ancestors[i].on('drag', function () {
 			    essaimJSXGraph.brd.fullUpdate()
 			});
 		    }
-		    newElement.needsRegularUpdate = true;
+		    axis.needsRegularUpdate = true;
 		    
+		    self.point = [];
 		}
-		essaimJSXGraph.point = [];
-	    }else if (essaimJSXGraph.point.length === 2 && essaimJSXGraph.mode === GLOB_cercle){
-		essaimJSXGraph.brd.removeObject(essaimJSXGraph.previsualisedObject);
-		essaimJSXGraph.brd.create(essaimJSXGraph.mode, essaimJSXGraph.point);
-		essaimJSXGraph.point = [];
-		essaimJSXGraph.previsualisedObject = undefined;
-	    }else if (essaimJSXGraph.point.length === 3) {
-		var newElement = brd.create(essaimJSXGraph.mode, essaimJSXGraph.point);
-		essaimJSXGraph.point = [];
-	    }   
+		break;
+
+	    case GLOB_angle:
+		if (self.point.length === 3){
+		    brd.create(self.mode, self.point);
+		    self.point = [];
+		}
+		break;
+	    default:
+		console.error("Erreur de mode, le mode selectionné est incorrect");
+	    }
 	}
     });
     
@@ -1069,10 +1078,4 @@ function getMouseCoords(event, brd){
     dx = absPos[0] - cPos[0],
     dy = absPos[1] - cPos[1];
     return new JXG.Coords(JXG.COORDS_BY_SCREEN, [dx, dy], brd);
-}
-
-EssaimJSXGraph.prototype.getSecondUnderMouse = function(event){
-    var ele = this.brd.getAllUnderMouse(event);
-    /*console.log(ele);*/
-    return ele[1];
 }
