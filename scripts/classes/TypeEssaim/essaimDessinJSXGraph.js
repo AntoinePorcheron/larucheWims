@@ -12,6 +12,7 @@ var GLOB_arrow = "arrow";
 var GLOB_segment = "segment";
 var GLOB_axe = "axis";
 var GLOB_angle = "angle";
+var GLOB_arc = "arc";
 
 // variable permettant de sauvegarder l'état actuel du dessin*/
 var saveState = {};
@@ -369,7 +370,6 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup)
             {essaimJSXGraph: this}, function (event) {
 		event.data.essaimJSXGraph.mode = GLOB_ligne;
             });
-
     
     var $button_cercle = 
 	$("<button title=\"Permet de créer un cercle. On utilise deux points pour cela.\">Cercle</button>")
@@ -697,12 +697,21 @@ EssaimJSXGraph.prototype.toOEF = function () {
 		    p1.X() + "," + p1.Y() + "," +
 		    point_final.x + "," + point_final.y + ",7,black\n";
 		break;
+		case GLOB_angle :
+			var p1 = brdElement.point1;
+			var p2 = brdElement.point2;
+			var p3 = brdElement.point3;
+			var valAngle = ( brdElement.Value() * 360 )  / ( 2 * Math.PI );
+			
+			OEF += "arc " + 
+				p1.X() + "," + p1.Y() + "," + "1,1,0," + valAngle + ",black\n";
+			break;
 	    default :
 	    }
 	}	
     }
 
-    OEF += "\\text{url" + this.nom + " = draw(200,200\n\\" + this.nom + ")}"
+    OEF += "}\n\\text{url" + this.nom + " = draw(200,200\n\\" + this.nom + ")}"
     return OEF;
 }
 
