@@ -517,6 +517,10 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup)
 	    default:
 		console.error("Erreur de mode, le mode selectionné est incorrect");
 	    }
+	    if (self.point.length > 3){
+		console.error("Erreur de points, trop de point en mémoire.");
+		self.point = [];
+	    }
 	}
     });
     
