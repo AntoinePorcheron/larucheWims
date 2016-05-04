@@ -402,38 +402,6 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup)
         $("<button title=\"Permet de créer un angle en utiliant 3 points\">Angle</button>").appendTo($div_button_retour_chariot_Objet).click(
             {essaimJSXGraph: this}, function (event) {
 				event.data.essaimJSXGraph.mode = GLOB_angle;
-
-	// Actuellement en test pour le menu contextuel sur le clic droit	
-	/*	
-	var $menuConte = ("<div id=\"context\">Yolooo</div>");
-	
-	
-	$(document).on("contextmenu", ".content", function(e){
-		var paddi = 10;
-		var cent = 100;
-		var vingt = 20;
-		$("#context").css({top:e.pageY,left:e.pageX,position:fixed, display:none, padding:paddi, background:orange}).show();
-		$(".content").css({width:cent, height:cent, margin:vingt});
-		e.preventDefault();
-		return false;
-	});
-	
-	$(document).on("contextmenu click","*:not(.content)",function(e){
-    	$("#context").hide();
-    	e.preventDefault();
-    	return false;
-	});
-	
-                
-
-	$('button').click(function(event){
-		var paddi = 10;
-		if (event.which === 2){
-			$('button').mouseup(function(event){
-				$("<div>Yolooo</div>").css({top:e.pageY,left:e.pageX,position:fixed, display:none, padding:paddi, background:orange});show();
-			})
-		}
-	});*/
 	
 	
     /*Gestion de l'evenementiel*/
