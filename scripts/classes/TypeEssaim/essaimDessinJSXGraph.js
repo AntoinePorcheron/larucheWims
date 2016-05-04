@@ -50,8 +50,9 @@ EssaimJSXGraph = function (num) {
     /*Bidouille pour regler compatibilité sous firefox*/
     this.lastEvent;
 
-    this.lastClick;
-    
+    /*this.previsualisation = flse;*/
+
+    this.previsualisedObject = undefined;
 }
 
 //------------ Déclaration comme classe dérivée de Essaim -------------//
@@ -215,7 +216,6 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup)
     
     var $zoneTexteObjet = $("<p></p>").text("Objets").appendTo($div_button_objet);
     var $div_button_retour_chariot_Objet = $("<div></div>").appendTo($div_button_objet);
-    
     
     var $div_menu_contextuelle = $("<div></div>").appendTo(this.divBloc);
     this.$divMenu.appendTo($div_menu_contextuelle);
@@ -429,6 +429,7 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup)
     var essaimJSXGraph = this;
     
     this.brd.on('down', function (event) {
+	console.log(event);
 	/*Event.buttons donne la valeur du clic*/
         if (essaimJSXGraph.mode !== GLOB_libre) {
             var point = undefined;
@@ -456,7 +457,11 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup)
 	    if (essaimJSXGraph.mode === GLOB_point) {
                 essaimJSXGraph.point = [];
             }
-            else if (essaimJSXGraph.point.length === 2 && essaimJSXGraph.mode !== GLOB_angle) {
+	    else if (essaimJSXGraph.point.length === 1 && essaimJSXGraph.mode === GLOB_cercle){
+		essaimJSXGraph.previsualisedObject = brd.create(essaimJSXGraph.mode, [essaimJSXGraph.point[0], brd.getUsrCoordsOfMouse(event)]);
+		/*this.previsualisation = true;*/
+	    }
+            else if (essaimJSXGraph.point.length === 2 && essaimJSXGraph.mode !== GLOB_angle && essaimJSXGraph.mode != GLOB_cercle) {
 		/*if (essaimJSXGraph.mode !== GLOB_axe){
 		  var newElement = brd.create(essaimJSXGraph.mode, essaimJSXGraph.point);
 		  }*/
@@ -489,6 +494,9 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup)
 		    
 		}
 		essaimJSXGraph.point = [];
+	    }else if (essaimJSXGraph.point.length === 2 && essaimJSXGraph.mode === GLOB_cercle){
+		essaimJSXGraph.point = [];
+		essaimJSXGraph.previsualisedObject = undefined;
 	    }else if (essaimJSXGraph.point.length === 3) {
 		var newElement = brd.create(essaimJSXGraph.mode, essaimJSXGraph.point);
 		essaimJSXGraph.point = [];
@@ -498,6 +506,11 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup)
     
     this.brd.on('move', function(event){
 	essaimJSXGraph.lastEvent = event;
+	if (essaimJSXGraph.previsualisedObject){
+	    essaimJSXGraph.previsualisedObject.point2.setPosition(JXG.COORDS_BY_USER, essaimJSXGraph.brd.getUsrCoordsOfMouse(event));
+	    essaimJSXGraph.brd.update();
+	}
+	
     });
 
 
@@ -869,8 +882,8 @@ EssaimJSXGraph.prototype.selection = function () {
  */
 EssaimJSXGraph.prototype.context = function () {
     var self = this;
-    this.brd.on("up", function () {
-	self.selection()
+    this.brd.on("down", function () {
+	self.selection();
     })
 };
 
