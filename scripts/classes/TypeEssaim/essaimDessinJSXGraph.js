@@ -427,13 +427,9 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup)
 
     /*Creation de points, à retoucher/améliorer*/
     var essaimJSXGraph = this;
-
-    $(document).on("click", function(event){
-	/*console.log(event);*/
-	essaimJSXGraph.lastClick = event.button;
-    });
-    this.brd.on('up', function (event) {
-	console.log(/*event*/essaimJSXGraph.lastClick);
+    
+    this.brd.on('down', function (event) {
+	/*Event.buttons donne la valeur du clic*/
         if (essaimJSXGraph.mode !== GLOB_libre) {
             var point = undefined;
             var brd = essaimJSXGraph.brd;
