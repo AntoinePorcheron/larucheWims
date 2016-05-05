@@ -4,8 +4,10 @@ BlocFocus = function(){
     this.content;
     this.width;
     this.height;
-
     this.headerHeight = 20;
+    
+    /*Contient un ensemble de fonction à effectuer lors du resize du bloc*/
+    this.resizeListener = [];
 }
 
 BlocFocus.prototype.proto = "BlocFocus";
@@ -52,29 +54,40 @@ BlocFocus.prototype.initBloc = function(){
 	    "position":"absolute",
 	    "top":this.headerHeight+"px"})
 	.appendTo(this.container);
-    $().resize(function(){
-	self.updateContainer();
+
+    /*On ajoute un petit temps d'attente pour s'assurer que la fenetre à fini de se redimensionner
+     avant de redimensionner ce cadre*/
+    var timer;
+    $(window).resize(function(){
+	clearTimeout(timer);
+	timer = setTimeout(function(){
+	    self.container.css("width", $(document.body).width() - 20);
+	    self.container.css("height", $(document.body).height() - 20);
+	    for (var i = 0; i < self.resizeListener.length; i++){
+		self.resizeListener[i]();
+	    }
+	}, 5);
     });
 }
 
 BlocFocus.prototype.createBloc = function(content){
     this.initBloc();
     if (content !== undefined){
-	/*this.content = content;*/
 	content.appendTo(this.content);
     }
 }
 
 BlocFocus.prototype.setContent = function(newContent){
     if (newContent !== undefined){
-	this.content = newContent
-	this.updateContainer();
+	this.content.empty();
+	newContent.appendTo(this.content);
+	/*this.updateContainer();*/
     }else{
 	console.error("Le bloc fournie n'est pas définie");
     }
 }
 
-BlocFocus.prototype.updateContainer = function(){
+/*BlocFocus.prototype.updateContainer = function(){
     this.container.empty();
     if (this.content !== undefined){
 	this.container.appendChild(this.content);
@@ -83,7 +96,7 @@ BlocFocus.prototype.updateContainer = function(){
     }else{
 	console.error("Erreur, il n'y à pas de contenu à afficher.");
     }
-}
+}*/
 
 BlocFocus.prototype.show = function(){
     this.container.fadeIn(150);
@@ -93,6 +106,17 @@ BlocFocus.prototype.hide = function(){
     this.container.fadeOut(150);
 }
 
+BlocFocus.prototype.resize = function(fun){
+    this.resizeListener.push(fun);
+}
+
+BlocFocus.prototype.width = function(){
+    return this.content.width();
+}
+
+BlocFocus.prototype.height = function(){
+    return this.content.height();
+}
 
 $(document).ready(function(){
 });

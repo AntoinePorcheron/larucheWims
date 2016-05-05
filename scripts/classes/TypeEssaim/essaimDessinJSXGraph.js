@@ -155,6 +155,7 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup)
     
     /*TODO améliorer ça en dessous*/
     
+    /*D'ici ->*/
     var buttonTmp = $("<button>Afficher</button>").appendTo(this.divBloc);
     /*var divBlocTmp = this.divBloc;*/
     var divContent = $("<div></div>");
@@ -164,8 +165,8 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup)
     
     $(buttonTmp).click(function(){
 	tmp.show();
-	/*console.log("ok");*/
     });
+    /*<- A la */
     
 
     // **** Fabrication du contenu du bloc ****
@@ -193,6 +194,7 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup)
             height: 400
 	}).appendTo($(this.divBloc));
     
+    /*TODO : ajouter le necessaire pour garder l'aspect lors de resize*/
     this.brd = JXG.JSXGraph.initBoard('box' + this.numero, 
 				      {	axis: this.axis,
 					keepaspectratio: true,
@@ -421,19 +423,34 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup)
 	    });
 
     /*Gestion de l'evenementiel*/
-
-    var timer;
+    /*TODO : retirer*/
+    /*Test*/
+    tmp.resize(function(){
+	var x = self.brd.zoomX;
+	var y = self.brd.zoomY;
+	/*console.log("test");*/
+	console.log(tmp.width());
+	/*var graph = event.data.essaimJSXGraph*/
+	self.brd.resizeContainer(
+	    /*self.divBloc.clientWidth - 30*/tmp.width(),
+	    /*self.divBloc.clientWidth - 30*/tmp.height()
+	);
+	/*self.brd.zoom100();*/
+	self.brd.zoomX = x;
+	self.brd.zoomY = y;
+	console.log(x ,y);
+    });
+    
+    /*var timer;
     $(window).resize({essaimJSXGraph: this}, function (event) {
-	var graph = event.data.essaimJSXGraph
+    
 	clearTimeout(timer);
         timer = setTimeout(
 	    function () {
 		
-		graph.brd.resizeContainer(
-		    graph.divBloc.clientWidth - 30,
-		    graph.divBloc.clientWidth - 30);
+		
 	    },200);
-    });
+    });*/
     /*Creation de points, à retoucher/améliorer*/
     var self = this, essaimJSXGraph = this;
     this.brd.on('down', function (event) {
