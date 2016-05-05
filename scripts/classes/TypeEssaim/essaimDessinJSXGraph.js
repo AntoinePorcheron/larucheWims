@@ -152,6 +152,21 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup)
     titreBloc.style.textAlign = "center";
 
     this.divBloc.appendChild(titreBloc);
+    
+    /*TODO améliorer ça en dessous*/
+    
+    var buttonTmp = $("<button>Afficher</button>").appendTo(this.divBloc);
+    /*var divBlocTmp = this.divBloc;*/
+    var divContent = $("<div></div>");
+    this.divBloc = divContent;
+    var tmp = new BlocFocus();
+    tmp.createBloc(this.divBloc);
+    
+    $(buttonTmp).click(function(){
+	tmp.show();
+	/*console.log("ok");*/
+    });
+    
 
     // **** Fabrication du contenu du bloc ****
     
@@ -557,6 +572,16 @@ EssaimJSXGraph.prototype.toOEF = function () {
     var bord_haut = this.brd.getBoundingBox()[1];
     var bord_droit = this.brd.getBoundingBox()[2];
     var bord_bas = this.brd.getBoundingBox()[3];
+
+    /*On recupère la hauteur et la largeur de la zone de dessin, en terme de 
+      coordonnées du dessin*/
+    var largeur = bord_droit - bord_gauche;
+    var hauteur = bord_haut - bord_bas;
+    
+    /*Taille de la diagonale de la zone de dessin*/
+    var coef = Math.sqrt(largeur * largeur + hauteur * hauteur);
+    var coef_dir_diagonal = (bord_haut - bord_bas) / (bord_droit - bord_gauche);
+    
     var OEF = "\\text{rangex" + this.nom + " = " + bord_gauche + "," + bord_droit + "}\n"
     OEF += "\\text{rangey" + this.nom + " = " + bord_bas + "," + bord_haut + "}\n";
     OEF += "\\text{" + this.nom + " = rangex \\rangex" + this.nom + "\n";
@@ -572,6 +597,10 @@ EssaimJSXGraph.prototype.toOEF = function () {
  	
  	var nb_x = Math.ceil(bord_droit - bord_gauche / pas_x);
  	var nb_y = Math.ceil(bord_haut - bord_bas / pas_x);
+	
+
+
+	
  	OEF += "parallel " + 
  	    deb_x + "," + bord_haut + "," + 
  	    deb_x + "," +  bord_bas + "," + 
@@ -587,17 +616,6 @@ EssaimJSXGraph.prototype.toOEF = function () {
 
     for (element in this.brd.objects){
 	var brdElement = this.brd.objects[element];
-	
-	/*On recupère la hauteur et la largeur de la zone de dessin, en terme de 
-	  coordonnées du dessin*/
-	var largeur = bord_droit - bord_gauche;
-	var hauteur = bord_haut - bord_bas;
-	
-	
-	/*Taille de la diagonale de la zone de dessin*/
-	var coef = Math.sqrt(largeur * largeur + hauteur * hauteur);
-	
-
 	if (brdElement.getAttribute("visible")){
 	    switch (brdElement.getType()){
 	    case GLOB_point :
@@ -607,12 +625,11 @@ EssaimJSXGraph.prototype.toOEF = function () {
 		var p1 = brdElement.point1;
 		var p2 = brdElement.point2;
 		
-		/*Taille de la diagonale de la zone de dessin*/
-		var coef = Math.sqrt(largeur * largeur + hauteur * hauteur);
+		/*a et b correspondent aux vecteurs de translation des deux points qui 
+		  correspondent à la ligne, car en OEF la primitive ligne ne fait qu'un segment, 
+		  on translate donc les points en dehors de la zone de dessin, pour donner 
+		  l'illusion d'une droite*/
 		
-		/*a et b correspondent aux vecteurs de translation des deux points qui correspondent à
-		  la ligne, car en OEF la primitive ligne ne fait qu'un segment, on translate donc 
-		  les points en dehors de la zone de dessin, pour donner l'illusion d'une droite*/
 		var a = (p2.X() - p1.X()) * coef;
 		var b = (p2.Y() - p1.Y()) * coef;
 		
@@ -653,7 +670,6 @@ EssaimJSXGraph.prototype.toOEF = function () {
 		    inverted = -1;
 		} 
 
-		/**/
 		var coef_dir = inverted * (p2.Y() - p1.Y()) /(p2.X() - p1.X());
 		var bord_1;
 		var bord_2;
@@ -667,7 +683,6 @@ EssaimJSXGraph.prototype.toOEF = function () {
 			dist_bord_2 = Math.abs(bord_droit - p2.X());
 
 		    }
-		    
 		}else{
 		    if (inverted === -1){
 			dist_bord_1 = Math.abs( bord_bas  - p2.Y());
@@ -691,10 +706,12 @@ EssaimJSXGraph.prototype.toOEF = function () {
 		    point_final.y += inverted * dist_2;
 		    point_final.x += inverted * dist_bord_2;
 		}
-
+		var a = (p1.X() - p2.X()) * coef;
+		var b = (p1.Y() - p2.Y()) * coef;
+		var tmp = 0.1 * largeur;
 		OEF += "arrow " +
 		    p1.X() + "," + p1.Y() + "," +
-		    point_final.x + "," + point_final.y + ",7,black\n";
+		    (point_final.x - tmp) + "," + (point_final.y - tmp) + ",7,black\n";
 		break;
 	    case GLOB_angle :
 		
