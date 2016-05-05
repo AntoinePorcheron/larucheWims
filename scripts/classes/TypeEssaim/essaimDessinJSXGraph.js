@@ -194,7 +194,6 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup)
             height: 400
 	}).appendTo($(this.divBloc));
     
-    /*TODO : ajouter le necessaire pour garder l'aspect lors de resize*/
     this.brd = JXG.JSXGraph.initBoard('box' + this.numero, 
 				      {	axis: this.axis,
 					keepaspectratio: true,
@@ -423,22 +422,15 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup)
 	    });
 
     /*Gestion de l'evenementiel*/
-    /*TODO : retirer*/
-    /*Test*/
+    
     tmp.resize(function(){
-	var x = self.brd.zoomX;
-	var y = self.brd.zoomY;
-	/*console.log("test");*/
-	console.log(tmp.width());
-	/*var graph = event.data.essaimJSXGraph*/
+	var boundingBox = self.brd.getBoundingBox();
 	self.brd.resizeContainer(
-	    /*self.divBloc.clientWidth - 30*/tmp.width(),
-	    /*self.divBloc.clientWidth - 30*/tmp.height()
+	    tmp.width(),
+	    tmp.height()
+	    
 	);
-	/*self.brd.zoom100();*/
-	self.brd.zoomX = x;
-	self.brd.zoomY = y;
-	console.log(x ,y);
+	self.brd.setBoundingBox(boundingBox);
     });
     
     /*var timer;
