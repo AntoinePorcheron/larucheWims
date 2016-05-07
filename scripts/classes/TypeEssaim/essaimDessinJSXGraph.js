@@ -12,54 +12,81 @@ var GLOB_segment = "segment";
 var GLOB_axe = "axis";
 var GLOB_angle = "angle";
 var GLOB_arc = "arc";
+
 // variable permettant de sauvegarder l'état actuel du dessin*/
 var saveState = {};
 var selectListener = [];
+
+var type = ["point", "line", "circle", "arrow", "segment", "axis", "angle", "arc"]
+
 //Variables qui définissent la largeurs du paneau latéral et la hauteur du paneau d'entete.
 var GLOB_largeur = 100;
 var GLOB_hauteur = 30;
+
+var AllJSXGraph = [];
+
 EssaimJSXGraph = function (num) {
     //Appelle le constructeur parent
     Essaim.call(this, num);
+    
     //---------- ATTRIBUTS -------------//
     this.nom = "JSXGraph" + num;   // nom de l'élément
     this.numero = num;		   // numéro de l'essaim
     this.proto = "EssaimJSXGraph"; // nature de la classe
+    
     // permet de définir dans quel mode l'utilisateur se trouve 
     //(mode point, mode ligne...)
     this.mode = GLOB_libre;
+    
     // contient un ensemble de point (une ligne = 2 points par exemple). 
     //Permet de créer un objet
     this.point = [];
+    
     // variable d'environnement : contient les bornes du graphe
     this.brd;
+    
     // variable permettant la création de la grille
     this.grid = true;		   
+    
     // variable permettant de créer un menu pour enregistrer les objets
     this.menu_enregistre = true;   
     this.ms = false;
+    
     /*Bidouille pour regler compatibilité sous firefox*/
     this.lastEvent;
+    
     /*this.previsualisation = flse;*/
     this.previsualisedObject = undefined;
 
     this.surpage;
+
+    this.inputZone;
+
+    this.deroulant;
 }
 //------------ Déclaration comme classe dérivée de Essaim -------------//
 EssaimJSXGraph.prototype = Object.create(Essaim.prototype);
+
 EssaimJSXGraph.prototype.constructor = EssaimJSXGraph;
+
 //Définition des nouveaux attributs
 // nom affiché dans le menu
 EssaimJSXGraph.prototype.nomAffiche = "Essaim : Dessin JSXGraph";
+
 // nature de la classe
 EssaimJSXGraph.prototype.proto = "EssaimJSXGraph";
+
 // image à insérer dans l'énoncé
 EssaimJSXGraph.prototype.imageEnonce = "images_essaims/graph.png";
+
 // drapeau, si "true", gère une réponse dans l'analyse
 EssaimJSXGraph.prototype.gereReponse = false;
+
 Essaim.prototype.aUneAide = false;
+
 // si "true", fixe la taille de l'image dans l'énoncé
 EssaimJSXGraph.prototype.gereTailleImageEnonce = true;
+
 /*Variable de classe*/
 EssaimJSXGraph.prototype.$divMenu = $("<div></div>").html("Menu Contextuel");
 EssaimJSXGraph.prototype.$menuButtons = $("<div></div>");
@@ -67,6 +94,7 @@ EssaimJSXGraph.prototype.stackMultiSelect = [];
 EssaimJSXGraph.prototype.$multiSelect = $("<div></div>").html("Multi-Select");
 EssaimJSXGraph.prototype.$selection = $("<div></div>");
 EssaimJSXGraph.prototype.$multiSelectMenu = $("<div></div>");
+
 //------------ METHODES -----------------//
 EssaimJSXGraph.prototype.initEnonce = function ()
 /*
@@ -78,6 +106,7 @@ EssaimJSXGraph.prototype.initEnonce = function ()
     var tab = document.getElementById('Rid_Enonce_Essaims_List');
     var li = document.createElement('li');
     li.id = "RidEnEs_" + this.nom;
+    
     // Bouton ajouté dans la liste des "actions d'Essaim" de l'énoncé
     var bouton = document.createElement('button');
     bouton.id = "boutonEssaimEnonce" + this.nom;
@@ -85,10 +114,12 @@ EssaimJSXGraph.prototype.initEnonce = function ()
     var txt = document.createTextNode(this.nom);
     bouton.appendChild(txt);
     bouton.onclick = function () {
+	
 	// On supprime le "RidEnEs_" devant le nom de la variable
         nomEssaim = li.id.slice("RidEnEs_".length, li.id.length);
         var ind = rucheSys.rechercheIndice(nomEssaim, rucheSys.listeBlocPrepa);
         var essaimFd = rucheSys.listeBlocPrepa[ind];
+	
 	// Si gère réponse, ne peut pas créer deux images "essaim" à la fois
         if (essaimFd.gereReponse == true) {
             alert("Problème , cet essaim devrait pouvoir gérer plusieurs dessins. Contacter les développeurs");
@@ -106,6 +137,7 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup)
  **/
 {
     Essaim.prototype.initBloc.call(this);
+    
     // **** Titre du bloc ****
     var titreBloc = document.createElement("DIV");
     var txt = document.createTextNode("Dessin JSXGraph");
@@ -122,6 +154,8 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup)
     this.divBloc.appendChild(titreBloc);
 
     var self = this;
+
+    AllJSXGraph.push(this);
     
     /*Création du panneau d'affichage*/
     var $bloc_contenu = $("<div></div>");
@@ -191,17 +225,20 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup)
     var $div_menu_contextuel = $("<div></div>")
 	.appendTo($left_panel);
 
+    this.inputZone = $("<div></div>").appendTo($left_panel);
+
     var modeSelect = function (event) {
 	self.mode = GLOB_libre
     };
     
+    
     this.$divMenu.appendTo($div_menu_contextuel);
     this.$menuButtons.appendTo($div_menu_contextuel);
-    /*this.context();*/
     
     this.initBoutonForme($div_bouton_forme);
     this.initBoutonAction($div_bouton_action);
     this.initEventListener($top_panel, $left_panel);
+    
     
     var barre_tache_editJSXGraph = document.createElement("DIV");
     var bouton_composant_editJSXGraph = document.createElement("button");
@@ -218,7 +255,9 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup)
   
     
     EssaimJSXGraph.prototype.initEnonce.call(this);
-    EssaimJSXGraph.prototype.initAnalyse.call(this);    
+    EssaimJSXGraph.prototype.initAnalyse.call(this);
+    this.updateDeroulant();
+    
 }
 
 
@@ -424,7 +463,7 @@ EssaimJSXGraph.prototype.menuOptions = function (element) {
         changeNom: {
             nom: "Changer le nom",
             callback: function () {
-		$.when(self.inputbox("Entrer un nom : " ))
+		$.when(self.inputbox("Entrer un nom : "))
                     .done(function (nom) {
 			element.name = nom;
 			self.brd.update()
@@ -614,17 +653,6 @@ EssaimJSXGraph.prototype.selection = function () {
     }
 };
 
-/*TODO : zone de test ->*/
-/**
- * context : 
- * effectuer le menu contextuel a la page
- */
-/*EssaimJSXGraph.prototype.context = function () {
-    var self = this;
-    
-};*/
-/*<- fin de zone de test*/
-
 /**
  * multiSelect : 
  * associer un evenement de souris a multi-select
@@ -733,8 +761,8 @@ EssaimJSXGraph.prototype.cleanMultiSelection = function () {
  * inputBox : 
  * Fait apparaitre une boite d'entrée utilisateur pour recuperer la valeurs
  *
- * @param label: le titre du input
- * @param type: le type du input
+ * @param label - le titre du input
+ * @param type - le type du input
  * @returns {*}, $.Deferred.promise()
  */
 EssaimJSXGraph.prototype.inputbox = function (label, type) {
@@ -742,7 +770,7 @@ EssaimJSXGraph.prototype.inputbox = function (label, type) {
     type = type || "text";
     var def = $.Deferred();
     var $box = $("<div></div>")
-	.appendTo(this.divBloc/*parent*/);
+	.appendTo(this.inputZone);
     var $label = $("<div></div>")
 	.html(label)
 	.appendTo($box);
@@ -770,7 +798,6 @@ EssaimJSXGraph.prototype.inputbox = function (label, type) {
  */
 EssaimJSXGraph.prototype.selectMode = function () {
     this.$button_libre.trigger("click")
-    console.log("test pour voir à quoi ça sert");
 };
 
 
@@ -934,25 +961,26 @@ EssaimJSXGraph.prototype.initBoutonAction = function(parent){
 	    self.brd.fullUpdate();
         });
     
-    var $menu_deroulant = $("<select></select>").click({}, function(){
-	console.log($($menu_deroulant).val());	
-    });
+    this.deroulant = $("<select></select>")
+	.appendTo($div_bouton_action);
 
     var $charger = $("<input type='button' value='Charger'/>")
-	.click({md:$menu_deroulant}, function(event){
-	    var $m = event.data.md;
+	.click(function(event){
+	    /*var $m = event.data.md;
 	    var ss = saveState[$($m).val()]
 	    for (var i in ss){
 		self.brd.objects[ss[i].id] = ss[i];
 	    }
-	    self.brd.fullUpdate();
-	});
+	    self.brd.fullUpdate();*/
+	    /*console.log(self.deroulant.val());*/
+	    self.loadSelection(self.deroulant.val());
+	}).appendTo($div_bouton_action);
 
     var $save = 
 	$("<button title=\"Permet de sauvegarder des éléments du graphique dans une boite à dessin.\">Ajout dans boîte à dessin </button>")
 	.appendTo($div_bouton_action)
-	.click({menu_D: $menu_deroulant, charge:$charger}, function (event) {
-	    var tab = {};
+	.click({charge:$charger}, function (event) {
+	    /*var tab = {};
 	    if (self.menu_enregistre) {
                 event.data.menu_D.appendTo($div_bouton_action);
 		event.data.charge.appendTo($div_bouton_action);
@@ -969,8 +997,9 @@ EssaimJSXGraph.prototype.initBoutonAction = function(parent){
 	    var nom_objet = clef[clef.length - 2];
 	    saveState[nom_objet] = tab;
 	    event.data.menu_D
-		.append("<option value=\"" + nom_objet + "\">" + nom_objet + "</option>");
-        });
+	    .append("<option value=\"" + nom_objet + "\">" + nom_objet + "</option>");*/
+	    self.saveSelection(self.brd.objects);
+	});
     
     EssaimJSXGraph.prototype.$button_libre = $button_libre;    
 }
@@ -1051,7 +1080,7 @@ EssaimJSXGraph.prototype.initEventListener = function($top_panel, $left_panel){
 	    case GLOB_segment:
 		if (self.point.length === 2){
 		    brd.create(self.mode, self.point);
-		    self.point = [];
+		    self.point = []; 
 		}
 		break;
 	    case GLOB_axe:
@@ -1109,6 +1138,81 @@ EssaimJSXGraph.prototype.initEventListener = function($top_panel, $left_panel){
     })
 }
 
+
+/**
+ * saveSelection
+ * Fonction qui ajoute une sauvegarde de l'élément passer en parametre
+ * @param objects - Element que l'on souhaite enregistré
+ */
+EssaimJSXGraph.prototype.saveSelection = function(objects){
+    var objets = [];
+    var self = this;
+    for (var i in objects){
+	console.log(objects[i].elType);
+	if (objects[i].elType === "point" && getLen(objects[i].childElement) === 1){
+	    objet.push(objects[i]);
+	}else if (objects[i].elType !== "point" && type.indexOf(objects[i].elType) !== -1){
+	    objets.push(objects[i]);
+	}
+    }
+
+    $.when(this.inputbox("Entrer un nom : "))
+        .done(function (name) {
+	    if (saveState[name] === undefined){
+		saveState[name] = objets;
+		self.updateDeroulant();
+		
+	    }else{
+		alert("Le nom " + name + " est déjà pris");	
+	    }
+        })
+        .fail(function (err) {
+	    alert(err);
+        })
+}
+
+/**
+ * loadSelection
+ * fonction qui charge l'élément selectionné
+ * @param name - Nom de l'élément que l'on va charger
+ */
+EssaimJSXGraph.prototype.loadSelection = function(name){
+    if (saveState[name] === undefined){
+	console.error("Le nom séléctionné n'est pas définie");
+    }else{
+	var objets = saveState[name];
+	for (var i in objets){
+	    if (objets[i].elType === "point"){
+		this.brd.create(objets[i].elType, [objets[i].X(), objets[i].Y()],{name:objets[i].name});
+	    }else{
+		var points = [];
+		for (var j in objets[i].ancestors){
+		    var obj = objets[i].ancestors[j];
+		    console.log(objets[i].ancestors[j].elType);
+		    if (objets[i].ancestors[j] === "point"){
+			points.push(this.brd.create(obj.elType,[obj.X(), obj.Y()],{name:obj.name}));
+		    }
+		}
+		console.log(objets[i].elType, points);
+		this.brd.create(objets[i].elType, points, {name:objets[i].name});
+	    }
+	}
+    }
+}
+
+/**
+ * updateDeroulant
+ * Fonction qui met à jour le menu déroulant des sauvegarde de tout les graphes existant
+ */
+EssaimJSXGraph.prototype.updateDeroulant = function(){
+    for (var i = 0; i < AllJSXGraph.length; i++){
+	AllJSXGraph[i].deroulant.empty();
+	for (var j in saveState){
+	    $("<option>" + j + "</option>").appendTo(AllJSXGraph[i].deroulant);
+	}
+    }
+}
+
 /**
  * getMouseCoords : 
  * Fonction qui permet de recuperer les coordonnées d'un clic sur le graphe 
@@ -1134,6 +1238,20 @@ function getMouseCoords(event, brd){
 function distance(p1, p2){
     return Math.sqrt((p1.X() - p2.X()) * (p1.X() - p2.X()) +
 		    (p1.Y() - p2.Y()) * (p1.Y() - p2.Y()));
+}
+
+/**
+ * getLen
+ * Fonction qui retourne le nombre d'element d'un objet
+ * @param object - objets dont on souhaite connaitre la taille
+ * @return retourne le nombre d'élément de l'objet
+ */
+function getLen(objects){
+    var nb = 0;
+    for (var i in objects){
+	nb++;
+    }
+    return nb;
 }
 
 $(document).ready(function () {
