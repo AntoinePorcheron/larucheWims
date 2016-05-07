@@ -312,58 +312,63 @@ EssaimJSXGraph.prototype.toOEF = function () {
 		    p1.X() + "," + p1.Y()+ "," +
 		    p2.X() + "," + p2.Y() + ",7,black\n";
 		break;
-	    case GLOB_axe : 
+	    case GLOB_axe :
+		
 		/*On recupère les deux points qui définisse un axe*/
+		var brd = this.brd;
 		var p1 = brdElement.point1;
 		var p2 = brdElement.point2;
-		/*Inverted sert à gerer les axes qui pointent vers la gauche, 
-		  lorsque c'est -1 une inversion à lieu, sinon on fait normalement*/
-		var inverted = 1;
-		if (p2.X() < p1.X()){
-		    inverted = -1;
-		} 
-		var coef_dir = inverted * (p2.Y() - p1.Y()) /(p2.X() - p1.X());
-		var bord_1;
-		var bord_2;
-		if (coef_dir < 0){
-		    if (inverted === -1){
-			dist_bord_1 = Math.abs(bord_haut   - p2.Y());
-			dist_bord_2 = Math.abs(bord_gauche - p2.X());
 
-		    }else{
-			dist_bord_1 = Math.abs( bord_bas  - p2.Y());
-			dist_bord_2 = Math.abs(bord_droit - p2.X());
+		var l, r, t, b;
+		g = bord_gauche;
+		d = bord_droit;
+		t = bord_haut;
+		b = bord_bas;
 
-		    }
-		}else{
-		    if (inverted === -1){
-			dist_bord_1 = Math.abs( bord_bas  - p2.Y());
-			dist_bord_2 = Math.abs(bord_droit - p2.X());
-		    }else{	
-			dist_bord_1 = Math.abs(bord_haut   - p2.Y());
-			dist_bord_2 = Math.abs(bord_gauche - p2.X());
-		    }
-		}
-		var dist_1 = inverted * coef_dir * dist_bord_1;
-		var dist_2 = inverted * coef_dir * dist_bord_2;
+		var gauche_vers_droite = p1.X() < p2.X();
+		var top_line_tmp = brd.create("segment", [[g,t],[d,t]]);
+		var bot_line_tmp = brd.create("segment", [[g,b],[d,b]]);
+		var side_line_tmp;
 		
-		var pyth_1 = Math.sqrt(dist_1 * dist_1 + dist_bord_1 * dist_bord_1);
-		var pyth_2 = Math.sqrt(dist_2 * dist_2 + dist_bord_2 * dist_bord_2);
-
-		var point_final = {x:p2.X(), y:p2.Y()};
-		if (pyth_1 < pyth_2){
-		    point_final.y += inverted * dist_1;
-		    point_final.x += inverted * dist_bord_1;
+		/*Si on va de la gauche vers la droite, le coté gauche est inutile
+		 * et vice et versa.
+		 */
+		if (gauche_vers_droite){
+		    side_line_tmp = brd.create("segment", [[d,t],[d,b]]);
 		}else{
-		    point_final.y += inverted * dist_2;
-		    point_final.x += inverted * dist_bord_2;
+		    side_line_tmp = brd.create("segment", [[g,t],[g,b]]);
 		}
-		var a = (p1.X() - p2.X()) * coef;
-		var b = (p1.Y() - p2.Y()) * coef;
-		var tmp = 0.1 * largeur;
+		var intersect1 = brd.create("intersection", [brdElement, top_line_tmp, 0]);
+		var intersect2 = brd.create("intersection", [brdElement, bot_line_tmp, 0]);
+		var intersect3 = brd.create("intersection", [brdElement,side_line_tmp, 0]);
+		var dist1 = distance(p2, intersect1);
+		var dist2 = distance(p2, intersect2);
+		var dist3 = distance(p2, intersect3);
+		var res;
+		if ((dist1 < dist2) && (dist1 < dist3)){
+		    res = intersect1;
+		}else if ((dist2 < dist1) && (dist2 < dist3)){
+		    res = intersect2;
+		}else if ((dist3 < dist1 && dist3 < dist2)){
+		    res = intersect3;
+		}else{
+		    console.error("Une erreurs est survenu");
+		}
+		
+		var xp1 = (p1.X() - p2.X()) * coef;
+		var yp1 = (p1.Y() - p2.Y()) * coef;
+		
 		OEF += "arrow " +
-		    p1.X() + "," + p1.Y() + "," +
-		    (point_final.x - tmp) + "," + (point_final.y - tmp) + ",7,black\n";
+		    xp1 + "," + yp1 + "," +
+		    res.X() + "," + res.Y() + ",7,black\n";/**/
+		
+		brd.removeObject(intersect1);
+		brd.removeObject(intersect2);
+		brd.removeObject(intersect3);
+		brd.removeObject(top_line_tmp);
+		brd.removeObject(bot_line_tmp);
+		brd.removeObject(side_line_tmp);
+		
 		break;
 	    case GLOB_angle :
 		var p1 = brdElement.point1;
@@ -1117,9 +1122,19 @@ function getMouseCoords(event, brd){
     dx = absPos[0] - cPos[0],
     dy = absPos[1] - cPos[1];
     return new JXG.Coords(JXG.COORDS_BY_SCREEN, [dx, dy], brd);
-};
+}
 
-
+/**
+ * Distance
+ * Fonction qui calcule la distance entre deux point JSXGraph.
+ * @param p1 - premier point à partir duquel on calcul une distance
+ * @param p2 - deuxieme point à partir duquel on calcul une distance
+ * @return {Number} distance de p1 à p2
+ */
+function distance(p1, p2){
+    return Math.sqrt((p1.X() - p2.X()) * (p1.X() - p2.X()) +
+		    (p1.Y() - p2.Y()) * (p1.Y() - p2.Y()));
+}
 
 $(document).ready(function () {
     rucheSys.initClasseEssaim(EssaimJSXGraph)
