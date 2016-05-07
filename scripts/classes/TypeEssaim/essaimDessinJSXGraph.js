@@ -1186,15 +1186,20 @@ EssaimJSXGraph.prototype.loadSelection = function(name){
 		this.brd.create(objets[i].elType, [objets[i].X(), objets[i].Y()],{name:objets[i].name});
 	    }else{
 		var points = [];
+		/*console.log(objets[i].ancestors);*/
 		for (var j in objets[i].ancestors){
 		    var obj = objets[i].ancestors[j];
-		    console.log(objets[i].ancestors[j].elType);
-		    if (objets[i].ancestors[j] === "point"){
-			points.push(this.brd.create(obj.elType,[obj.X(), obj.Y()],{name:obj.name}));
-		    }
+		    console.log(obj);
+		    /*console.log(objets[i].ancestors[j].elType);*/
+		    /*if (objets[i].ancestors[j] === "point"){*/
+		    var tmp = this.brd.create(obj.elType,[obj.X(),obj.Y()]/*,{name:obj.name}*/);
+		    points.push(tmp);
+		    /*}*/
+		    
 		}
 		console.log(objets[i].elType, points);
-		this.brd.create(objets[i].elType, points, {name:objets[i].name});
+		/*console.log(objets[i].ancestors);*/
+		this.brd.create(objets[i].elType, objets[i].ancestors/*, {name:objets[i].name}*/);
 	    }
 	}
     }
