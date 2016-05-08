@@ -283,7 +283,7 @@ EssaimJSXGraph.prototype.nouveauComposant = function (classeComposant) {
 
 
 EssaimJSXGraph.prototype.detruitBloc = function () {
-    freeBoard(this.brd);
+    /*JXG.JSXGraph.freeBoard(this.brd);*/
     Essaim.prototype.detruitBloc.call(this);
 }
 
@@ -702,7 +702,7 @@ EssaimJSXGraph.prototype.multiSelect = function () {
     var $clean = $("<button></button>").appendTo(this.$multiSelect)
         .html("Effacer")
         .click(function () {
-            self.cleanMultiSelection()
+            self.cleanMultiSelection();
         });
     this.$selection.appendTo(/*this.divBloc*/this.$multiSelect);
     this.$multiSelectMenu.appendTo(/*this.divBloc*/this.$multiSelect);
@@ -751,6 +751,7 @@ EssaimJSXGraph.prototype.buildMultiSelectMenu = function () {
                 self.brd.removeObject(self.stackMultiSelect[i])
             }
             self.brd.update()
+	    self.cleanMultiSelection();
         }
     };
     var key = Object.keys(menu);
@@ -1171,9 +1172,11 @@ EssaimJSXGraph.prototype.initEventListener = function ($top_panel, $left_panel) 
 EssaimJSXGraph.prototype.saveSelection = function (objects) {
     var objets = [];
     var self = this;
+    console.log(objects);
     for (var i in objects) {
 	
-        console.log(objects[i].elType);
+        /*console.log(objects[i].elType);*/
+	console.log(i);
         if (objects[i].elType === "point" && getLen(objects[i].childElement) === 1) {
 	    objet.push(objects[i]);
         } else if (objects[i].elType !== "point" && type.indexOf(objects[i].elType) !== -1) {
@@ -1275,11 +1278,14 @@ function distance(p1, p2) {
  * @return retourne le nombre d'élément de l'objet
  */
 function getLen(object) {
-    console.log(object);
     // doit obtenir erreur quand object est null, undefined ou pas un object
-    var tmp = Object.keys(object).length;
+    if (object){
+	var tmp = Object.keys(object).length;
+    }else{
+	console.error("L'objets est indéfinie");
+    }
     // afin que ce valeur n'est pas disponible a modifier
-    return tmp
+    return -1
 }
 
 $(document).ready(function () {

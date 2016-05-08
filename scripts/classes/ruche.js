@@ -1837,15 +1837,15 @@ Ruche.prototype.charge = function ()
 
     var txt = document.getElementById("Rid_Zone_Sauvegarde").value;
     if (txt != "") {
-        var errorJSON = 'false';
+        var errorJSON = false;
         try {
             var json = JSON.parse(txt);
         }
         catch (e) {
             alert("Ereur de format dans le fichier de sauvegarde (erreur JSON)");
-            errorJSON = 'true';
+            errorJSON = true;
         }
-        if (errorJSON != 'true') {
+        if (!errorJSON) {
             editor.deleteText(0, editor.getLength());
             this.reset(json);
             editor.setHTML(json.enonce.enonce_Html_sauve);
@@ -1856,6 +1856,7 @@ Ruche.prototype.charge = function ()
             this.reloadEditors(json.listeEditeur);
             this.modifieVarJson();
         }
+	console.log(json);
     }
 
     $(".Rcl_OK_Light_SaveLoad").css("visibility", "visible");
