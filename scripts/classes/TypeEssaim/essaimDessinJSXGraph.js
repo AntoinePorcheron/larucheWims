@@ -677,29 +677,26 @@ EssaimJSXGraph.prototype.selection = function () {
 EssaimJSXGraph.prototype.multiSelect = function () {
     this.stackMultiSelect = [];
     var self = this;
-    if (!this.ms) {
-        // ok button
-        this.$multiSelect.html("Multi-Select").show();
-        this.$selection.html("").show();
-        console.log(this.$selection)
-        this.$multiSelectMenu.show();
-        var $ok = $("<button></button>").appendTo(this.$multiSelect)
-            .html("ok")
-            .click(function (event) {
-                self.brd.off("up", tmp);
-                self.$button_libre.trigger("click");
-                $ok.remove();
-                $clean.remove();
-                self.buildMultiSelectMenu()
-            });
-        // clean button
-        var $clean = $("<button></button>").appendTo(this.$multiSelect)
-            .html("Effacer")
-            .click(function () {
-                self.cleanMultiSelection()
-            });
-        this.ms = true;
-    }
+    // ok button
+    this.$multiSelect.html("Multi-Select").show();
+    this.$selection.html("").show();
+    console.log(this.$selection)
+    this.$multiSelectMenu.show();
+    var $ok = $("<button></button>").appendTo(this.$multiSelect)
+        .html("ok")
+        .click(function (event) {
+            self.brd.off("up", tmp);
+            self.$button_libre.trigger("click");
+            $ok.remove();
+            $clean.remove();
+            self.buildMultiSelectMenu()
+        });
+    // clean button
+    var $clean = $("<button></button>").appendTo(this.$multiSelect)
+        .html("Effacer")
+        .click(function () {
+            self.cleanMultiSelection()
+        });
     this.$selection.appendTo(this.divBloc);
     this.$multiSelectMenu.appendTo(this.divBloc);
     var tmp = function () {
