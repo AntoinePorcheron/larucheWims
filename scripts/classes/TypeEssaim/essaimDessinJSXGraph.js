@@ -94,6 +94,7 @@ EssaimJSXGraph.prototype.stackMultiSelect = [];
 EssaimJSXGraph.prototype.$multiSelect = $("<div></div>").html("Multi-Select");
 EssaimJSXGraph.prototype.$selection = $("<div></div>");
 EssaimJSXGraph.prototype.$multiSelectMenu = $("<div></div>");
+EssaimJSXGraph.prototype.$divInput = $("<div></div>").appendTo(EssaimJSXGraph.prototype.divBloc);
 
 //------------ METHODES -----------------//
 EssaimJSXGraph.prototype.initEnonce = function ()
@@ -769,6 +770,7 @@ EssaimJSXGraph.prototype.inputbox = function (label, type) {
     label = label || "";
     type = type || "text";
     var def = $.Deferred();
+	this.inputZone.html("");
     var $box = $("<div></div>")
 	.appendTo(this.inputZone);
     var $label = $("<div></div>")
@@ -1250,12 +1252,10 @@ function distance(p1, p2){
  * @param object - objets dont on souhaite connaitre la taille
  * @return retourne le nombre d'élément de l'objet
  */
-function getLen(objects){
-    var nb = 0;
-    for (var i in objects){
-	nb++;
-    }
-    return nb;
+function getLen(object){
+    var tmp = Object.keys(object).length;
+	// afin que ce valeur n'est pas disponible a modifier
+	return tmp
 }
 
 $(document).ready(function () {
