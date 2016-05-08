@@ -241,6 +241,11 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup)
         self.mode = GLOB_libre
     };
 
+    /******************************
+     * A ne pas modifier
+     */
+    this.modeSelect = modeSelect;
+
 
     this.$divMenu.appendTo($div_menu_contextuel);
     this.$menuButtons.appendTo($div_menu_contextuel);
@@ -928,7 +933,7 @@ EssaimJSXGraph.prototype.initBoutonAction = function (parent) {
         $("<input type='button' value='Supprimer' title = \"Permet de supprimer un élément.\"/>")
             .appendTo($div_bouton_action)
             .click(function (event) {
-                modeSelect(event);
+                self.modeSelect(event);
                 var tmp = function () {
                     var element = self.getTopUnderMouse();
                     if (element.elType) {
@@ -1268,6 +1273,7 @@ function distance(p1, p2) {
  * @return retourne le nombre d'élément de l'objet
  */
 function getLen(object) {
+    // doit obtenir erreur quand object est null, undefined ou pas un object
     var tmp = Object.keys(object).length;
     // afin que ce valeur n'est pas disponible a modifier
     return tmp
