@@ -13,9 +13,6 @@ var GLOB_axe = "axis";
 var GLOB_angle = "angle";
 var GLOB_arc = "arc";
 
-/*Variable du mode multiSelect, pour eviter conflit creation/multiSelect*/
-var GLOB_multiSelect = "multiSelect";
-
 // variable permettant de sauvegarder l'état actuel du dessin*/
 var saveState = {};
 var selectListener = [];
@@ -684,6 +681,7 @@ EssaimJSXGraph.prototype.selection = function () {
  * le bouton effacer efface la multi-selection
  */
 EssaimJSXGraph.prototype.multiSelect = function () {
+    this.mode = GLOB_libre;
     this.stackMultiSelect = [];
     var self = this;
     // ok button
@@ -765,7 +763,7 @@ EssaimJSXGraph.prototype.buildMultiSelectMenu = function () {
     for (var i = 0; i < key.length; i++) {
         self.$multiSelectMenu.append(buildButton(menu[key[i]]))
     }
-    self.$multiSelectMenu.appendTo(self.divBloc)
+    self.$multiSelectMenu.appendTo(self.$multiSelect)
 };
 
 
