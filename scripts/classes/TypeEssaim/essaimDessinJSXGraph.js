@@ -206,8 +206,9 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup)
 				       {
 					   axis: this.axis,
 					   keepaspectratio: true,
-					   boundingbox: [-5, 5, 5, -5],
-					   grid: false
+					   /*boundingbox: [-5, 5, 5, -5],*/
+					   grid: false,
+					   showCopyright: false
 				       });
 
      /* -----------------------------------
@@ -284,6 +285,7 @@ EssaimJSXGraph.prototype.nouveauComposant = function (classeComposant) {
 
 EssaimJSXGraph.prototype.detruitBloc = function () {
     /*JXG.JSXGraph.freeBoard(this.brd);*/
+    /*this.brd = null;*/
     Essaim.prototype.detruitBloc.call(this);
 }
 
@@ -482,9 +484,9 @@ EssaimJSXGraph.prototype.menuOptions = function (element) {
             callback: function () {
                 $.when(self.inputbox("Entrer un nom : "))
                     .done(function (nom) {
-                        element.name = nom;
+			element.name = nom;
                         self.brd.update()
-                    })
+		    })
                     .fail(function (err) {
                         alert(err)
                     })
@@ -493,9 +495,9 @@ EssaimJSXGraph.prototype.menuOptions = function (element) {
     };
     options.image = {
         resize: {
-            nom: "changer le size",
+            nom: "changer la taille",
             callback: function () {
-                $.when(self.inputbox("Entrer width et height, separer par , "))
+                $.when(self.inputbox("Entrer la largeur et la hauteur, separer par , "))
                     .done(function (data) {
                         var width = parseInt(data.match(/^ *[^,]* *,/)[0].replace(/,/, ""));
                         var height = parseInt(data.match(/, *[^,]*$/)[0].replace(/,/, ""));
@@ -941,16 +943,17 @@ EssaimJSXGraph.prototype.initBoutonAction = function (parent) {
                 var element = self.getTopUnderMouse();
                 if (element.elType) {
                     self.brd.removeObject(element);
+		    self.unsetContextMenu();
                 } else {
                     alert("element invalide.")
                 }
                 self.brd.update();
                 self.brd.off("up", tmp);
-
                 self.brd.on("up", function () {
                     self.selection()
                 })
             };
+	   
             self.brd.on("up", tmp)
         });
 
@@ -989,13 +992,6 @@ EssaimJSXGraph.prototype.initBoutonAction = function (parent) {
 
     var $charger = $("<input type='button' value='Charger'/>")
         .click(function (event) {
-            /*var $m = event.data.md;
-              var ss = saveState[$($m).val()]
-              for (var i in ss){
-              self.brd.objects[ss[i].id] = ss[i];
-              }
-              self.brd.fullUpdate();*/
-            /*console.log(self.deroulant.val());*/
             self.loadSelection(self.deroulant.val());
         }).appendTo($div_bouton_action);
 
@@ -1003,24 +999,6 @@ EssaimJSXGraph.prototype.initBoutonAction = function (parent) {
         $("<button title=\"Permet de sauvegarder des éléments du graphique dans une boite à dessin.\">Ajout dans boîte à dessin </button>")
         .appendTo($div_bouton_action)
         .click({charge: $charger}, function (event) {
-            /*var tab = {};
-              if (self.menu_enregistre) {
-              event.data.menu_D.appendTo($div_bouton_action);
-              event.data.charge.appendTo($div_bouton_action);
-              self.menu_enregistre = false;
-              }
-              for (i in self.brd.objects) {
-              if (i.toLowerCase() !== "jxgBoard1_infobox".toLowerCase()) {
-              if (self.brd.objects[i].visible){
-              tab[i] = self.brd.objects[i];
-              }
-              }
-              }
-              var clef = Object.keys(tab);
-              var nom_objet = clef[clef.length - 2];
-              saveState[nom_objet] = tab;
-              event.data.menu_D
-              .append("<option value=\"" + nom_objet + "\">" + nom_objet + "</option>");*/
             self.saveSelection(self.brd.objects);
         });
 
@@ -1056,6 +1034,7 @@ EssaimJSXGraph.prototype.initEventListener = function ($top_panel, $left_panel) 
 
 
     this.brd.on('down', function (event) {
+	console
         var brd = self.brd;
         var mode = self.mode;
         var coords = getMouseCoords(event, self.brd);
@@ -1108,28 +1087,7 @@ EssaimJSXGraph.prototype.initEventListener = function ($top_panel, $left_panel) 
                 break;
             case GLOB_axe:
                 if (self.point.length === 2) {
-                    var axis = brd.create(self.mode, self.point, {
-                        name: '',
-                        withLabel: true,
-                        label: {
-                            position: 'top'
-                        }
-                    });
-                    /*Sert à ne pas créer les grilles lorsque on crée un axe*/
-                    axis.removeAllTicks();
-                    axis.isDraggable = true;
-                    axis.on('drag', function () {
-                        self.brd.fullUpdate()
-                    });
-
-                    for (var i in axis.ancestors) {
-                        axis.ancestors[i].isDraggable = true;
-                        axis.ancestors[i].on('drag', function () {
-                            self.brd.fullUpdate()
-                        });
-                    }
-                    axis.needsRegularUpdate = true;
-
+		    self.createDraggableAxis(self.point);
                     self.point = [];
                 }
                 break;
@@ -1165,20 +1123,17 @@ EssaimJSXGraph.prototype.initEventListener = function ($top_panel, $left_panel) 
 
 
 /**
- * saveSelection
  * Fonction qui ajoute une sauvegarde de l'élément passer en parametre
  * @param objects - Element que l'on souhaite enregistré
  */
 EssaimJSXGraph.prototype.saveSelection = function (objects) {
     var objets = [];
     var self = this;
-    console.log(objects);
+    /*console.log(objects);*/
     for (var i in objects) {
-	
-        /*console.log(objects[i].elType);*/
-	console.log(i);
-        if (objects[i].elType === "point" && getLen(objects[i].childElement) === 1) {
-	    objet.push(objects[i]);
+	console.log("Sauvegarde", getLen(objects[i].childElement), objects[i].elType);
+	if (objects[i].elType === "point" && objects[i].getAttribute("visible")) {
+	    objets.push(objects[i]);
         } else if (objects[i].elType !== "point" && type.indexOf(objects[i].elType) !== -1) {
 	    objets.push(objects[i]);
         }
@@ -1199,7 +1154,6 @@ EssaimJSXGraph.prototype.saveSelection = function (objects) {
 }
 
 /**
- * loadSelection
  * fonction qui charge l'élément selectionné
  * @param name - Nom de l'élément que l'on va charger
  */
@@ -1208,31 +1162,27 @@ EssaimJSXGraph.prototype.loadSelection = function (name) {
         console.error("Le nom séléctionné n'est pas définie");
     } else {
         var objets = saveState[name];
+	var ancestor = {}
         for (var i in objets) {
 	    if (objets[i].elType === "point") {
                 this.brd.create(objets[i].elType, [objets[i].X(), objets[i].Y()], {name: objets[i].name});
 	    } else {
                 var points = [];
-                /*console.log(objets[i].ancestors);*/
                 for (var j in objets[i].ancestors) {
 		    var obj = objets[i].ancestors[j];
-		    /*console.log(obj);*/
-		    /*console.log(objets[i].ancestors[j].elType);*/
-		    /*if (objets[i].ancestors[j] === "point"){*/
-		    var tmp = this.brd.create(obj.elType, [obj.X(), obj.Y()]/*,{name:obj.name}*/);
-		    points.push(tmp);
-		    /*}*/
-                }
-                console.log(points);
-                /*console.log(objets[i].ancestors);*/
-                this.brd.create(objets[i].elType, points/*objets[i].ancestors*//*, {name:objets[i].name}*/);
+		    var tmp;
+		    if (!ancestor[j]){
+			ancestor[j] = this.brd.create(obj.elType, [obj.X(), obj.Y()],{name:obj.name});
+		    }	    
+		    points.push(ancestor[j]);
+		}
+                this.brd.create(objets[i].elType, points, {name:objets[i].name});
 	    }
         }
     }
 }
 
 /**
- * updateDeroulant
  * Fonction qui met à jour le menu déroulant des sauvegarde de tout les graphes existant
  */
 EssaimJSXGraph.prototype.updateDeroulant = function () {
@@ -1245,7 +1195,71 @@ EssaimJSXGraph.prototype.updateDeroulant = function () {
 }
 
 /**
- * getMouseCoords :
+ *  Fonction qui reinitialise l'affichage du menu contextuel
+ */
+EssaimJSXGraph.prototype.unsetContextMenu = function(){
+    this.$divMenu.html("Menu Contextuel");
+    this.$menuButtons.html("<div></div>");
+};
+
+/**
+ *Fonction qui permet de crée des axes sans grille que l'on peut déplacer.
+ */
+EssaimJSXGraph.prototype.createDraggableAxis = function(point){
+    var self = this;
+    var axis = this.brd.create(this.mode, point, {
+        name: '',
+        withLabel: true,
+        label: {
+            position: 'top'
+        }
+    });
+    /*Sert à ne pas créer les grilles lorsque on crée un axe*/
+    axis.removeAllTicks();
+    axis.isDraggable = true;
+    axis.on('drag', function () {
+	
+        self.brd.fullUpdate()
+    });
+    
+    for (var i in axis.ancestors) {
+        axis.ancestors[i].isDraggable = true;
+        axis.ancestors[i].on('drag', function () {
+            self.brd.fullUpdate()
+        });
+    }
+    axis.needsRegularUpdate = true;
+    /*console.log(axis.label);*/
+    /*console.log(axis.position);*/
+    axis.label.position = "lft";
+    this.brd.update();
+}
+
+/**
+ * Fonction qui permet de positionner le nom d'un axe en fonction de son orientation
+ * @param axis - Axe pour lequel on veut changer la position du nom de l'axe
+ */
+EssaimJSXGraph.prototype.setAxisNamePosition = function(axis){
+    var p1 = axis.point1;
+    var p2 = axis.point2;
+    var coef_dir = (p1.Y() - p2.Y()) / (p1.X() - p2.X());
+    if (p2.X() < p1.X()){
+	if (coef_dir > 0){
+	    /*axis.*/
+	}else{
+
+	}
+    }else{
+	if (coef_dir < 0){
+
+	}else{
+
+	}
+    }
+    this.brd.update();
+}
+
+/**
  * Fonction qui permet de recuperer les coordonnées d'un clic sur le graphe
  * @param event
  * @param brd
@@ -1260,7 +1274,6 @@ function getMouseCoords(event, brd) {
 }
 
 /**
- * Distance
  * Fonction qui calcule la distance entre deux point JSXGraph.
  * @param p1 - premier point à partir duquel on calcul une distance
  * @param p2 - deuxieme point à partir duquel on calcul une distance
@@ -1272,7 +1285,6 @@ function distance(p1, p2) {
 }
 
 /**
- * getLen
  * Fonction qui retourne le nombre d'element d'un objet
  * @param object - objets dont on souhaite connaitre la taille
  * @return retourne le nombre d'élément de l'objet
