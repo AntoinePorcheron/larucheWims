@@ -687,7 +687,7 @@ EssaimJSXGraph.prototype.multiSelect = function () {
     // ok button
     this.$multiSelect.html("Multi-Select").show();
     this.$selection.html("").show();
-    console.log(this.$selection)
+    this.$multiSelectMenu.html("");
     this.$multiSelectMenu.show();
     var $ok = $("<button></button>").appendTo(this.$multiSelect)
         .html("ok")
