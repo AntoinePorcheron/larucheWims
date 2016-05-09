@@ -1123,8 +1123,12 @@ EssaimJSXGraph.prototype.initEventListener = function ($top_panel, $left_panel) 
     });
 
     /*Fonction du menu contextuel*/
-    this.brd.on("down", function () {
-        self.selection();
+    this.brd.on("down", function (event) {
+	/*console.log(event);*/
+	if (event.buttons === 2){
+	    console.log("haha");
+            self.selection();
+	}
     })
 }
 
