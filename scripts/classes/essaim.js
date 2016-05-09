@@ -70,7 +70,7 @@ Essaim.prototype.initBloc = function()
             {
                 if(bloc_pere.getAttribute("posdrag")<e.clientY)
         {
-            this.style.marginBottom = "50px"; //Marge ajoutée
+            this.style.marginBottom = "30px"; //Marge ajoutée
             this.style.borderBottom="2px dotted red";
         }
         else
