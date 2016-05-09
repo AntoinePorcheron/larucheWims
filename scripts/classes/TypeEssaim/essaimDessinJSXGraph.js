@@ -667,41 +667,33 @@ EssaimJSXGraph.prototype.buildMenu = function (element) {
 
 
 /**
- * sélection :
  * Sélectionne un objet pour le menu contextuel
  */
 EssaimJSXGraph.prototype.selection = function (event) {
     var element = this.getTopUnderMouse();
-    if (element.label){
-	/*console.log(element.label.coords.scrCoords);*/
-	TEST = element.label.coords;
-    }
-    /*console.log(element.coords.scrCoords);*/
     var self = this;
     /*On ne doit pas pouvoir séléctioner du text, ça n'a pas de sens...*/
     if (element.elType && element.elType !== "text"){
+	var positionInputBox = {"x":event.clientX, "y":event.clientY};
 	this.unsetContextMenu();
 	this.inputBoxMenu
 	    .css(
-		{
-		    "position":"absolute",
-		    "left":TEST.scrCoords[1] + GLOB_largeur - 5,
-		    "top":TEST.scrCoords[2] + GLOB_hauteur - 5,
-		    "z-index":"100000"
-		}).show();
+		{"position":"absolute",
+		 "left":positionInputBox.x - 5,
+		 "top":positionInputBox.y - 5,
+		 "z-index":"100000"})
+	    .show();
 	this.$divMenu.css(
 	    {"position":"absolute",
-	     "left":element.coords.scrCoords[1] + GLOB_largeur + 5,
-	     "top":element.coords.scrCoords[2] + GLOB_hauteur + 5,
+	     "left":positionInputBox.x + 5,
+	     "top":positionInputBox.y + 5,
 	     "border":"1px black solid",
 	     "z-index":"100"
 	    })
 	    .click(function(){
-		/*self.unsetContextMenu();*/
 		self.$divMenu.hide();
 	    })
 	    .show();
-        /*this.$divMenu.html("Menu Contextuel de " + element.elType + " " + element.name);*/
         this.buildMenu(element)
     }else{
 	this.unsetContextMenu();
@@ -709,7 +701,6 @@ EssaimJSXGraph.prototype.selection = function (event) {
 };
 
 /**
- * multiSelect :
  * associer un évènement de souris à multi-select
  * cliquer une fois sur un élément le selectionne, une deuxième fois ça le lache
  * le bouton ok stop la multi-selection puis fait apparaitre un menu
@@ -768,7 +759,6 @@ EssaimJSXGraph.prototype.multiSelect = function () {
 
 
 /**
- * buildMultiSelectMenu :
  * construit les boutons dans le menu de multi selection.
  */
 EssaimJSXGraph.prototype.buildMultiSelectMenu = function () {
@@ -806,7 +796,6 @@ EssaimJSXGraph.prototype.buildMultiSelectMenu = function () {
 
 
 /**
- * cleanMultiSelection :
  * effacer les selections multiples
  */
 EssaimJSXGraph.prototype.cleanMultiSelection = function () {
@@ -817,7 +806,6 @@ EssaimJSXGraph.prototype.cleanMultiSelection = function () {
 
 
 /**
- * inputBox :
  * Fait apparaitre une boite d'entrée utilisateur pour récuperer la valeur
  *
  * @param label - le titre du input
@@ -857,7 +845,6 @@ EssaimJSXGraph.prototype.inputbox = function (label, parent, hint, showButton=tr
 
 
 /**
- * selectMode :
  * TODO
  */
 EssaimJSXGraph.prototype.selectMode = function () {
@@ -866,7 +853,6 @@ EssaimJSXGraph.prototype.selectMode = function () {
 
 
 /**
- * initBoutonForme :
  * Fonction qui initialise les boutons qui permettent de générer des éléments sur le graphe tel que
  * des points, des lignes, etc. Cette fonction gère aussi les événements lié à ces boutons.
  *
@@ -940,7 +926,6 @@ EssaimJSXGraph.prototype.initBoutonForme = function (parent) {
 
 
 /**
- * initBoutonAction :
  * Fonction qui initialise tout les boutons qui gèrent les actions que l'on peut faire dans le
  * graphe (supprimer, se mettre en mode libre, etc). Gère aussi les evenements lié à ces boutons.
  *
@@ -1053,7 +1038,6 @@ EssaimJSXGraph.prototype.initBoutonAction = function (parent) {
 
 
 /**
- * InitEventListener :
  * Fonction qui se charge d'initialiser tous les "écouteurs" d'événement,
  * comme un redimensionnement, un clic souris ou autre.
  *
@@ -1078,9 +1062,7 @@ EssaimJSXGraph.prototype.initEventListener = function ($top_panel, $left_panel) 
             });
     });
 
-
-    this.brd.on('down', function (event) {        
-	/*console.log(event);*/
+    this.brd.on('down', function (event) {
 	if (event.button !== 2){
 	    var brd = self.brd;
             var mode = self.mode;
@@ -1095,76 +1077,85 @@ EssaimJSXGraph.prototype.initEventListener = function ($top_panel, $left_panel) 
 			JXG.isPoint(brd.objects[element])) {
 			point = brd.objects[element];
                     }
+		    objet = brd.objects[element];
 		}
-		if (point === undefined) {
-                    point = brd.create("point", userCoord);   
-		}
-		objet = point;
-		self.point.push(point);
-		switch (mode) {
-		case GLOB_point:
-                    self.point = [];
-                    break;
-		case GLOB_ligne:
-                    if (self.point.length === 2) {
-			objet = brd.create(self.mode, self.point);
-			self.point = [];
-                    }
-                    break;
-		case GLOB_cercle:
-                    if (self.point.length === 1) {
-			self.previsualisedObject = 
-			    self.brd.create(self.mode, [self.point[0], userCoord])
-			
-                    } else if (self.point.length === 2) {
-			brd.removeObject(self.previsualisedObject);
-			self.previsualisedObject = null;
-			objet = brd.create(self.mode, self.point);
-			self.point = [];
-                    }
-                    break;
-		case GLOB_arrow:
-                    if (self.point.length === 2) {
-			objet = brd.create(self.mode, self.point);
-			self.point = [];
-                    }
-                    break;
-		case GLOB_segment:
-                    if (self.point.length === 2) {
-			objet = brd.create(self.mode, self.point);
-			self.point = [];
-                    }
-                    break;
-		case GLOB_axe:
-                    if (self.point.length === 2) {
-			objet = self.createDraggableAxis(self.point);
-			self.point = [];
-                    }
-                    break;
-		case GLOB_angle:
-                    if (self.point.length === 3) {
-			objet = brd.create(self.mode, self.point);
-			self.point = [];
-                    }
-                    break;
-		default:
-                    console.error("Erreur de mode, le mode selectionné est incorrect");
-		}
-		if (self.point.length > 3) {
-                    console.error("Erreur de points, trop de point en mémoire.");
-                    self.point = [];
-		}
-		console.log(objet);
+		
+		var dragging = false;
 		if (objet){
 		    objet.on("drag", function(){
 			self.mode = GLOB_libre;
 			self.point = [];
 			self.brd.removeObject(self.previsualisedObject);
 			self.previsualisedObject = undefined;
+			dragging = true;
 		    });
 		}
-            }
+		if (!dragging){
+		    if (point === undefined) {
+			point = brd.create("point", userCoord);   
+		    }
+		    
+		    
+		    self.point.push(point);
+		    switch (mode) {
+		    case GLOB_point:
+			self.point = [];
+			break;
+		    case GLOB_ligne:
+			if (self.point.length === 2) {
+			    objet = brd.create(self.mode, self.point);
+			    self.point = [];
+			}
+			break;
+		    case GLOB_cercle:
+			if (self.point.length === 1) {
+			    self.previsualisedObject = 
+				self.brd.create(self.mode, [self.point[0], userCoord])
+			    
+			} else if (self.point.length === 2) {
+			    brd.removeObject(self.previsualisedObject);
+			    self.previsualisedObject = null;
+			    objet = brd.create(self.mode, self.point);
+			    self.point = [];
+			}
+			break;
+		    case GLOB_arrow:
+			if (self.point.length === 2) {
+			    objet = brd.create(self.mode, self.point);
+			    self.point = [];
+			}
+			break;
+		    case GLOB_segment:
+			if (self.point.length === 2) {
+			    objet = brd.create(self.mode, self.point);
+			    self.point = [];
+			}
+			break;
+		    case GLOB_axe:
+			if (self.point.length === 2) {
+			    objet = self.createDraggableAxis(self.point);
+			    self.point = [];
+			}
+			break;
+		    case GLOB_angle:
+			if (self.point.length === 3) {
+			    objet = brd.create(self.mode, self.point);
+			    self.point = [];
+			}
+			break;
+		    default:
+			console.error("Erreur de mode, le mode selectionné est incorrect");
+		    }
+		    if (self.point.length > 3) {
+			console.error("Erreur de points, trop de point en mémoire.");
+			self.point = [];
+		    }
+		}
+            }else{
+		self.point = [];
+	    }
 	}
+	point = undefined;
     });
 
     this.brd.on('move', function (event) {
@@ -1277,8 +1268,6 @@ EssaimJSXGraph.prototype.updateDeroulant = function () {
  *  Fonction qui reinitialise l'affichage du menu contextuel
  */
 EssaimJSXGraph.prototype.unsetContextMenu = function(){
-    /*this.$divMenu.html("Menu Contextuel");*/
-    /*this.$menuButtons.html("<div></div>");*/
     this.$divMenu.html("<div></div>");
     this.$divMenu.hide();
     this.inputBoxMenu.html("<div></div>");
