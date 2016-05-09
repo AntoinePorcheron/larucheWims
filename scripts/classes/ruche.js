@@ -1824,7 +1824,12 @@ Ruche.prototype.sauvegarde = function ()
     setTimeout(function () {
         $(".Rcl_OK_Light_SaveLoad").css("visibility", "hidden")
     }, 300);
-}
+    // local storage
+    var local = store.existLocal("json", json);
+    if(local){
+        store.local("json", json)
+    }
+};
 
 
 //---------------------------------//
@@ -1835,7 +1840,8 @@ Ruche.prototype.charge = function ()
      * Fonction qui charge tous les éléments de l'objet JSON donné par l'utilisateur
      */ {
 
-    var txt = document.getElementById("Rid_Zone_Sauvegarde").value;
+    var txt = store.local("json") || document.getElementById("Rid_Zone_Sauvegarde").value;
+    $("#Rid_Zone_Sauvegarde").html(txt);
     if (txt != "") {
         var errorJSON = false;
         try {

@@ -765,6 +765,7 @@ input:-moz-placeholder { color:rgba(255,10,0,0.5); }
 #blocFocus .leftMenu input{
 	width: 100%;
 	text-align: left;
+	border: 1px black solid;
 	border-radius: 3px;
 	background-color: rgb(216,191,216);
 }
@@ -795,8 +796,10 @@ input:-moz-placeholder { color:rgba(255,10,0,0.5); }
 #blocFocus .topMenu input {
 	width: 9%;
 	height:70%;
-	border-radius: 3px;
+	border: 1px black solid;
+	border-radius: 2px;
 	background-color: rgb(216,191,216);
+	padding-left:3px;
 }
 
 #blocFocus .topMenu input:hover{
