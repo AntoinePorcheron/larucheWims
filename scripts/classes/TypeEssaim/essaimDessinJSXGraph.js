@@ -673,7 +673,7 @@ EssaimJSXGraph.prototype.buildMenu = function (element) {
 EssaimJSXGraph.prototype.selection = function (event) {
     var element = this.getTopUnderMouse();
     if (element.label){
-	console.log(element.label.coords.scrCoords);
+	/*console.log(element.label.coords.scrCoords);*/
 	TEST = element.label.coords;
     }
     /*console.log(element.coords.scrCoords);*/
@@ -793,7 +793,7 @@ EssaimJSXGraph.prototype.buildMultiSelectMenu = function () {
     };
     var key = Object.keys(menu);
     var buildButton = function (option) {
-        console.log(option);
+        /*console.log(option);*/
         return $("<input type='button' value="+option.nom+" title=\"Permet de supprimer toute la sélection.\"/>")
             .html(option.nom)
             .click(option.callback)
@@ -825,7 +825,7 @@ EssaimJSXGraph.prototype.cleanMultiSelection = function () {
  * @returns {*}, $.Deferred.promise()
  */
 EssaimJSXGraph.prototype.inputbox = function (label, parent, hint, showButton=true, type="text") {
-    console.log(parent);
+    /*console.log(parent);*/
     label = label || "";
     type = type || "text";
     var def = $.Deferred();
@@ -982,7 +982,7 @@ EssaimJSXGraph.prototype.initBoutonAction = function (parent) {
             self.modeSelect(event);
             var tmp = function () {
                 var element = self.getTopUnderMouse();
-		console.log(element.label.coords);
+		/*console.log(element.label.coords);*/
 		/*TEST = element.label.coords*/
                 if (element.elType) {
                     self.brd.removeObject(element);
@@ -1080,25 +1080,26 @@ EssaimJSXGraph.prototype.initEventListener = function ($top_panel, $left_panel) 
 
 
     this.brd.on('down', function (event) {        
-	console.log(event);
+	/*console.log(event);*/
 	if (event.button !== 2){
 	    var brd = self.brd;
             var mode = self.mode;
             var coords = getMouseCoords(event, brd);
             var userCoord = brd.getUsrCoordsOfMouse(event)
-            if (self.mode !== GLOB_libre) {
+	    var objet;
+	    if (self.mode !== GLOB_libre) {
 		var point = undefined;
 		for (element in brd.objects) {
                     if (brd.objects[element].hasPoint(coords.scrCoords[1], coords.scrCoords[2]) &&
 			brd.objects[element].getAttribute("visible") &&
 			JXG.isPoint(brd.objects[element])) {
-			
-			point = element;
+			point = brd.objects[element];
                     }
 		}
 		if (point === undefined) {
-                    point = brd.create("point", userCoord);
+                    point = brd.create("point", userCoord);   
 		}
+		objet = point;
 		self.point.push(point);
 		switch (mode) {
 		case GLOB_point:
@@ -1106,41 +1107,43 @@ EssaimJSXGraph.prototype.initEventListener = function ($top_panel, $left_panel) 
                     break;
 		case GLOB_ligne:
                     if (self.point.length === 2) {
-			brd.create(self.mode, self.point);
+			objet = brd.create(self.mode, self.point);
 			self.point = [];
                     }
                     break;
 		case GLOB_cercle:
                     if (self.point.length === 1) {
-			self.previsualisedObject = self.brd.create(self.mode, [self.point[0], userCoord])
-
+			self.previsualisedObject = 
+			    self.brd.create(self.mode, [self.point[0], userCoord])
+			
                     } else if (self.point.length === 2) {
 			brd.removeObject(self.previsualisedObject);
-			brd.create(self.mode, self.point);
+			self.previsualisedObject = null;
+			objet = brd.create(self.mode, self.point);
 			self.point = [];
                     }
                     break;
 		case GLOB_arrow:
                     if (self.point.length === 2) {
-			brd.create(self.mode, self.point);
+			objet = brd.create(self.mode, self.point);
 			self.point = [];
                     }
                     break;
 		case GLOB_segment:
                     if (self.point.length === 2) {
-			brd.create(self.mode, self.point);
+			objet = brd.create(self.mode, self.point);
 			self.point = [];
                     }
                     break;
 		case GLOB_axe:
                     if (self.point.length === 2) {
-			self.createDraggableAxis(self.point);
+			objet = self.createDraggableAxis(self.point);
 			self.point = [];
                     }
                     break;
 		case GLOB_angle:
                     if (self.point.length === 3) {
-			brd.create(self.mode, self.point);
+			objet = brd.create(self.mode, self.point);
 			self.point = [];
                     }
                     break;
@@ -1150,6 +1153,15 @@ EssaimJSXGraph.prototype.initEventListener = function ($top_panel, $left_panel) 
 		if (self.point.length > 3) {
                     console.error("Erreur de points, trop de point en mémoire.");
                     self.point = [];
+		}
+		console.log(objet);
+		if (objet){
+		    objet.on("drag", function(){
+			self.mode = GLOB_libre;
+			self.point = [];
+			self.brd.removeObject(self.previsualisedObject);
+			self.previsualisedObject = undefined;
+		    });
 		}
             }
 	}
@@ -1300,8 +1312,8 @@ EssaimJSXGraph.prototype.createDraggableAxis = function(point){
         });
     }
     axis.needsRegularUpdate = true;
-    /*axis.label.position = "lft";*/
     this.brd.update();
+    return axis;
 }
 
 /**
@@ -1328,7 +1340,6 @@ EssaimJSXGraph.prototype.setAxisNamePosition = function(axis){
     }
     this.brd.update();
 }
-
 /**
  * Fonction qui permet de recuperer les coordonnées d'un clic sur le graphe
  * @param event
