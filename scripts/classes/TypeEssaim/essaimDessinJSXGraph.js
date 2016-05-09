@@ -19,8 +19,8 @@ var selectListener = [];
 
 var type = ["point", "line", "circle", "arrow", "segment", "axis", "angle", "arc"]
 
-//Variables qui définissent la largeurs du paneau latéral et la hauteur du paneau d'entete.
-var GLOB_largeur = 100;
+//Variables qui définissent la largeur du panneau latéral et la hauteur du panneau d'entête.
+var GLOB_largeur = 110;
 var GLOB_hauteur = 30;
 
 var AllJSXGraph = [];
@@ -162,12 +162,12 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup)
 
      // **** Fabrication du contenu du bloc ****
 
-     /* Le panneau d'affichage du graphe est composé de trois bloc
-      * - un bloc lateral qui contient les actions disponible sur le graphe
-      * - un bloc au sommet qui contient les formes que l'on peut crée sur le graphe
-      * - un bloc plus central qui contient le graphe en lui meme
+     /* Le panneau d'affichage du graphe est composé de trois blocs
+      * - un bloc lateral qui contient les actions disponibles sur le graphe
+      * - un bloc au sommet qui contient les formes que l'on peut créer sur le graphe
+      * - un bloc plus central qui contient le graphe en lui même
       */
-     var $left_panel = $("<div></div>")
+     var $left_panel = $("<div class=\"leftMenu\"></div>")
          .css({
              "position": "absolute",
              "width": GLOB_largeur,
@@ -176,13 +176,12 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup)
              "top": 0
          })
          .appendTo($bloc_contenu);
-     var $top_panel = $("<div></div>")
+     var $top_panel = $("<div class=\"topMenu\"></div>")
          .css({
              "position": "absolute",
              "width": this.surpage.width() - GLOB_largeur,
              "height": GLOB_hauteur,
              "top": 0,
-             "right": 0,
              /*"background-color":"#00ff00",*/
              "display": "inline"
          })
@@ -227,10 +226,10 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup)
          })
          .appendTo($top_panel);
 
-     var $div_bouton_action = $("<div></div>")
+     var $div_bouton_action = $("<div class='actionLeft' ></div>")
          .appendTo($left_panel);
 
-     var $div_menu_contextuel = $("<div></div>")
+     var $div_menu_contextuel = $("<div class='menu_contextuel'></div>")
          .appendTo($left_panel);
 
      this.inputZone = $("<div></div>").appendTo($left_panel);
@@ -270,11 +269,13 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup)
      }
      barre_tache_editJSXGraph.appendChild(bouton_composant_editJSXGraph);
 
-
+     /*On met à jour le deroulant car celui ci peut déjà posseder des éléments d'autres graphes.*/
+     this.updateDeroulant();
+     
      EssaimJSXGraph.prototype.initEnonce.call(this);
      EssaimJSXGraph.prototype.initAnalyse.call(this);
-     this.updateDeroulant();
 
+     console.log(rucheSys.listeVariables);
  }
 
 
@@ -292,8 +293,8 @@ EssaimJSXGraph.prototype.detruitBloc = function () {
 
 /**
  * toOEF
- * Fonction qui genere le code OEF correspondant au graphe construit
- * @return {string} Code oef generer dans cette fonction
+ * Fonction qui génère le code OEF correspondant au graphe construit
+ * @return {string} Code oef généré dans cette fonction
  */
 EssaimJSXGraph.prototype.toOEF = function () {
     var bord_gauche = this.brd.getBoundingBox()[0];
@@ -314,7 +315,7 @@ EssaimJSXGraph.prototype.toOEF = function () {
     if (!this.grid) {
         var pas_x = JXG.Options.ticks.ticksDistance;
         var pas_y = JXG.Options.ticks.ticksDistance;
-        /*On recupere les position des première ligne de la grille*/
+        /*On recupère les positions des premières lignes de la grille*/
         var deb_x = (bord_gauche - (bord_gauche % JXG.Options.ticks.ticksDistance));
         var deb_y = (bord_bas - (bord_bas % JXG.Options.ticks.ticksDistance));
         var nb_x = Math.ceil(bord_droit - bord_gauche / pas_x);
@@ -432,7 +433,7 @@ EssaimJSXGraph.prototype.toOEF = function () {
                 var p1 = brdElement.point1;
                 var p2 = brdElement.point2;
                 var p3 = brdElement.point3;
-                /*On créé une ligne temporaire pour obtenir l'angle de "base" à partir de l'axe X*/
+                /*On crée une ligne temporaire pour obtenir l'angle de "base" à partir de l'axe X*/
                 var tmpLine = this.brd.create("line", [p1, p2]);
                 var valAngleAxeX = (tmpLine.getAngle() * 360) / (2 * Math.PI);
                 this.brd.removeObject(tmpLine);
@@ -450,8 +451,7 @@ EssaimJSXGraph.prototype.toOEF = function () {
 
 
 /**
- * toOEFFromStatement
- * TODO
+ * Genere le code OEF qui correspond à la partie "statement", code necessaire pour l'affichage de l'image
  */
 EssaimJSXGraph.prototype.toOEFFromStatement = function (idReponse) {
     return "<img src=\"\\url" + this.nom + "\" alt=\"Erreur avec l'image " + this.nom + "\"/>";
@@ -482,7 +482,7 @@ EssaimJSXGraph.prototype.menuOptions = function (element) {
         changeNom: {
             nom: "Changer le nom",
             callback: function () {
-                $.when(self.inputbox("Entrer un nom : "))
+                $.when(self.inputbox("Entrer un nom"))
                     .done(function (nom) {
 			element.name = nom;
                         self.brd.update()
@@ -533,7 +533,7 @@ EssaimJSXGraph.prototype.menuOptions = function (element) {
 EssaimJSXGraph.prototype.fillImageIntoPoint = function (url, pointExiste) {
     /**
      * Important:
-     * En changer le numero de layer de image, on met image le plus haut que les autre
+     * En changent le numéro de layer de l'image, on met l'image plus haute que les autres
      */
     this.brd.options.layer["image"] = 10;
     function getCoord2D(paint) {
@@ -560,7 +560,7 @@ EssaimJSXGraph.prototype.fillImageIntoPoint = function (url, pointExiste) {
 /**
  * popupImageUploader :
  *
- * fait apparaitre une fenetre pour charger une image.
+ * fait apparaitre une fenêtre pour charger une image.
  * @param readSuccess
  * @param readFail
  */
@@ -600,9 +600,9 @@ EssaimJSXGraph.prototype.popupImageUploader = function (readSuccess, readFail) {
 
 /**
  * getTopUnderMouse
- * Obtenir le premier element, a partir du texte
- * les textes ont le moins prioritaire juste dans cette fonction,
- * dont le layer n'est pas globalement modifie
+ * Obtenir le premier élément, à partir du texte
+ * les textes sont le moins prioritaires juste dans cette fonction,
+ * dont le layer n'est pas globalement modifié
  * @returns {*}
  */
 EssaimJSXGraph.prototype.getTopUnderMouse = function () {
@@ -640,9 +640,9 @@ EssaimJSXGraph.prototype.getTopUnderMouse = function () {
  * @param element, callback argument
  */
 EssaimJSXGraph.prototype.buildMenu = function (element) {
-    // Pour indiquer les options dans le menu par rapport aux types des elements
+    // Pour indiquer les options dans le menu par rapport aux types des éléments
     var buildButton = function (option) {
-        return $("<button></button>")
+        return $("<input type='button' />")
             .html(option.nom)
             .click(option.callback)
     };
@@ -663,8 +663,8 @@ EssaimJSXGraph.prototype.buildMenu = function (element) {
 
 
 /**
- * selection :
- * Selection un objet pour le menu contextuel
+ * sélection :
+ * Sélectionne un objet pour le menu contextuel
  */
 EssaimJSXGraph.prototype.selection = function () {
     var element = this.getTopUnderMouse();
@@ -677,37 +677,12 @@ EssaimJSXGraph.prototype.selection = function () {
 
 /**
  * multiSelect :
- * associer un evenement de souris a multi-select
- * cliquer une fois sur un element le selectionne, une deuxieme fois ça le lache
+ * associer un évènement de souris à multi-select
+ * cliquer une fois sur un élément le selectionne, une deuxième fois ça le lache
  * le bouton ok stop la multi-selection puis fait apparaitre un menu
  * le bouton effacer efface la multi-selection
  */
 EssaimJSXGraph.prototype.multiSelect = function () {
-    this.mode = GLOB_libre;
-    this.stackMultiSelect = [];
-    var self = this;
-    // ok button
-    this.$multiSelect.html("Multi-Select").show();
-    this.$selection.html("").show();
-    console.log(this.$selection)
-    this.$multiSelectMenu.show();
-    var $ok = $("<button></button>").appendTo(this.$multiSelect)
-        .html("ok")
-        .click(function (event) {
-            self.brd.off("up", tmp);
-            self.$button_libre.trigger("click");
-            $ok.remove();
-            $clean.remove();
-            self.buildMultiSelectMenu()
-        });
-    // clean button
-    var $clean = $("<button></button>").appendTo(this.$multiSelect)
-        .html("Effacer")
-        .click(function () {
-            self.cleanMultiSelection();
-        });
-    this.$selection.appendTo(/*this.divBloc*/this.$multiSelect);
-    this.$multiSelectMenu.appendTo(/*this.divBloc*/this.$multiSelect);
     var tmp = function () {
         self.$button_libre.trigger("click");
         var element = self.getTopUnderMouse();
@@ -726,8 +701,35 @@ EssaimJSXGraph.prototype.multiSelect = function () {
         for (var i = 0; i < select.length; i++) {
             html.push(select[i].elType + " " + select[i].name)
         }
-        self.$selection.html(JSON.stringify(html))
+        self.$selection.html(JSON.stringify(html));
     };
+    this.mode = GLOB_libre;
+    this.stackMultiSelect = [];
+    this.brd.off("up", tmp);
+    // pour eviter deux fois cliquer
+    var self = this;
+    // ok button
+    this.$multiSelect.html("Multi-Select").show();
+    this.$selection.html("").show();
+    this.$multiSelectMenu.html("");
+    this.$multiSelectMenu.show();
+    var $ok = $("<input type='button' value ='Ok' />").appendTo(this.$multiSelect)
+        .html("ok")
+        .click(function (event) {
+            self.brd.off("up", tmp);
+            self.$button_libre.trigger("click");
+            $ok.remove();
+            $clean.remove();
+            self.buildMultiSelectMenu()
+        });
+    // clean button
+    var $clean = $("<input type='button' value='Clean' />").appendTo(this.$multiSelect)
+        .html("Effacer")
+        .click(function () {
+            self.cleanMultiSelection();
+        });
+    this.$selection.appendTo(/*this.divBloc*/this.$multiSelect);
+    this.$multiSelectMenu.appendTo(/*this.divBloc*/this.$multiSelect);
     this.brd.on("up", tmp)
 };
 
@@ -759,7 +761,7 @@ EssaimJSXGraph.prototype.buildMultiSelectMenu = function () {
     var key = Object.keys(menu);
     var buildButton = function (option) {
         console.log(option);
-        return $("<button></button>")
+        return $("<input type='button' />")
             .html(option.nom)
             .click(option.callback)
     };
@@ -783,7 +785,7 @@ EssaimJSXGraph.prototype.cleanMultiSelection = function () {
 
 /**
  * inputBox :
- * Fait apparaitre une boite d'entrée utilisateur pour recuperer la valeurs
+ * Fait apparaitre une boite d'entrée utilisateur pour récuperer la valeur
  *
  * @param label - le titre du input
  * @param type - le type du input
@@ -802,11 +804,11 @@ EssaimJSXGraph.prototype.inputbox = function (label, type) {
     var $input = $("<input />")
         .attr("type", type)
         .appendTo($box);
-    var $submit = $("<button></button>")
+    var $submit = $("<input type='button' value='Changer nom' />")
         .html("ok")
         .click(function (event) {
             if (!$input.val() || !$input.val().length) {
-                def.reject("le valeur n'est pas defini")
+                def.reject("La valeur n'est pas definie.")
             } else {
                 $box.remove();
                 def.resolve($input.val())
@@ -828,10 +830,10 @@ EssaimJSXGraph.prototype.selectMode = function () {
 
 /**
  * initBoutonForme :
- * Fonction qui initialise les boutons qui permettent de generer des éléments sur le graphe tel que
+ * Fonction qui initialise les boutons qui permettent de générer des éléments sur le graphe tel que
  * des points, des lignes, etc. Cette fonction gère aussi les événements lié à ces boutons.
  *
- * @param parent - element dans lequel viennent s'inserer tout les boutons
+ * @param parent - élément dans lequel viennent s'insérer tous les boutons
  */
 EssaimJSXGraph.prototype.initBoutonForme = function (parent) {
     var self = this;
@@ -849,6 +851,8 @@ EssaimJSXGraph.prototype.initBoutonForme = function (parent) {
        * - axe
        * - angle
        */
+    
+    
     var $button_point = $("<input type='button' value='Point' title=\"Permet de créer un point.\"/>")
         .appendTo($div_bouton_forme)
         .click(function (event) {
@@ -920,7 +924,7 @@ EssaimJSXGraph.prototype.initBoutonAction = function (parent) {
        * - multi-selection
        */
     var $button_libre =
-        $("<button title=\"Permet de déplacer des objets dans le graphe.\"> Deplacer </button>")
+        $("<input type='button' value='Déplacer' title=\"Permet de déplacer des objets dans le graphe.\"/>")
         .appendTo($div_bouton_action)
         .click(function (event) {
             self.mode = GLOB_libre
@@ -928,9 +932,9 @@ EssaimJSXGraph.prototype.initBoutonAction = function (parent) {
 
     /**
      * button supprimer
-     * supprimer un element en click,
-     * si cliquer sur un element non valide, il va alert un message de error,
-     * si valide, il va supprimer l'element.
+     * supprimer un élément en click,
+     * si on clique sur un élément non valide, il va envoyer un message d'erreur,
+     * si valide, il va supprimer l'élément.
      * il marche une fois et puis revient en mode selection
      * @type {*|{trigger, _default}|jQuery}
      */
@@ -953,11 +957,11 @@ EssaimJSXGraph.prototype.initBoutonAction = function (parent) {
                     self.selection()
                 })
             };
-	   
+	    
             self.brd.on("up", tmp)
         });
 
-    var $button_image = $("<input type='button' value='Image'/>")
+    var $button_image = $("<input type='button' value='Importer image'/>")
         .appendTo($div_bouton_action)
         .click(function (event) {
             self.popupImageUploader(function (event) {
@@ -968,14 +972,14 @@ EssaimJSXGraph.prototype.initBoutonAction = function (parent) {
         });
 
     var $multiselect =
-        $("<button title = \"Action de multi-sélection\">Multi-select</button>")
+        $("<input type='button' value ='Multi-select' title = \"Action de multi-sélection\" />")
         .appendTo($div_bouton_action)
         .click(function (event) {
             self.multiSelect();
         });
 
     var $button_switch_grille =
-        $("<button title=\"Affiche/enlève la grille.\">Grille</button>")
+        $("<input type='button' value = 'Grille' title=\"Affiche/enlève la grille.\" />")
         .appendTo($div_bouton_action)
         .click(function (event) {
             self.grid = !self.grid;
@@ -996,7 +1000,7 @@ EssaimJSXGraph.prototype.initBoutonAction = function (parent) {
         }).appendTo($div_bouton_action);
 
     var $save =
-        $("<button title=\"Permet de sauvegarder des éléments du graphique dans une boite à dessin.\">Ajout dans boîte à dessin </button>")
+        $("<input type='button' value = 'Ajout dans BaD' title=\"Permet de sauvegarder des éléments du graphique dans une boite à dessin.\" />")
         .appendTo($div_bouton_action)
         .click({charge: $charger}, function (event) {
             self.saveSelection(self.brd.objects);
@@ -1008,13 +1012,13 @@ EssaimJSXGraph.prototype.initBoutonAction = function (parent) {
 
 /**
  * InitEventListener :
- * Fonction qui se charge d'initialiser tout les "ecouteurs" d'événement,
+ * Fonction qui se charge d'initialiser tous les "écouteurs" d'événement,
  * comme un redimensionnement, un clic souris ou autre.
  *
- * @param $top_panel - panneau supérieurs, qui necessite un redimensionnement si un
- * redimensionnement à lieu
- * @param $left_panel - panneau latéral gauche qui necessite un redimensionnement si un
- * redimensionnement à lieu
+ * @param $top_panel - panneau supérieur, qui nécessite un redimensionnement si un
+ * redimensionnement a lieu
+ * @param $left_panel - panneau latéral gauche qui nécessite un redimensionnement si un
+ * redimensionnement a lieu
  */
 EssaimJSXGraph.prototype.initEventListener = function ($top_panel, $left_panel) {
     var self = this;
@@ -1139,7 +1143,7 @@ EssaimJSXGraph.prototype.saveSelection = function (objects) {
         }
     }
 
-    $.when(this.inputbox("Entrer un nom : "))
+    $.when(this.inputbox("Entrer un nom"))
         .done(function (name) {
 	    if (saveState[name] === undefined) {
                 saveState[name] = objets;
@@ -1165,7 +1169,10 @@ EssaimJSXGraph.prototype.loadSelection = function (name) {
 	var ancestor = {}
         for (var i in objets) {
 	    if (objets[i].elType === "point") {
-                this.brd.create(objets[i].elType, [objets[i].X(), objets[i].Y()], {name: objets[i].name});
+		if (!objets[i]){
+		    ancestor[i] = this.brd.create(objets[i].elType, [objets[i].X(), objets[i].Y()], 
+						  {name: objets[i].name});
+		}
 	    } else {
                 var points = [];
                 for (var j in objets[i].ancestors) {
@@ -1176,7 +1183,19 @@ EssaimJSXGraph.prototype.loadSelection = function (name) {
 		    }	    
 		    points.push(ancestor[j]);
 		}
-                this.brd.create(objets[i].elType, points, {name:objets[i].name});
+		/*if (objets[i].elType === "angle"){
+		    this.brd.create(objets[i].elType, [points[1], points[0], points[1]]);
+		}else{
+                    this.brd.create(objets[i].elType, points, {name:objets[i].name});
+		}*/
+		var res;
+		if (objets[i].elType === "angle"){
+		    /*console.log(points);*/
+		    res = [points[1], points[0], points[2]];
+		}else{
+		    res = points
+		}
+		this.brd.create(objets[i].elType, res, {name:objets[i].name});
 	    }
         }
     }
@@ -1276,7 +1295,7 @@ function getMouseCoords(event, brd) {
 /**
  * Fonction qui calcule la distance entre deux point JSXGraph.
  * @param p1 - premier point à partir duquel on calcul une distance
- * @param p2 - deuxieme point à partir duquel on calcul une distance
+ * @param p2 - deuxième point à partir duquel on calcul une distance
  * @return {Number} distance de p1 à p2
  */
 function distance(p1, p2) {
@@ -1290,13 +1309,13 @@ function distance(p1, p2) {
  * @return retourne le nombre d'élément de l'objet
  */
 function getLen(object) {
-    // doit obtenir erreur quand object est null, undefined ou pas un object
+    // doit donner une erreur quand object est null, undefined ou pas un object
     if (object){
 	var tmp = Object.keys(object).length;
     }else{
 	console.error("L'objets est indéfinie");
     }
-    // afin que ce valeur n'est pas disponible a modifier
+    // afin que cette valeur ne soit pas modifiable
     return -1
 }
 
