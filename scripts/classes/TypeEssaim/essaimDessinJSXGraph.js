@@ -17,13 +17,13 @@ var GLOB_arc = "arc";
 var saveState = {};
 var selectListener = [];
 
-var type = ["point", "line", "circle", "arrow", "segment", "axis", "angle", "arc"]
-
 //Variables qui définissent la largeur du panneau latéral et la hauteur du panneau d'entête.
 var GLOB_largeur = 110;
 var GLOB_hauteur = 30;
 
 var AllJSXGraph = [];
+
+var TEST;
 
 EssaimJSXGraph = function (num) {
     //Appelle le constructeur parent
@@ -63,6 +63,8 @@ EssaimJSXGraph = function (num) {
     this.inputZone;
 
     this.deroulant;
+
+    this.inputBoxMenu = $("<div></div>");
 }
 //------------ Déclaration comme classe dérivée de Essaim -------------//
 EssaimJSXGraph.prototype = Object.create(Essaim.prototype);
@@ -157,7 +159,13 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup)
      AllJSXGraph.push(this);
 
      /*Création du panneau d'affichage*/
-     var $bloc_contenu = $("<div></div>");
+     /*On fait en sorte de ne pas avoir le clic droit sur cette zone, pour avoir le menu contextuel personnalisé*/
+     var $bloc_contenu = $("<div></div>")
+	 .on("contextmenu", 
+	     function(event){
+		 event.preventDefault(); return false
+	     });
+     
      this.surpage = new BlocFocus($bloc_contenu, this.divBloc);
 
      // **** Fabrication du contenu du bloc ****
@@ -235,8 +243,8 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup)
      this.inputZone = $("<div></div>").appendTo($left_panel);
 
      this.$multiSelect.appendTo($left_panel).hide();
-     this.$selection.appendTo(/*$left_panel*/this.$multiSelect).hide();
-     this.$multiSelectMenu.appendTo(/*$left_panel*/this.$multiSelect).hide();
+     this.$selection.appendTo(this.$multiSelect).hide();
+     this.$multiSelectMenu.appendTo(this.$multiSelect).hide();
 
      var modeSelect = function (event) {
          self.mode = GLOB_libre
@@ -248,8 +256,9 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup)
      this.modeSelect = modeSelect;
 
 
-     this.$divMenu.appendTo($div_menu_contextuel);
-     this.$menuButtons.appendTo($div_menu_contextuel);
+     this.$divMenu.appendTo( $bloc_contenu/*$div_brd/*$div_menu_contextuel*/);
+     this.$menuButtons.appendTo( $bloc_contenu/*$div_brd/*$div_menu_contextuel*/);
+     this.inputBoxMenu.appendTo( $bloc_contenu/*$div_brd/*$div_menu_contextuel*/);
 
      this.initBoutonForme($div_bouton_forme);
      this.initBoutonAction($div_bouton_action);
@@ -460,7 +469,6 @@ EssaimJSXGraph.prototype.toOEFFromStatement = function (idReponse) {
 
 
 /**
- * removeImage
  * supprime une image dans le plateau
  * @param image: JSXGraph.element(image), la variable qui indique une image de JSXGraph
  */
@@ -470,7 +478,6 @@ EssaimJSXGraph.prototype.removeImage = function (image) {
 
 
 /**
- * menuOptions
  * ici on definit les options du menu contextuel
  * @param element, callback argument
  * @returns {{}}
@@ -482,7 +489,7 @@ EssaimJSXGraph.prototype.menuOptions = function (element) {
         changeNom: {
             nom: "Changer le nom",
             callback: function () {
-                $.when(self.inputbox("Entrer un nom"))
+                $.when(self.inputbox(/*"Entrer un nom",*/"", self.inputBoxMenu, "Nom"/*, false*/))
                     .done(function (nom) {
 			element.name = nom;
                         self.brd.update()
@@ -497,7 +504,7 @@ EssaimJSXGraph.prototype.menuOptions = function (element) {
         resize: {
 	    nom: "Changer la taille",
             callback: function () {
-                $.when(self.inputbox("Entrer la largeur et la hauteur, separer par , "))
+                $.when(self.inputbox("Entrer la largeur et la hauteur, separer par , ", self.inputBoxMenu))
                     .done(function (data) {
                         var width = parseInt(data.match(/^ *[^,]* *,/)[0].replace(/,/, ""));
                         var height = parseInt(data.match(/, *[^,]*$/)[0].replace(/,/, ""));
@@ -524,7 +531,6 @@ EssaimJSXGraph.prototype.menuOptions = function (element) {
 
 
 /**
- * fillImageIntoPoint
  * insère une image dans un point
  * @param url" String, url de l'image
  * @param pointExiste: JSXGraph.element(point), le variable qui indique un point de JSXGraph
@@ -558,8 +564,6 @@ EssaimJSXGraph.prototype.fillImageIntoPoint = function (url, pointExiste) {
 
 
 /**
- * popupImageUploader :
- *
  * fait apparaitre une fenêtre pour charger une image.
  * @param readSuccess
  * @param readFail
@@ -668,19 +672,33 @@ EssaimJSXGraph.prototype.buildMenu = function (element) {
  */
 EssaimJSXGraph.prototype.selection = function (event) {
     var element = this.getTopUnderMouse();
+    if (element.label){
+	console.log(element.label.coords.scrCoords);
+	TEST = element.label.coords;
+    }
+    /*console.log(element.coords.scrCoords);*/
     var self = this;
     /*On ne doit pas pouvoir séléctioner du text, ça n'a pas de sens...*/
     if (element.elType && element.elType !== "text"){
 	this.unsetContextMenu();
+	this.inputBoxMenu
+	    .css(
+		{
+		    "position":"absolute",
+		    "left":TEST.scrCoords[1] + GLOB_largeur - 5,
+		    "top":TEST.scrCoords[2] + GLOB_hauteur - 5,
+		    "z-index":"100000"
+		}).show();
 	this.$divMenu.css(
 	    {"position":"absolute",
-	     "left":event.clientX,
-	     "top":event.clientY,
+	     "left":element.coords.scrCoords[1] + GLOB_largeur + 5,
+	     "top":element.coords.scrCoords[2] + GLOB_hauteur + 5,
 	     "border":"1px black solid",
-	     "z-index":"100000000"
+	     "z-index":"100"
 	    })
 	    .click(function(){
-		self.unsetContextMenu();
+		/*self.unsetContextMenu();*/
+		self.$divMenu.hide();
 	    })
 	    .show();
         /*this.$divMenu.html("Menu Contextuel de " + element.elType + " " + element.name);*/
@@ -806,18 +824,19 @@ EssaimJSXGraph.prototype.cleanMultiSelection = function () {
  * @param type - le type du input
  * @returns {*}, $.Deferred.promise()
  */
-EssaimJSXGraph.prototype.inputbox = function (label, type) {
+EssaimJSXGraph.prototype.inputbox = function (label, parent, hint, showButton=true, type="text") {
+    console.log(parent);
     label = label || "";
     type = type || "text";
     var def = $.Deferred();
     this.inputZone.html("");
     var $box = $("<div></div>")
-        .appendTo(this.inputZone);
+        .appendTo(parent);
     var $label = $("<div></div>")
         .html(label)
         .appendTo($box);
     var $input = $("<input />")
-        /*.attr("type", type)*/
+        .attr({"type":type, "placeholder":hint})
         .appendTo($box);
     var $submit = $("<input type='button' value='Valider' />")
         .html("ok")
@@ -830,6 +849,9 @@ EssaimJSXGraph.prototype.inputbox = function (label, type) {
             }
         })
         .appendTo($box);
+    if (!showButton){
+	$submit.hide();
+    }
     return def.promise()
 };
 
@@ -960,6 +982,8 @@ EssaimJSXGraph.prototype.initBoutonAction = function (parent) {
             self.modeSelect(event);
             var tmp = function () {
                 var element = self.getTopUnderMouse();
+		console.log(element.label.coords);
+		/*TEST = element.label.coords*/
                 if (element.elType) {
                     self.brd.removeObject(element);
 		    self.unsetContextMenu();
@@ -1053,6 +1077,7 @@ EssaimJSXGraph.prototype.initEventListener = function ($top_panel, $left_panel) 
 
 
     this.brd.on('down', function (event) {        
+	console.log(event);
 	if (event.button !== 2){
 	    var brd = self.brd;
             var mode = self.mode;
@@ -1163,7 +1188,7 @@ EssaimJSXGraph.prototype.saveSelection = function (objects) {
         }
     }
 
-    $.when(this.inputbox("Entrer un nom"))
+    $.when(this.inputbox("Entrer un nom", self.inputZone))
         .done(function (name) {
 	    if (saveState[name] === undefined) {
                 saveState[name] = objets;
@@ -1241,6 +1266,8 @@ EssaimJSXGraph.prototype.unsetContextMenu = function(){
     /*this.$menuButtons.html("<div></div>");*/
     this.$divMenu.html("<div></div>");
     this.$divMenu.hide();
+    this.inputBoxMenu.html("<div></div>");
+    this.inputBoxMenu.hide();
 };
 
 /**
@@ -1270,9 +1297,7 @@ EssaimJSXGraph.prototype.createDraggableAxis = function(point){
         });
     }
     axis.needsRegularUpdate = true;
-    /*console.log(axis.label);*/
-    /*console.log(axis.position);*/
-    axis.label.position = "lft";
+    /*axis.label.position = "lft";*/
     this.brd.update();
 }
 
@@ -1280,6 +1305,7 @@ EssaimJSXGraph.prototype.createDraggableAxis = function(point){
  * Fonction qui permet de positionner le nom d'un axe en fonction de son orientation
  * @param axis - Axe pour lequel on veut changer la position du nom de l'axe
  */
+/*TODO*/
 EssaimJSXGraph.prototype.setAxisNamePosition = function(axis){
     var p1 = axis.point1;
     var p2 = axis.point2;
