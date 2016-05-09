@@ -682,6 +682,8 @@ EssaimJSXGraph.prototype.selection = function () {
 EssaimJSXGraph.prototype.multiSelect = function () {
     this.mode = GLOB_libre;
     this.stackMultiSelect = [];
+    this.brd.off("up", tmp);
+    // pour eviter deux fois cliquer
     var self = this;
     // ok button
     this.$multiSelect.html("Multi-Select").show();
@@ -724,6 +726,7 @@ EssaimJSXGraph.prototype.multiSelect = function () {
             html.push(select[i].elType + " " + select[i].name)
         }
         self.$selection.html(JSON.stringify(html))
+        console.log(self.stackMultiSelect)
     };
     this.brd.on("up", tmp)
 };
