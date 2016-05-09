@@ -669,9 +669,12 @@ EssaimJSXGraph.prototype.buildMenu = function (element) {
 EssaimJSXGraph.prototype.selection = function () {
     var element = this.getTopUnderMouse();
     var self = this;
-    if (element.elType) {
+    /*On ne doit pas pouvoir séléctioner du text, ça n'a pas de sens...*/
+    if (element.elType && element.elType !== "text") {
         this.$divMenu.html("Menu Contextuel de " + element.elType + " " + element.name);
         this.buildMenu(element)
+    }else{
+	this.unsetContextMenu();
     }
 };
 
