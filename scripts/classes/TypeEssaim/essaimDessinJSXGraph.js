@@ -680,6 +680,26 @@ EssaimJSXGraph.prototype.selection = function () {
  * le bouton effacer efface la multi-selection
  */
 EssaimJSXGraph.prototype.multiSelect = function () {
+    var tmp = function () {
+        self.$button_libre.trigger("click");
+        var element = self.getTopUnderMouse();
+        if (element.elType) {
+            var tmp = self.stackMultiSelect.indexOf(element);
+            if (tmp >= 0) {
+                self.stackMultiSelect.splice(tmp, 1)
+            } else {
+                self.stackMultiSelect.push(element)
+            }
+        }
+        //interface
+        self.$selection.html("");
+        var html = [];
+        var select = self.stackMultiSelect;
+        for (var i = 0; i < select.length; i++) {
+            html.push(select[i].elType + " " + select[i].name)
+        }
+        self.$selection.html(JSON.stringify(html));
+    };
     this.mode = GLOB_libre;
     this.stackMultiSelect = [];
     this.brd.off("up", tmp);
@@ -707,27 +727,6 @@ EssaimJSXGraph.prototype.multiSelect = function () {
         });
     this.$selection.appendTo(/*this.divBloc*/this.$multiSelect);
     this.$multiSelectMenu.appendTo(/*this.divBloc*/this.$multiSelect);
-    var tmp = function () {
-        self.$button_libre.trigger("click");
-        var element = self.getTopUnderMouse();
-        if (element.elType) {
-            var tmp = self.stackMultiSelect.indexOf(element);
-            if (tmp >= 0) {
-                self.stackMultiSelect.splice(tmp, 1)
-            } else {
-                self.stackMultiSelect.push(element)
-            }
-        }
-        //interface
-        self.$selection.html("");
-        var html = [];
-        var select = self.stackMultiSelect;
-        for (var i = 0; i < select.length; i++) {
-            html.push(select[i].elType + " " + select[i].name)
-        }
-        self.$selection.html(JSON.stringify(html))
-        console.log(self.stackMultiSelect)
-    };
     this.brd.on("up", tmp)
 };
 
