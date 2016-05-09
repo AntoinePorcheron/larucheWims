@@ -492,7 +492,7 @@ EssaimJSXGraph.prototype.menuOptions = function (element) {
     };
     options.image = {
         resize: {
-            nom: "changer le size",
+            nom: "Changer la taille",
             callback: function () {
                 $.when(self.inputbox("Entrer width et height, separer par , "))
                     .done(function (data) {
@@ -639,7 +639,7 @@ EssaimJSXGraph.prototype.getTopUnderMouse = function () {
 EssaimJSXGraph.prototype.buildMenu = function (element) {
     // Pour indiquer les options dans le menu par rapport aux types des éléments
     var buildButton = function (option) {
-        return $("<input type='button' />")
+        return $("<input type='button' value='Changer nom'/>")
             .html(option.nom)
             .click(option.callback)
     };
@@ -720,7 +720,7 @@ EssaimJSXGraph.prototype.multiSelect = function () {
             self.buildMultiSelectMenu()
         });
     // clean button
-    var $clean = $("<input type='button' value='Clean' />").appendTo(this.$multiSelect)
+    var $clean = $("<input type='button' value='Effacer' />").appendTo(this.$multiSelect)
         .html("Effacer")
         .click(function () {
             self.cleanMultiSelection();
@@ -740,13 +740,13 @@ EssaimJSXGraph.prototype.buildMultiSelectMenu = function () {
     var menu = {};
     var self = this;
     menu.grouper = {
-        nom: "grouper",
+        nom: "Grouper",
         callback: function () {
             self.brd.create("group", self.stackMultiSelect)
         }
     };
     menu.toutsup = {
-        nom: "tout supprimer",
+        nom: "Suppression",
         callback: function () {
             for (var i = 0; i < self.stackMultiSelect.length; i++) {
                 self.brd.removeObject(self.stackMultiSelect[i])
@@ -758,7 +758,7 @@ EssaimJSXGraph.prototype.buildMultiSelectMenu = function () {
     var key = Object.keys(menu);
     var buildButton = function (option) {
         console.log(option);
-        return $("<input type='button' />")
+        return $("<input type='button' value="+option.nom+" title=\"Permet de supprimer toute la sélection.\"/>")
             .html(option.nom)
             .click(option.callback)
     };
@@ -775,7 +775,7 @@ EssaimJSXGraph.prototype.buildMultiSelectMenu = function () {
  */
 EssaimJSXGraph.prototype.cleanMultiSelection = function () {
     this.stackMultiSelect = [];
-    this.$selection.html("");
+    this.$selection.html("");s
     this.$multiSelectMenu.html("")
 };
 
@@ -801,7 +801,7 @@ EssaimJSXGraph.prototype.inputbox = function (label, type) {
     var $input = $("<input />")
         .attr("type", type)
         .appendTo($box);
-    var $submit = $("<input type='button' value='Changer nom' />")
+    var $submit = $("<input type='button' value='Valider' />")
         .html("ok")
         .click(function (event) {
             if (!$input.val() || !$input.val().length) {
