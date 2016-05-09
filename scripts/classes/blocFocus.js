@@ -23,7 +23,7 @@ BlocFocus = function(content, affichage){
     if (content !== undefined){
 	content.appendTo(this.content);
     }
-    var $button = $("<input type='button' value='afficher'/>")
+    var $button = $("<input type='button' value='Afficher'/>")
 	.click(function(){
 	    self.show();
 	})
