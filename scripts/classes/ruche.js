@@ -202,6 +202,7 @@ Ruche.prototype.initialisationEvent = function ()
             if (target.id != this.id) {
                 if (e.x <= rect.left + rect.width && e.x >= rect.left && e.y <= rect.top + rect.height && e.y >= rect.top) {
                     var txt = target;
+                    console.log("format id : "+txt.id)
                     var elem = document.getElementById(e.dataTransfer.getData("texte"));
                     var indice = rucheSys.rechercheIndice(txt.id, rucheSys.listeEditeur);
                     rucheSys.listeEditeur[indice].insertVariableDansEditeur(elem.innerHTML);

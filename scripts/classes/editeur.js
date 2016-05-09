@@ -34,11 +34,14 @@ function Editeur(id,ruc,bool,toolbar){
                               });
 		this.edit.on('selection-change', function(range) {
             if(range){
-                document.getElementById(id).className+=" Rcl_Droppable_focus";
+                var bloc_pere =document.getElementById("Rid_Prep_Vars");
+                bloc_pere.setAttribute("focusedit",id);
+                var bloc_pere2 =document.getElementById("Rid_Analyse_Vars");
+                bloc_pere2.setAttribute("focusedit",id);
+                document.getElementById(id).style.backgroundColor="lightgreen";
             }
             else{
-                var typedrop = document.getElementById(id).className.replace(" Rcl_Droppable_focus", "");
-                document.getElementById(id).className=typedrop;
+                document.getElementById(id).style.backgroundColor="";
             }
 		});
 		
@@ -454,6 +457,7 @@ function Editeur(id,ruc,bool,toolbar){
             this.edit.setSelection(range2.end + 1,range2.end + 1);
         }
     }
+    
 
     //---------------------------------//
 
