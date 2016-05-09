@@ -20,7 +20,7 @@ var selectListener = [];
 var type = ["point", "line", "circle", "arrow", "segment", "axis", "angle", "arc"]
 
 //Variables qui définissent la largeur du panneau latéral et la hauteur du panneau d'entête.
-var GLOB_largeur = 100;
+var GLOB_largeur = 110;
 var GLOB_hauteur = 30;
 
 var AllJSXGraph = [];
@@ -167,7 +167,7 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup)
       * - un bloc au sommet qui contient les formes que l'on peut créer sur le graphe
       * - un bloc plus central qui contient le graphe en lui même
       */
-     var $left_panel = $("<div></div>")
+     var $left_panel = $("<div class=\"leftMenu\"></div>")
          .css({
              "position": "absolute",
              "width": GLOB_largeur,
@@ -176,13 +176,12 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup)
              "top": 0
          })
          .appendTo($bloc_contenu);
-     var $top_panel = $("<div></div>")
+     var $top_panel = $("<div class=\"topMenu\"></div>")
          .css({
              "position": "absolute",
              "width": this.surpage.width() - GLOB_largeur,
              "height": GLOB_hauteur,
              "top": 0,
-             "right": 0,
              /*"background-color":"#00ff00",*/
              "display": "inline"
          })
@@ -226,10 +225,10 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup)
          })
          .appendTo($top_panel);
 
-     var $div_bouton_action = $("<div></div>")
+     var $div_bouton_action = $("<div class='actionLeft' ></div>")
          .appendTo($left_panel);
 
-     var $div_menu_contextuel = $("<div></div>")
+     var $div_menu_contextuel = $("<div class='menu_contextuel'></div>")
          .appendTo($left_panel);
 
      this.inputZone = $("<div></div>").appendTo($left_panel);
@@ -480,7 +479,7 @@ EssaimJSXGraph.prototype.menuOptions = function (element) {
         changeNom: {
             nom: "Changer le nom",
             callback: function () {
-                $.when(self.inputbox("Entrer un nom : "))
+                $.when(self.inputbox("Entrer un nom"))
                     .done(function (nom) {
                         element.name = nom;
                         self.brd.update()
@@ -640,7 +639,7 @@ EssaimJSXGraph.prototype.getTopUnderMouse = function () {
 EssaimJSXGraph.prototype.buildMenu = function (element) {
     // Pour indiquer les options dans le menu par rapport aux types des éléments
     var buildButton = function (option) {
-        return $("<button></button>")
+        return $("<input type='button' />")
             .html(option.nom)
             .click(option.callback)
     };
@@ -689,7 +688,7 @@ EssaimJSXGraph.prototype.multiSelect = function () {
     this.$selection.html("").show();
     this.$multiSelectMenu.html("");
     this.$multiSelectMenu.show();
-    var $ok = $("<button></button>").appendTo(this.$multiSelect)
+    var $ok = $("<input type='button' value ='Ok' />").appendTo(this.$multiSelect)
         .html("ok")
         .click(function (event) {
             self.brd.off("up", tmp);
@@ -699,7 +698,7 @@ EssaimJSXGraph.prototype.multiSelect = function () {
             self.buildMultiSelectMenu()
         });
     // clean button
-    var $clean = $("<button></button>").appendTo(this.$multiSelect)
+    var $clean = $("<input type='button' value='Clean' />").appendTo(this.$multiSelect)
         .html("Effacer")
         .click(function () {
             self.cleanMultiSelection();
@@ -757,7 +756,7 @@ EssaimJSXGraph.prototype.buildMultiSelectMenu = function () {
     var key = Object.keys(menu);
     var buildButton = function (option) {
         console.log(option);
-        return $("<button></button>")
+        return $("<input type='button' />")
             .html(option.nom)
             .click(option.callback)
     };
@@ -800,11 +799,11 @@ EssaimJSXGraph.prototype.inputbox = function (label, type) {
     var $input = $("<input />")
         .attr("type", type)
         .appendTo($box);
-    var $submit = $("<button></button>")
+    var $submit = $("<input type='button' value='Changer nom' />")
         .html("ok")
         .click(function (event) {
             if (!$input.val() || !$input.val().length) {
-                def.reject("le valeur n'est pas defini")
+                def.reject("La valeur n'est pas definie.")
             } else {
                 $box.remove();
                 def.resolve($input.val())
@@ -847,6 +846,8 @@ EssaimJSXGraph.prototype.initBoutonForme = function (parent) {
        * - axe
        * - angle
        */
+	   
+	
     var $button_point = $("<input type='button' value='Point' title=\"Permet de créer un point.\"/>")
         .appendTo($div_bouton_forme)
         .click(function (event) {
@@ -918,7 +919,7 @@ EssaimJSXGraph.prototype.initBoutonAction = function (parent) {
        * - multi-selection
        */
     var $button_libre =
-        $("<button title=\"Permet de déplacer des objets dans le graphe.\"> Deplacer </button>")
+        $("<input type='button' value='Déplacer' title=\"Permet de déplacer des objets dans le graphe.\"/>")
         .appendTo($div_bouton_action)
         .click(function (event) {
             self.mode = GLOB_libre
@@ -954,7 +955,7 @@ EssaimJSXGraph.prototype.initBoutonAction = function (parent) {
             self.brd.on("up", tmp)
         });
 
-    var $button_image = $("<input type='button' value='Image'/>")
+    var $button_image = $("<input type='button' value='Importer image'/>")
         .appendTo($div_bouton_action)
         .click(function (event) {
             self.popupImageUploader(function (event) {
@@ -965,14 +966,14 @@ EssaimJSXGraph.prototype.initBoutonAction = function (parent) {
         });
 
     var $multiselect =
-        $("<button title = \"Action de multi-sélection\">Multi-select</button>")
+        $("<input type='button' value ='Multi-select' title = \"Action de multi-sélection\" />")
         .appendTo($div_bouton_action)
         .click(function (event) {
             self.multiSelect();
         });
 
     var $button_switch_grille =
-        $("<button title=\"Affiche/enlève la grille.\">Grille</button>")
+        $("<input type='button' value = 'Grille' title=\"Affiche/enlève la grille.\" />")
         .appendTo($div_bouton_action)
         .click(function (event) {
             self.grid = !self.grid;
@@ -1000,7 +1001,7 @@ EssaimJSXGraph.prototype.initBoutonAction = function (parent) {
         }).appendTo($div_bouton_action);
 
     var $save =
-        $("<button title=\"Permet de sauvegarder des éléments du graphique dans une boite à dessin.\">Ajout dans boîte à dessin </button>")
+        $("<input type='button' value = 'Ajout dans BaD' title=\"Permet de sauvegarder des éléments du graphique dans une boite à dessin.\" />")
         .appendTo($div_bouton_action)
         .click({charge: $charger}, function (event) {
             /*var tab = {};
@@ -1184,7 +1185,7 @@ EssaimJSXGraph.prototype.saveSelection = function (objects) {
         }
     }
 
-    $.when(this.inputbox("Entrer un nom : "))
+    $.when(this.inputbox("Entrer un nom"))
         .done(function (name) {
 	    if (saveState[name] === undefined) {
                 saveState[name] = objets;

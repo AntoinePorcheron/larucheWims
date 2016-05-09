@@ -748,6 +748,61 @@ input:-moz-placeholder { color:rgba(255,10,0,0.5); }
     background-color: rgba(253,255,187,1);
 }
 
+
+/******************************************************************************************
+ ********************************* STYLE GRAPHE *****************************************/
+#blocFocus{
+	background-color: rgb(255,218,185);
+	position:absolute;
+	top:10px;
+	left:10px;
+}
+
+#blocFocus .leftMenu {
+	padding-top:2%;
+}
+
+#blocFocus .leftMenu input{
+	width: 100%;
+	text-align: left;
+	border-radius: 3px;
+	background-color: rgb(216,191,216);
+}
+
+#blocFocus .leftMenu input:hover{
+	background-color: rgb(255,160,15);
+}
+
+
+#blocFocus .leftMenu select{
+	width:100%;
+	background-color: rgb(216,191,216);
+	border: 2px black solid;
+}
+
+#blocFocus .leftMenu select:hover{
+	background:rgb(255,160,15)
+}
+
+#blocFocus .leftMenu .menu_contextuel{
+	margin-top:30%;
+}
+
+#blocFocus .topMenu {
+	padding-left:20%;
+}
+
+#blocFocus .topMenu input {
+	width: 9%;
+	height:70%;
+	border-radius: 3px;
+	background-color: rgb(216,191,216);
+}
+
+#blocFocus .topMenu input:hover{
+	background-color: rgb(255,160,15);
+}
+
 /******************************************************************************************
  ********************************* STYLES ANALYSE *****************************************/
 .Rcl_Menu_Analyse {

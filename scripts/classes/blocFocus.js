@@ -40,13 +40,10 @@ BlocFocus.prototype.proto = "BlocFocus";
 BlocFocus.prototype.initBloc = function(){
     var self = this;
     this.container = $("<div></div>")
+	.attr('id', "blocFocus")
 	.css({"width":$(document).width() - 20, 
 	      "height":$(document).height() - 20, 
-	      "background-color":"#ffffff", 
-	      "position":"absolute", 
-	      "top":"10px", 
-	      "left":"10px"/*, 
-	      "border-radius":"20px"*/})
+	})
 	.appendTo($(document.body));
     
     var $quit = $("<div></div>")
