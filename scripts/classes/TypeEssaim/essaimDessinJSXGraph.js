@@ -19,7 +19,7 @@ var selectListener = [];
 
 var type = ["point", "line", "circle", "arrow", "segment", "axis", "angle", "arc"]
 
-//Variables qui définissent la largeurs du paneau latéral et la hauteur du paneau d'entete.
+//Variables qui définissent la largeur du panneau latéral et la hauteur du panneau d'entête.
 var GLOB_largeur = 100;
 var GLOB_hauteur = 30;
 
@@ -162,10 +162,10 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup)
 
      // **** Fabrication du contenu du bloc ****
 
-     /* Le panneau d'affichage du graphe est composé de trois bloc
-      * - un bloc lateral qui contient les actions disponible sur le graphe
-      * - un bloc au sommet qui contient les formes que l'on peut crée sur le graphe
-      * - un bloc plus central qui contient le graphe en lui meme
+     /* Le panneau d'affichage du graphe est composé de trois blocs
+      * - un bloc lateral qui contient les actions disponibles sur le graphe
+      * - un bloc au sommet qui contient les formes que l'on peut créer sur le graphe
+      * - un bloc plus central qui contient le graphe en lui même
       */
      var $left_panel = $("<div></div>")
          .css({
@@ -290,8 +290,8 @@ EssaimJSXGraph.prototype.detruitBloc = function () {
 
 /**
  * toOEF
- * Fonction qui genere le code OEF correspondant au graphe construit
- * @return {string} Code oef generer dans cette fonction
+ * Fonction qui génère le code OEF correspondant au graphe construit
+ * @return {string} Code oef généré dans cette fonction
  */
 EssaimJSXGraph.prototype.toOEF = function () {
     var bord_gauche = this.brd.getBoundingBox()[0];
@@ -312,7 +312,7 @@ EssaimJSXGraph.prototype.toOEF = function () {
     if (!this.grid) {
         var pas_x = JXG.Options.ticks.ticksDistance;
         var pas_y = JXG.Options.ticks.ticksDistance;
-        /*On recupere les position des première ligne de la grille*/
+        /*On recupère les positions des premières lignes de la grille*/
         var deb_x = (bord_gauche - (bord_gauche % JXG.Options.ticks.ticksDistance));
         var deb_y = (bord_bas - (bord_bas % JXG.Options.ticks.ticksDistance));
         var nb_x = Math.ceil(bord_droit - bord_gauche / pas_x);
@@ -430,7 +430,7 @@ EssaimJSXGraph.prototype.toOEF = function () {
                 var p1 = brdElement.point1;
                 var p2 = brdElement.point2;
                 var p3 = brdElement.point3;
-                /*On créé une ligne temporaire pour obtenir l'angle de "base" à partir de l'axe X*/
+                /*On crée une ligne temporaire pour obtenir l'angle de "base" à partir de l'axe X*/
                 var tmpLine = this.brd.create("line", [p1, p2]);
                 var valAngleAxeX = (tmpLine.getAngle() * 360) / (2 * Math.PI);
                 this.brd.removeObject(tmpLine);
@@ -531,7 +531,7 @@ EssaimJSXGraph.prototype.menuOptions = function (element) {
 EssaimJSXGraph.prototype.fillImageIntoPoint = function (url, pointExiste) {
     /**
      * Important:
-     * En changer le numero de layer de image, on met image le plus haut que les autre
+     * En changent le numéro de layer de l'image, on met l'image plus haute que les autres
      */
     this.brd.options.layer["image"] = 10;
     function getCoord2D(paint) {
@@ -558,7 +558,7 @@ EssaimJSXGraph.prototype.fillImageIntoPoint = function (url, pointExiste) {
 /**
  * popupImageUploader :
  *
- * fait apparaitre une fenetre pour charger une image.
+ * fait apparaitre une fenêtre pour charger une image.
  * @param readSuccess
  * @param readFail
  */
@@ -598,9 +598,9 @@ EssaimJSXGraph.prototype.popupImageUploader = function (readSuccess, readFail) {
 
 /**
  * getTopUnderMouse
- * Obtenir le premier element, a partir du texte
- * les textes ont le moins prioritaire juste dans cette fonction,
- * dont le layer n'est pas globalement modifie
+ * Obtenir le premier élément, à partir du texte
+ * les textes sont le moins prioritaires juste dans cette fonction,
+ * dont le layer n'est pas globalement modifié
  * @returns {*}
  */
 EssaimJSXGraph.prototype.getTopUnderMouse = function () {
@@ -638,7 +638,7 @@ EssaimJSXGraph.prototype.getTopUnderMouse = function () {
  * @param element, callback argument
  */
 EssaimJSXGraph.prototype.buildMenu = function (element) {
-    // Pour indiquer les options dans le menu par rapport aux types des elements
+    // Pour indiquer les options dans le menu par rapport aux types des éléments
     var buildButton = function (option) {
         return $("<button></button>")
             .html(option.nom)
@@ -661,8 +661,8 @@ EssaimJSXGraph.prototype.buildMenu = function (element) {
 
 
 /**
- * selection :
- * Selection un objet pour le menu contextuel
+ * sélection :
+ * Sélectionne un objet pour le menu contextuel
  */
 EssaimJSXGraph.prototype.selection = function () {
     var element = this.getTopUnderMouse();
@@ -675,8 +675,8 @@ EssaimJSXGraph.prototype.selection = function () {
 
 /**
  * multiSelect :
- * associer un evenement de souris a multi-select
- * cliquer une fois sur un element le selectionne, une deuxieme fois ça le lache
+ * associer un évènement de souris à multi-select
+ * cliquer une fois sur un élément le selectionne, une deuxième fois ça le lache
  * le bouton ok stop la multi-selection puis fait apparaitre un menu
  * le bouton effacer efface la multi-selection
  */
@@ -781,7 +781,7 @@ EssaimJSXGraph.prototype.cleanMultiSelection = function () {
 
 /**
  * inputBox :
- * Fait apparaitre une boite d'entrée utilisateur pour recuperer la valeurs
+ * Fait apparaitre une boite d'entrée utilisateur pour récuperer la valeur
  *
  * @param label - le titre du input
  * @param type - le type du input
@@ -826,10 +826,10 @@ EssaimJSXGraph.prototype.selectMode = function () {
 
 /**
  * initBoutonForme :
- * Fonction qui initialise les boutons qui permettent de generer des éléments sur le graphe tel que
+ * Fonction qui initialise les boutons qui permettent de générer des éléments sur le graphe tel que
  * des points, des lignes, etc. Cette fonction gère aussi les événements lié à ces boutons.
  *
- * @param parent - element dans lequel viennent s'inserer tout les boutons
+ * @param parent - élément dans lequel viennent s'insérer tous les boutons
  */
 EssaimJSXGraph.prototype.initBoutonForme = function (parent) {
     var self = this;
@@ -926,9 +926,9 @@ EssaimJSXGraph.prototype.initBoutonAction = function (parent) {
 
     /**
      * button supprimer
-     * supprimer un element en click,
-     * si cliquer sur un element non valide, il va alert un message de error,
-     * si valide, il va supprimer l'element.
+     * supprimer un élément en click,
+     * si on clique sur un élément non valide, il va envoyer un message d'erreur,
+     * si valide, il va supprimer l'élément.
      * il marche une fois et puis revient en mode selection
      * @type {*|{trigger, _default}|jQuery}
      */
@@ -1030,13 +1030,13 @@ EssaimJSXGraph.prototype.initBoutonAction = function (parent) {
 
 /**
  * InitEventListener :
- * Fonction qui se charge d'initialiser tout les "ecouteurs" d'événement,
+ * Fonction qui se charge d'initialiser tous les "écouteurs" d'événement,
  * comme un redimensionnement, un clic souris ou autre.
  *
- * @param $top_panel - panneau supérieurs, qui necessite un redimensionnement si un
- * redimensionnement à lieu
- * @param $left_panel - panneau latéral gauche qui necessite un redimensionnement si un
- * redimensionnement à lieu
+ * @param $top_panel - panneau supérieur, qui nécessite un redimensionnement si un
+ * redimensionnement a lieu
+ * @param $left_panel - panneau latéral gauche qui nécessite un redimensionnement si un
+ * redimensionnement a lieu
  */
 EssaimJSXGraph.prototype.initEventListener = function ($top_panel, $left_panel) {
     var self = this;
@@ -1233,7 +1233,7 @@ EssaimJSXGraph.prototype.loadSelection = function (name) {
 
 /**
  * updateDeroulant
- * Fonction qui met à jour le menu déroulant des sauvegarde de tout les graphes existant
+ * Fonction qui met à jour le menu déroulant des sauvegardes de tous les graphes existants
  */
 EssaimJSXGraph.prototype.updateDeroulant = function () {
     for (var i = 0; i < AllJSXGraph.length; i++) {
@@ -1246,7 +1246,7 @@ EssaimJSXGraph.prototype.updateDeroulant = function () {
 
 /**
  * getMouseCoords :
- * Fonction qui permet de recuperer les coordonnées d'un clic sur le graphe
+ * Fonction qui permet de récupérer les coordonnées d'un clic sur le graphe
  * @param event
  * @param brd
  * @return
@@ -1263,7 +1263,7 @@ function getMouseCoords(event, brd) {
  * Distance
  * Fonction qui calcule la distance entre deux point JSXGraph.
  * @param p1 - premier point à partir duquel on calcul une distance
- * @param p2 - deuxieme point à partir duquel on calcul une distance
+ * @param p2 - deuxième point à partir duquel on calcul une distance
  * @return {Number} distance de p1 à p2
  */
 function distance(p1, p2) {
@@ -1273,18 +1273,18 @@ function distance(p1, p2) {
 
 /**
  * getLen
- * Fonction qui retourne le nombre d'element d'un objet
+ * Fonction qui retourne le nombre d'élément d'un objet
  * @param object - objets dont on souhaite connaitre la taille
  * @return retourne le nombre d'élément de l'objet
  */
 function getLen(object) {
-    // doit obtenir erreur quand object est null, undefined ou pas un object
+    // doit donner une erreur quand object est null, undefined ou pas un object
     if (object){
 	var tmp = Object.keys(object).length;
     }else{
 	console.error("L'objets est indéfinie");
     }
-    // afin que ce valeur n'est pas disponible a modifier
+    // afin que cette valeur ne soit pas modifiable
     return -1
 }
 
