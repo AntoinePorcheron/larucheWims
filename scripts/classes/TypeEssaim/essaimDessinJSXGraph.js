@@ -23,8 +23,6 @@ var GLOB_hauteur = 30;
 
 var AllJSXGraph = [];
 
-var TEST;
-
 EssaimJSXGraph = function (num) {
     //Appelle le constructeur parent
     Essaim.call(this, num);
@@ -489,9 +487,11 @@ EssaimJSXGraph.prototype.menuOptions = function (element) {
         changeNom: {
             nom: "Changer le nom",
             callback: function () {
-                $.when(self.inputbox(/*"Entrer un nom",*/"", self.inputBoxMenu, "Nom"/*, false*/))
+                $.when(self.inputbox("", self.inputBoxMenu, "Nom"))
                     .done(function (nom) {
 			element.name = nom;
+			console.log(element.getAttribute("withLabel"));
+			element.setAttribute({"withLabel":true});
                         self.brd.update()
 		    })
                     .fail(function (err) {
@@ -781,6 +781,14 @@ EssaimJSXGraph.prototype.buildMultiSelectMenu = function () {
 	    self.cleanMultiSelection();
         }
     };
+
+    menu.sauvegarder = {
+	nom: "Sauvegarde",
+	callback:function(){
+	    self.saveSelection(self.stackMultiSelect);
+	    self.cleanMultiSelection();
+	}
+    };
     var key = Object.keys(menu);
     var buildButton = function (option) {
         /*console.log(option);*/
@@ -800,7 +808,7 @@ EssaimJSXGraph.prototype.buildMultiSelectMenu = function () {
  */
 EssaimJSXGraph.prototype.cleanMultiSelection = function () {
     this.stackMultiSelect = [];
-    this.$selection.html("");s
+    this.$selection.html("");
     this.$multiSelectMenu.html("")
 };
 
@@ -1189,7 +1197,7 @@ EssaimJSXGraph.prototype.saveSelection = function (objects) {
 	console.log("Sauvegarde", getLen(objects[i].childElement), objects[i].elType);
 	if (objects[i].elType === "point" && objects[i].getAttribute("visible")) {
 	    objets.push(objects[i]);
-        } else if (objects[i].elType !== "point" && type.indexOf(objects[i].elType) !== -1) {
+        } else if (objects[i].elType !== "point" /*&& type.indexOf(objects[i].elType) !== -1*/) {
 	    objets.push(objects[i]);
         }
     }
