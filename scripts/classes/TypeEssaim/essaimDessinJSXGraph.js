@@ -88,7 +88,7 @@ Essaim.prototype.aUneAide = false;
 EssaimJSXGraph.prototype.gereTailleImageEnonce = true;
 
 /*Variable de classe*/
-EssaimJSXGraph.prototype.$divMenu = $("<div></div>").html("Menu Contextuel");
+EssaimJSXGraph.prototype.$divMenu = $("<div></div>").hide()/*.html("Menu Contextuel")*/;
 EssaimJSXGraph.prototype.$menuButtons = $("<div></div>");
 EssaimJSXGraph.prototype.stackMultiSelect = [];
 EssaimJSXGraph.prototype.$multiSelect = $("<div></div>").html("Multi-Select");
@@ -1041,77 +1041,79 @@ EssaimJSXGraph.prototype.initEventListener = function ($top_panel, $left_panel) 
 
 
     this.brd.on('down', function (event) {
-	console
-        var brd = self.brd;
-        var mode = self.mode;
-        var coords = getMouseCoords(event, self.brd);
-        var userCoord = brd.getUsrCoordsOfMouse(event)
-        if (self.mode !== GLOB_libre) {
-            var point = undefined;
-            for (element in brd.objects) {
-                if (brd.objects[element].hasPoint(coords.scrCoords[1], coords.scrCoords[2]) &&
-                    brd.objects[element].getAttribute("visible") &&
-                    JXG.isPoint(brd.objects[element])) {
+        
+	if (event.button !== 2){
+	    var brd = self.brd;
+            var mode = self.mode;
+            var coords = getMouseCoords(event, self.brd);
+            var userCoord = brd.getUsrCoordsOfMouse(event)
+            if (self.mode !== GLOB_libre) {
+		var point = undefined;
+		for (element in brd.objects) {
+                    if (brd.objects[element].hasPoint(coords.scrCoords[1], coords.scrCoords[2]) &&
+			brd.objects[element].getAttribute("visible") &&
+			JXG.isPoint(brd.objects[element])) {
+			
+			point = element;
+                    }
+		}
+		if (point === undefined) {
+                    point = brd.create("point", userCoord);
+		}
+		self.point.push(point);
+		switch (mode) {
+		case GLOB_point:
+                    self.point = [];
+                    break;
+		case GLOB_ligne:
+                    if (self.point.length === 2) {
+			brd.create(self.mode, self.point);
+			self.point = [];
+                    }
+                    break;
+		case GLOB_cercle:
+                    if (self.point.length === 1) {
+			self.previsualisedObject = self.brd.create(self.mode, [self.point[0], userCoord])
 
-                    point = element;
-                }
+                    } else if (self.point.length === 2) {
+			brd.removeObject(self.previsualisedObject);
+			brd.create(self.mode, self.point);
+			self.point = [];
+                    }
+                    break;
+		case GLOB_arrow:
+                    if (self.point.length === 2) {
+			brd.create(self.mode, self.point);
+			self.point = [];
+                    }
+                    break;
+		case GLOB_segment:
+                    if (self.point.length === 2) {
+			brd.create(self.mode, self.point);
+			self.point = [];
+                    }
+                    break;
+		case GLOB_axe:
+                    if (self.point.length === 2) {
+			self.createDraggableAxis(self.point);
+			self.point = [];
+                    }
+                    break;
+		case GLOB_angle:
+                    if (self.point.length === 3) {
+			brd.create(self.mode, self.point);
+			self.point = [];
+                    }
+                    break;
+		default:
+                    console.error("Erreur de mode, le mode selectionné est incorrect");
+		}
+		if (self.point.length > 3) {
+                    console.error("Erreur de points, trop de point en mémoire.");
+                    self.point = [];
+		}
             }
-            if (point === undefined) {
-                point = brd.create("point", userCoord);
-            }
-            self.point.push(point);
-            switch (mode) {
-            case GLOB_point:
-                self.point = [];
-                break;
-            case GLOB_ligne:
-                if (self.point.length === 2) {
-                    brd.create(self.mode, self.point);
-                    self.point = [];
-                }
-                break;
-            case GLOB_cercle:
-                if (self.point.length === 1) {
-                    self.previsualisedObject = self.brd.create(self.mode, [self.point[0], userCoord])
-
-                } else if (self.point.length === 2) {
-                    brd.removeObject(self.previsualisedObject);
-                    brd.create(self.mode, self.point);
-                    self.point = [];
-                }
-                break;
-            case GLOB_arrow:
-                if (self.point.length === 2) {
-                    brd.create(self.mode, self.point);
-                    self.point = [];
-                }
-                break;
-            case GLOB_segment:
-                if (self.point.length === 2) {
-                    brd.create(self.mode, self.point);
-                    self.point = [];
-                }
-                break;
-            case GLOB_axe:
-                if (self.point.length === 2) {
-		    self.createDraggableAxis(self.point);
-                    self.point = [];
-                }
-                break;
-            case GLOB_angle:
-                if (self.point.length === 3) {
-                    brd.create(self.mode, self.point);
-                    self.point = [];
-                }
-                break;
-            default:
-                console.error("Erreur de mode, le mode selectionné est incorrect");
-            }
-            if (self.point.length > 3) {
-                console.error("Erreur de points, trop de point en mémoire.");
-                self.point = [];
-            }
-        }
+	}
     });
 
     this.brd.on('move', function (event) {
@@ -1124,10 +1126,8 @@ EssaimJSXGraph.prototype.initEventListener = function ($top_panel, $left_panel) 
 
     /*Fonction du menu contextuel*/
     this.brd.on("down", function (event) {
-	/*console.log(event);*/
 	if (event.buttons === 2){
-	    console.log("haha");
-            self.selection();
+	    self.selection();
 	}
     })
 }
