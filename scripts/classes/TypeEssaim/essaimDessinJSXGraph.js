@@ -654,7 +654,7 @@ EssaimJSXGraph.prototype.buildMenu = function (element) {
             if (options[list[key]]) {
                 var option = Object.keys(options[list[key]]);
                 for (var i = 0; i < option.length; i++) {
-                    self.$menuButtons.append(buildButton(options[list[key]][option[i]]))
+                    self.$divMenu.append(buildButton(options[list[key]][option[i]]))
                 }
             }
         }
@@ -666,12 +666,24 @@ EssaimJSXGraph.prototype.buildMenu = function (element) {
  * sélection :
  * Sélectionne un objet pour le menu contextuel
  */
-EssaimJSXGraph.prototype.selection = function () {
+EssaimJSXGraph.prototype.selection = function (event) {
     var element = this.getTopUnderMouse();
     var self = this;
     /*On ne doit pas pouvoir séléctioner du text, ça n'a pas de sens...*/
-    if (element.elType && element.elType !== "text") {
-        this.$divMenu.html("Menu Contextuel de " + element.elType + " " + element.name);
+    if (element.elType && element.elType !== "text"){
+	this.unsetContextMenu();
+	this.$divMenu.css(
+	    {"position":"absolute",
+	     "left":event.clientX,
+	     "top":event.clientY,
+	     "border":"1px black solid",
+	     "z-index":"100000000"
+	    })
+	    .click(function(){
+		self.unsetContextMenu();
+	    })
+	    .show();
+        /*this.$divMenu.html("Menu Contextuel de " + element.elType + " " + element.name);*/
         this.buildMenu(element)
     }else{
 	this.unsetContextMenu();
@@ -957,7 +969,7 @@ EssaimJSXGraph.prototype.initBoutonAction = function (parent) {
                 self.brd.update();
                 self.brd.off("up", tmp);
                 self.brd.on("up", function () {
-                    self.selection()
+                    self.selection(event)
                 })
             };
 	    
@@ -1040,12 +1052,11 @@ EssaimJSXGraph.prototype.initEventListener = function ($top_panel, $left_panel) 
     });
 
 
-    this.brd.on('down', function (event) {
-        
+    this.brd.on('down', function (event) {        
 	if (event.button !== 2){
 	    var brd = self.brd;
             var mode = self.mode;
-            var coords = getMouseCoords(event, self.brd);
+            var coords = getMouseCoords(event, brd);
             var userCoord = brd.getUsrCoordsOfMouse(event)
             if (self.mode !== GLOB_libre) {
 		var point = undefined;
@@ -1127,7 +1138,9 @@ EssaimJSXGraph.prototype.initEventListener = function ($top_panel, $left_panel) 
     /*Fonction du menu contextuel*/
     this.brd.on("down", function (event) {
 	if (event.buttons === 2){
-	    self.selection();
+	    self.selection(event);
+	}else{
+	    self.unsetContextMenu();
 	}
     })
 }
@@ -1224,8 +1237,10 @@ EssaimJSXGraph.prototype.updateDeroulant = function () {
  *  Fonction qui reinitialise l'affichage du menu contextuel
  */
 EssaimJSXGraph.prototype.unsetContextMenu = function(){
-    this.$divMenu.html("Menu Contextuel");
-    this.$menuButtons.html("<div></div>");
+    /*this.$divMenu.html("Menu Contextuel");*/
+    /*this.$menuButtons.html("<div></div>");*/
+    this.$divMenu.html("<div></div>");
+    this.$divMenu.hide();
 };
 
 /**
