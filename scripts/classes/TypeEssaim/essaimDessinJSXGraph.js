@@ -805,7 +805,7 @@ EssaimJSXGraph.prototype.inputbox = function (label, type) {
         .html(label)
         .appendTo($box);
     var $input = $("<input />")
-        .attr("type", type)
+        /*.attr("type", type)*/
         .appendTo($box);
     var $submit = $("<input type='button' value='Valider' />")
         .html("ok")
