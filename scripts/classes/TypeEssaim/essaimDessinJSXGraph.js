@@ -1021,6 +1021,9 @@ EssaimJSXGraph.prototype.initBoutonAction = function (parent) {
             self.saveSelection(self.brd.objects);
         });
 
+	var $button_undo = $("<input type='button' value='Annuler' title=\"Permet d'annuler la dernière action.\" />.").appendTo($div_bouton_action).click( function(event) {
+		//TODO fonction undo (annuler/retour action précédente)
+	});
     EssaimJSXGraph.prototype.$button_libre = $button_libre;
 }
 
