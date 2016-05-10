@@ -14,7 +14,7 @@ var GLOB_angle = "angle";
 
 var TYPE_USABLE_VAR = ["integer", "real"];
 
-var type= ["point", "line", "circle", "arrow", "segment", "axis", "angle", "arc"]
+var type= ["line", "circle", "arrow", "segment", "axis", "angle", "arc"]
 // variable permettant de sauvegarder l'état actuel du dessin*/
 var saveState = {};
 var selectListener = [];
@@ -1253,22 +1253,23 @@ EssaimJSXGraph.prototype.initEventListener = function ($top_panel, $left_panel) 
  * @param objects - Element que l'on souhaite enregistré
  */
 EssaimJSXGraph.prototype.saveSelection = function (objects) {
-    var objets = [];
+    var objets = {};
+    var points = {};
     var self = this;
-    /*console.log(objects);*/
     for (var i in objects) {
-	/*console.log("Sauvegarde", getLen(objects[i].childElement), objects[i].elType);*/
-	if (objects[i].elType === "point" && objects[i].getAttribute("visible")) {
-	    objets.push(objects[i]);
-        } else if (objects[i].elType !== "point" && type.indexOf(objects[i].elType) !== -1) {
-	    objets.push(objects[i]);
-        }
+	if (objects[i].elType !== "text"){
+	    if (objects[i].getAttribute("visible") && type.indexOf(objects[i].elType) !== -1){
+		objets[i] = objects[i];
+	    }else if (objects[i].getAttribute("visible") && objects[i].elType === "point"){
+		points[i] = objects[i];
+	    }
+	}
     }
-
+    
     $.when(this.inputbox("Entrer un nom", self.inputZone))
         .done(function (name) {
 	    if (saveState[name] === undefined) {
-                saveState[name] = objets;
+                saveState[name] = {"forme":objets, "point":points};
                 self.updateDeroulant();
 	    } else {
                 alert("Le nom " + name + " est déjà pris");
@@ -1287,39 +1288,26 @@ EssaimJSXGraph.prototype.loadSelection = function (name) {
     if (saveState[name] === undefined) {
         console.error("Le nom séléctionné n'est pas définie");
     } else {
-        var objets = saveState[name];
+        var objets = saveState[name].forme;
+	var points = saveState[name].point;
 	var ancestor = {}
-        for (var i in objets) {
-	    if (objets[i].elType === "point") {
-		if (!ancestor[i]){
-		    ancestor[i] = this.brd.create(objets[i].elType, [objets[i].X(), objets[i].Y()], 
-						  {name: objets[i].name});
-		}
-	    } else {
-                var points = [];
-                for (var j in objets[i].ancestors) {
-		    var obj = objets[i].ancestors[j];
-		    var tmp;
-		    if (!ancestor[j]){
-			ancestor[j] = this.brd.create(obj.elType, [obj.X(), obj.Y()],{name:obj.name});
-		    }	    
-		    points.push(ancestor[j]);
-		}
-		/*if (objets[i].elType === "angle"){
-		    this.brd.create(objets[i].elType, [points[1], points[0], points[1]]);
-		}else{
-                    this.brd.create(objets[i].elType, points, {name:objets[i].name});
-		}*/
-		var res;
-		if (objets[i].elType === "angle"){
-		    /*console.log(points);*/
-		    res = [points[1], points[0], points[2]];
-		}else{
-		    res = points
-		}
-		this.brd.create(objets[i].elType, res, {name:objets[i].name});
+	for (var i in points){
+	    ancestor[i] = this.brd.create("point", 
+					  [points[i].X(), points[i].Y()], 
+					  {name:points[i].name, size:points[i].getAttribute("size")});
+	}
+	var ancestorObject = [];
+	for (var i in objets){
+	    ancestorObject = [];
+	    for (var j in objets[i].ancestors){
+		ancestorObject.push(ancestor[j]);
 	    }
-        }
+	    if (objets[i].elType === "angle"){
+		var tmp = ancestorObject;
+		ancestorObject = [tmp[1], tmp[0], tmp[2]];
+	    }
+	    this.brd.create(objets[i].elType, ancestorObject);
+	}
     }
 }
 
