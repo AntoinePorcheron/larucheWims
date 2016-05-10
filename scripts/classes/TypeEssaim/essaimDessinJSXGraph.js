@@ -499,7 +499,8 @@ EssaimJSXGraph.prototype.menuOptions = function (element) {
 	supprime:{
 	    nom:"Supprimer",
 	    callback: function(){
-		self.brd.removeObject(element);
+		console.log(element);
+		self.removeElement(element);
 		self.point = [];
 	    }
 	}
@@ -971,16 +972,16 @@ EssaimJSXGraph.prototype.initBoutonAction = function (parent) {
      * il marche une fois et puis revient en mode selection
      * @type {*|{trigger, _default}|jQuery}
      */
-    var $supprimer =
+    /*var $supprimer =
         $("<input type='button' value='Supprimer' title = \"Permet de supprimer un élément.\"/>")
         .appendTo($div_bouton_action)
         .click(function (event) {
             self.modeSelect(event);
             var tmp = function () {
-                var element = self.getTopUnderMouse();
+                var element = self.getTopUnderMouse();*/
 		/*console.log(element.label.coords);*/
 		/*TEST = element.label.coords*/
-                if (element.elType) {
+/*                if (element.elType) {
                     self.brd.removeObject(element);
 		    self.unsetContextMenu();
                 } else {
@@ -994,7 +995,7 @@ EssaimJSXGraph.prototype.initBoutonAction = function (parent) {
             };
 	    
             self.brd.on("up", tmp)
-        });
+        });*/
 
     var $button_image = $("<input type='button' value='Importer image'/>")
         .appendTo($div_bouton_action)
@@ -1337,6 +1338,17 @@ EssaimJSXGraph.prototype.setAxisNamePosition = function(axis){
 	}
     }
     this.brd.update();
+}
+
+EssaimJSXGraph.prototype.removeElement = function(element){
+    for (var i in element.childElements){
+	this.brd.removeObject(this.brd.objects[i]);
+    }
+    for (var i in element.ancestors){
+	this.brd.removeObject(this.brd.objects[i]);
+    }
+    this.brd.removeObject(element);
+    
 }
 /**
  * Fonction qui permet de recuperer les coordonnées d'un clic sur le graphe
