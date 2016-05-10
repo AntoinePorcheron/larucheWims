@@ -1093,8 +1093,8 @@ EssaimJSXGraph.prototype.initEventListener = function ($top_panel, $left_panel) 
 		
 		if (point === undefined) {
 		    /*
-		     *On différencie le cas ou on fait des points de construction, 
-		     *pour faire les points plus petit
+		     * On différencie le cas ou on fait des points de construction, 
+		     * pour faire les points plus petit
 		     */
 		    if (mode !== GLOB_point){
 			point = brd.create("point", userCoord, {size:1});
@@ -1103,6 +1103,7 @@ EssaimJSXGraph.prototype.initEventListener = function ($top_panel, $left_panel) 
 		    }
 		}
 		
+		objet = point;
 		
 		self.point.push(point);
 		switch (mode) {
