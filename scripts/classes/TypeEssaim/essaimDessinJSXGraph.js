@@ -1286,40 +1286,34 @@ EssaimJSXGraph.prototype.saveSelection = function (objects) {
  */
 EssaimJSXGraph.prototype.loadSelection = function (name) {
     if (saveState[name] === undefined) {
-        console.error("Le nom séléctionné n'est pas définie");
+        console.error("Le nom séléctionné n'est pas défini");
     } else {
         var objets = saveState[name];
 	var ancestor = {}
         for (var i in objets) {
-	    if (objets[i].elType === "point") {
-		if (!objets[i]){
-		    ancestor[i] = this.brd.create(objets[i].elType, [objets[i].X(), objets[i].Y()], 
-						  {name: objets[i].name});
-		}
-	    } else {
-                var points = [];
-                for (var j in objets[i].ancestors) {
-		    var obj = objets[i].ancestors[j];
-		    var tmp;
-		    if (!ancestor[j]){
-			ancestor[j] = this.brd.create(obj.elType, [obj.X(), obj.Y()],{name:obj.name});
-		    }	    
-		    points.push(ancestor[j]);
-		}
-		/*if (objets[i].elType === "angle"){
-		    this.brd.create(objets[i].elType, [points[1], points[0], points[1]]);
-		}else{
-                    this.brd.create(objets[i].elType, points, {name:objets[i].name});
-		}*/
-		var res;
-		if (objets[i].elType === "angle"){
-		    /*console.log(points);*/
-		    res = [points[1], points[0], points[2]];
-		}else{
-		    res = points
-		}
-		this.brd.create(objets[i].elType, res, {name:objets[i].name});
-	    }
+			if (objets[i].elType === "point") {
+				if (!ancestor[i]){
+					ancestor[i] = this.brd.create(objets[i].elType, [objets[i].X(), objets[i].Y()], 
+								  {name: objets[i].name, size:objets[i].size});
+				}
+			} else {
+				var points = [];
+				for (var j in objets[i].ancestors) {
+					var obj = objets[i].ancestors[j];
+					var tmp;
+					if (!ancestor[j]){
+						ancestor[j] = this.brd.create(obj.elType, [obj.X(), obj.Y()],{name:obj.name});
+					}	    
+					points.push(ancestor[j]);
+				}
+			var res;
+			if (objets[i].elType === "angle"){
+				res = [points[1], points[0], points[2]];
+			}else{
+				res = points
+			}
+			this.brd.create(objets[i].elType, res, {name:objets[i].name});
+			}
         }
     }
 }
