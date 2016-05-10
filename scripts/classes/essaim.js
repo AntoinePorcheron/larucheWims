@@ -735,7 +735,7 @@ Essaim.prototype.initEnonce = function()
     //permet d'envoyer des données à la zone de drop
     bouton.addEventListener('dragstart', function(e) {
 
-        e.dataTransfer.setData('text/plain', bouton.id);
+        e.dataTransfer.setData("texte", bouton.id);
         
     });
 

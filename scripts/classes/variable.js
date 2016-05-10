@@ -44,8 +44,10 @@ Variable.prototype.ajoutVarDansListe = function()
     spantxt.id = "RidEnVa_sp_"+this.nom;
     spantxt.style.cursor = "default";
     spantxt.appendChild(txt);
+    console.log("spantxt = "+spantxt)
     
     spantxt.draggable = "true";
+    
     spantxt.addEventListener('dragstart', this.debutDeplacement, false);
     
     // bouton de suppression de variable depuis la liste des variables
@@ -105,7 +107,7 @@ Variable.prototype.ajoutVarDansMenuListePreparation = function()
     }
     
     // double click sur le span -> insertion dans l'éditeur principal
-    spantxt.ondblclick = function(){
+    spantxt.ondblclick = function(){ //oyo
         var nomVar = div.id.slice("RidPrVa_".length,div.id.length); // On supprime le "RidEnVa_" devant le nom de la variable
         var txtcurr = document.getElementById(divVar.getAttribute("focusedit"));
         console.log(txtcurr.id);

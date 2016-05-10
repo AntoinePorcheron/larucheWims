@@ -994,11 +994,29 @@ function Editeur(id,ruc,bool,toolbar){
     // permet de recevoir du texte de l'élément envoyé !
     document.querySelector('#editor-container').addEventListener('drop', function(e) {
         var nomBoutton=" ";
-        nomBoutton=e.dataTransfer.getData('text/plain'); // Affiche le contenu du type MIME « text/plain »
+        nomBoutton=e.dataTransfer.getData("texte"); // Affiche le contenu du type MIME « text/plain »
         console.log('Données reçu : ' + nomBoutton);
+        
+        var typeRecuVariable; // vaut supérieur à 0
+        var typeRecuEssaim;
+        
+        typeRecuVariable  = nomBoutton.indexOf("RidEnVa");// vaudra >0 si c'est une variable
+        typeRecuEssaim = nomBoutton.indexOf("bouton"); // vaudra >0 si c'est une variable
         nomBoutton='#'+nomBoutton;
         buttonDD=document.querySelector(nomBoutton);
-        buttonDD.onclick(); // On va simuler l'activation du bouton 
+        console.log("typeRecuVariable = "+typeRecuVariable);
+        
+        
+        if(typeRecuEssaim>=0)
+            {
+                buttonDD.onclick(); // On va simuler l'activation du bouton 
+                console.log("L'élement recu est de type essaim");
+            }
+        else if(typeRecuVariable>=0)
+            {
+                buttonDD.ondblclick();
+                console.log("L'élement recu est de type variable");
+            }
 
 
     });
