@@ -1286,7 +1286,7 @@ EssaimJSXGraph.prototype.saveSelection = function (objects) {
  */
 EssaimJSXGraph.prototype.loadSelection = function (name) {
     if (saveState[name] === undefined) {
-        console.error("Le nom séléctionné n'est pas définie");
+        console.error("Le nom séléctionné n'est pas défini");
     } else {
         var objets = saveState[name].forme;
 	var points = saveState[name].point;
@@ -1306,7 +1306,12 @@ EssaimJSXGraph.prototype.loadSelection = function (name) {
 		var tmp = ancestorObject;
 		ancestorObject = [tmp[1], tmp[0], tmp[2]];
 	    }
-	    this.brd.create(objets[i].elType, ancestorObject);
+	    
+	    if (objets[i].elType !== "axis"){
+		this.brd.create(objets[i].elType, ancestorObject);
+	    }else{
+		this.createDraggableAxis(ancestorObject);
+	    }
 	}
     }
 }
@@ -1338,7 +1343,7 @@ EssaimJSXGraph.prototype.unsetContextMenu = function(){
  */
 EssaimJSXGraph.prototype.createDraggableAxis = function(point){
     var self = this;
-    var axis = this.brd.create(this.mode, point, {
+    var axis = this.brd.create("axis", point, {
         name: '',
         withLabel: true,
         label: {
