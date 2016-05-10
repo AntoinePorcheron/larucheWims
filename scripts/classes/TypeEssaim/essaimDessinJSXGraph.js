@@ -499,14 +499,12 @@ EssaimJSXGraph.prototype.menuOptions = function (element) {
 	supprime:{
 	    nom:"Supprimer",
 	    callback: function(){
-		console.log(element);
 		self.removeElement(element);
 		self.point = [];
 	    }
 	}
     };
 	
-    
     options.image = {
         resize: {
 	    nom: "Changer la taille",
@@ -1094,7 +1092,15 @@ EssaimJSXGraph.prototype.initEventListener = function ($top_panel, $left_panel) 
 		
 		
 		if (point === undefined) {
-		    point = brd.create("point", userCoord);   
+		    /*
+		     *On différencie le cas ou on fait des points de construction, 
+		     *pour faire les points plus petit
+		     */
+		    if (mode !== GLOB_point){
+			point = brd.create("point", userCoord, {size:1});
+		    }else{
+			point = brd.create("point", userCoord);
+		    }
 		}
 		
 		
