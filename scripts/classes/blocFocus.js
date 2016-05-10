@@ -76,9 +76,9 @@ BlocFocus.prototype.initBloc = function(){
     this.content = $("<div></div>")
 	.css({
 	    "width":"100%", 
-	    "height":"100%"/*this.container.height()/* - this.headerHeight*/,
+	    "height":"100%",
 	    "position":"absolute",
-	    "top":/*this.headerHeight+"px"*/0,
+	    "top":0,
 	    "border-radius":"20px"})
 	.appendTo(this.container);
 
@@ -88,8 +88,8 @@ BlocFocus.prototype.initBloc = function(){
     $(window).resize(function(){
 	clearTimeout(timer);
 	timer = setTimeout(function(){
-	    self.container.css("width", $(document.body).width() - 20);
-	    self.container.css("height", $(document.body).height() - 20);
+	    self.container.css("width", $(document).width() - 20);
+	    self.container.css("height", $(document).height() - 20);
 	    
 	    /*Ici, on fait appelle à toute les fonctions contenu dans le tableau pour effectuer
 	     * le comportement attendu lors du redimensionnement de cet element.*/
