@@ -61,7 +61,7 @@ EssaimJSXGraph = function (num) {
 
     this.deroulant;
 
-    this.inputBoxMenu = $("<div class='menu_contextuel'></div>");
+    this.inputBoxMenu = $("<div></div>");
 }
 //------------ Déclaration comme classe dérivée de Essaim -------------//
 EssaimJSXGraph.prototype = Object.create(Essaim.prototype);
@@ -87,7 +87,7 @@ Essaim.prototype.aUneAide = false;
 EssaimJSXGraph.prototype.gereTailleImageEnonce = true;
 
 /*Variable de classe*/
-EssaimJSXGraph.prototype.$divMenu = $("<div></div>").hide()/*.html("Menu Contextuel")*/;
+EssaimJSXGraph.prototype.$divMenu = $("<div class='menu_contextuel'></div>").hide();
 EssaimJSXGraph.prototype.$menuButtons = $("<div></div>");
 EssaimJSXGraph.prototype.stackMultiSelect = [];
 EssaimJSXGraph.prototype.$multiSelect = $("<div></div>").html("Multi-Select");
@@ -193,7 +193,7 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup)
          .appendTo($bloc_contenu);
 
      var $div_brd = $("<div></div>")
-         .attr({
+	 .attr({
              "id": "box" + this.numero,
              "class": "jxgbox"
          })
@@ -425,7 +425,6 @@ EssaimJSXGraph.prototype.toOEF = function () {
                 OEF += "arrow " +
                     xp1 + "," + yp1 + "," +
                     res.X() + "," + res.Y() + ",7,black\n";
-                /**/
 
                 brd.removeObject(intersect1);
                 brd.removeObject(intersect2);
@@ -489,7 +488,6 @@ EssaimJSXGraph.prototype.menuOptions = function (element) {
                 $.when(self.inputbox("", self.inputBoxMenu, "Nom"))
                     .done(function (nom) {
 			element.name = nom;
-			console.log(element.getAttribute("withLabel"));
 			element.setAttribute({"withLabel":true});
                         self.brd.update()
 		    })
@@ -502,6 +500,7 @@ EssaimJSXGraph.prototype.menuOptions = function (element) {
 	    nom:"Supprimer",
 	    callback: function(){
 		self.brd.removeObject(element);
+		self.point = [];
 	    }
 	}
     };
@@ -517,8 +516,6 @@ EssaimJSXGraph.prototype.menuOptions = function (element) {
                         var height = parseInt(data.match(/, *[^,]*$/)[0].replace(/,/, ""));
                         element.updateSize();
                         element.updateRenderer();
-                        console.log([width, height])
-                        console.log(element)
                         self.brd.fullUpdate()
                     })
             }
@@ -527,7 +524,6 @@ EssaimJSXGraph.prototype.menuOptions = function (element) {
             nom: "remettre en haut",
             callback: function () {
                 var tmp = element;
-                console.log(tmp);
                 self.brd.removeObject(element);
                 self.brd.create("image", [tmp.url, [tmp.X(), tmp.Y()], tmp.usrSize])
             }
@@ -548,7 +544,7 @@ EssaimJSXGraph.prototype.fillImageIntoPoint = function (url, pointExiste) {
      * Important:
      * En changent le numéro de layer de l'image, on met l'image plus haute que les autres
      */
-    this.brd.options.layer["image"] = 10;
+    this.brd.options.layer["image"] = 100;
     function getCoord2D(paint) {
         return getCoord(paint).slice(1)
     }
@@ -556,7 +552,7 @@ EssaimJSXGraph.prototype.fillImageIntoPoint = function (url, pointExiste) {
     function getSize(paint) {
         return paint.visProp.size
     }
-
+    
     var coodsToPixel = 30;
     //TODO to have an exact ratio
     var width = getSize(pointExiste) / coodsToPixel;
@@ -654,7 +650,7 @@ EssaimJSXGraph.prototype.buildMenu = function (element) {
     // Pour indiquer les options dans le menu par rapport aux types des éléments
     var buildButton = function (option) {
         return $("<input type='button' value='" + option.nom + "'/>")
-            .html(option.nom) 
+            /*.html(option.nom) */
             .click(option.callback)
     };
     var options = this.menuOptions(element);
@@ -1076,9 +1072,9 @@ EssaimJSXGraph.prototype.initEventListener = function ($top_panel, $left_panel) 
                 "height": self.surpage.height()
             });
     });
-
+    
     this.brd.on('down', function (event) {
-	if (event.button !== 2){
+	if (event.buttons === 1){
 	    var brd = self.brd;
             var mode = self.mode;
             var coords = getMouseCoords(event, brd);
@@ -1095,77 +1091,75 @@ EssaimJSXGraph.prototype.initEventListener = function ($top_panel, $left_panel) 
 		    objet = brd.objects[element];
 		}
 		
-		var dragging = false;
+		
+		if (point === undefined) {
+		    point = brd.create("point", userCoord);   
+		}
+		
+		
+		self.point.push(point);
+		switch (mode) {
+		case GLOB_point:
+		    self.point = [];
+		    break;
+		case GLOB_ligne:
+		    if (self.point.length === 2) {
+			objet = brd.create(self.mode, self.point);
+			self.point = [];
+		    }
+		    break;
+		case GLOB_cercle:
+		    if (self.point.length === 1) {
+			self.previsualisedObject = 
+			    self.brd.create(self.mode, [self.point[0], userCoord])
+			
+		    } else if (self.point.length === 2) {
+			brd.removeObject(self.previsualisedObject);
+			self.previsualisedObject = null;
+			objet = brd.create(self.mode, self.point);
+			self.point = [];
+		    }
+		    break;
+		case GLOB_arrow:
+		    if (self.point.length === 2) {
+			objet = brd.create(self.mode, self.point);
+			self.point = [];
+		    }
+		    break;
+		case GLOB_segment:
+		    if (self.point.length === 2) {
+			objet = brd.create(self.mode, self.point);
+			self.point = [];
+		    }
+		    break;
+		case GLOB_axe:
+		    if (self.point.length === 2) {
+			objet = self.createDraggableAxis(self.point);
+			self.point = [];
+		    }
+		    break;
+		case GLOB_angle:
+		    if (self.point.length === 3) {
+			objet = brd.create(self.mode, self.point);
+			self.point = [];
+		    }
+		    break;
+		default:
+		    console.error("Erreur de mode, le mode selectionné est incorrect");
+		}
+		if (self.point.length > 3) {
+		    console.error("Erreur de points, trop de point en mémoire.");
+		    self.point = [];
+		}
 		if (objet){
 		    objet.on("drag", function(){
 			self.mode = GLOB_libre;
 			self.point = [];
 			self.brd.removeObject(self.previsualisedObject);
 			self.previsualisedObject = undefined;
-			dragging = true;
 		    });
 		}
-		if (!dragging){
-		    if (point === undefined) {
-			point = brd.create("point", userCoord);   
-		    }
-		    
-		    
-		    self.point.push(point);
-		    switch (mode) {
-		    case GLOB_point:
-			self.point = [];
-			break;
-		    case GLOB_ligne:
-			if (self.point.length === 2) {
-			    objet = brd.create(self.mode, self.point);
-			    self.point = [];
-			}
-			break;
-		    case GLOB_cercle:
-			if (self.point.length === 1) {
-			    self.previsualisedObject = 
-				self.brd.create(self.mode, [self.point[0], userCoord])
-			    
-			} else if (self.point.length === 2) {
-			    brd.removeObject(self.previsualisedObject);
-			    self.previsualisedObject = null;
-			    objet = brd.create(self.mode, self.point);
-			    self.point = [];
-			}
-			break;
-		    case GLOB_arrow:
-			if (self.point.length === 2) {
-			    objet = brd.create(self.mode, self.point);
-			    self.point = [];
-			}
-			break;
-		    case GLOB_segment:
-			if (self.point.length === 2) {
-			    objet = brd.create(self.mode, self.point);
-			    self.point = [];
-			}
-			break;
-		    case GLOB_axe:
-			if (self.point.length === 2) {
-			    objet = self.createDraggableAxis(self.point);
-			    self.point = [];
-			}
-			break;
-		    case GLOB_angle:
-			if (self.point.length === 3) {
-			    objet = brd.create(self.mode, self.point);
-			    self.point = [];
-			}
-			break;
-		    default:
-			console.error("Erreur de mode, le mode selectionné est incorrect");
-		    }
-		    if (self.point.length > 3) {
-			console.error("Erreur de points, trop de point en mémoire.");
-			self.point = [];
-		    }
-		}
+		
             }else{
 		self.point = [];
 	    }
@@ -1201,7 +1195,7 @@ EssaimJSXGraph.prototype.saveSelection = function (objects) {
     var self = this;
     /*console.log(objects);*/
     for (var i in objects) {
-	console.log("Sauvegarde", getLen(objects[i].childElement), objects[i].elType);
+	/*console.log("Sauvegarde", getLen(objects[i].childElement), objects[i].elType);*/
 	if (objects[i].elType === "point" && objects[i].getAttribute("visible")) {
 	    objets.push(objects[i]);
         } else if (objects[i].elType !== "point" /*&& type.indexOf(objects[i].elType) !== -1*/) {
