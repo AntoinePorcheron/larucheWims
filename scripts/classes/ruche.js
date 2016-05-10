@@ -1244,6 +1244,16 @@ Ruche.prototype.ajoutCodeLibrePreparation = function ()
     c.creerBloc();
 }
 
+//---------------------------------------------//
+Ruche.prototype.toutReduire = function ()
+/* fonction qui permet de réduire tous les blocs 
+*/ 
+{
+    for (i=0 ; i < this.listeBlocPrepa.length; i++)
+    {
+        this.listeBlocPrepa[i].reduireBloc();
+    }
+}
 //---------------------------------//
 
 Ruche.prototype.ajoutBlocEssaim = function (ClasseDeriveeEssaim, elemRecup)

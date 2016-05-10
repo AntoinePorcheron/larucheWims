@@ -194,6 +194,7 @@ function BoucleFor(numero)
 
 		// Bouton pour diminuer / agrandir la fenêtre 
 		var buttonWindow = document.createElement('button');
+        buttonWindow.id="Rid_Button_MiniMaxi_"+this.nom;
 		buttonWindow.className = "Rcl_Button_Minimize";
 		buttonWindow.addEventListener('click', function (event) 
 		{ 
@@ -308,6 +309,23 @@ function BoucleFor(numero)
 	}
 
 
+
+	//---------------------------------//
+    
+    this.reduireBloc = function()
+    {
+        console.log(this.nom);
+        if(document.getElementById("Rid_Button_MiniMaxi_"+this.nom).className=="Rcl_Button_Minimize")
+        {
+            document.getElementById("RidPrBloc_"+this.nom).className="Rcl_Closed";
+            document.getElementById("Rid_Button_MiniMaxi_"+this.nom).className="Rcl_Button_Maximize";
+            document.getElementById("forDebut" + this.nom).className += " Rcl_Mini_Editor_hidden";
+            document.getElementById("forFin" + this.nom).className += " Rcl_Mini_Editor_hidden";
+            document.getElementById("forInstruction" + this.nom).className += " Rcl_Mini_Editor_hidden";
+        }
+    }
+
+	
 
 	//---------------------------------//
 

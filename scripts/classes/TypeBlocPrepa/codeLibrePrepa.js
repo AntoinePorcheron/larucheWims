@@ -206,6 +206,7 @@ var lgPrev= Essaim.prototype.trouverPrecedent(id_drop,this);
         
         // Bouton pour diminuer / agrandir la fenêtre
 		var buttonWindow = document.createElement('button');
+        buttonWindow.id = "Rid_Button_MiniMaxi_"+this.nom;
 		buttonWindow.className = "Rcl_Button_Minimize";
 		buttonWindow.addEventListener('click', function (event)
 		{ 
@@ -299,12 +300,18 @@ var lgPrev= Essaim.prototype.trouverPrecedent(id_drop,this);
 
 
 	//---------------------------------//
+    
+    this.reduireBloc = function()
+    {
+        console.log(this.nom);
+        if(document.getElementById("Rid_Button_MiniMaxi_"+this.nom).className=="Rcl_Button_Minimize")
+        {
+            document.getElementById("RidPrBloc_"+this.nom).className="Rcl_Closed";
+            document.getElementById("Rid_Button_MiniMaxi_"+this.nom).className="Rcl_Button_Maximize";
+            document.getElementById("RidPrBloc_Content_"+this.nom).className+= " Rcl_Mini_Editor_hidden";
+        }
+    }
 
-
-	/*this.recupDonnes = function()
-	{
-		this.valeur = document.getElementById("RidPrBloc_Content_"+this.nom).value;
-	}*/
 	
 
 	//---------------------------------//

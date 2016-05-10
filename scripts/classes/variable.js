@@ -124,6 +124,35 @@ Variable.prototype.ajoutVarDansMenuListePreparation = function()
 }
 
 	//---------------------------------//
+
+    
+    Variable.prototype.reduireBloc = function()
+    {
+        console.log(this.nom);
+        if(document.getElementById("Rid_Button_MiniMaxi_"+this.nom).className=="Rcl_Button_Minimize")
+        {
+            document.getElementById("RidPrBloc_"+this.nom).className="Rcl_Closed";
+            document.getElementById("Rid_Button_MiniMaxi_"+this.nom).className="Rcl_Button_Maximize";
+            if(document.getElementById("RidPrBloc_Content_"+this.nom)!=null){
+                if(document.getElementById("RidPrBloc_Content_"+this.nom).value!=undefined){
+                    if(" "+document.getElementById("RidPrBloc_Content_"+this.nom).value.length < 11)
+                        {
+                            document.getElementById("RidPrBloc_ValVar_"+this.nom).innerHTML=" "+document.getElementById("RidPrBloc_Content_"+this.nom).value;
+                        }
+                    else{
+                            document.getElementById("RidPrBloc_ValVar_"+this.nom).innerHTML=" "+document.getElementById("RidPrBloc_Content_"+this.nom).value.substr(0,10)+"...";
+                        }
+                }
+            
+               document.getElementById("RidPrBloc_Content_"+this.nom).className = "Rcl_Droppable Rcl_Mini_Editor_hidden";
+            }
+            
+        }
+    }
+
+	
+
+	//---------------------------------//
 	
 
 Variable.prototype.ajoutVarDansMenuListeAnalyse = function()

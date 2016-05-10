@@ -209,6 +209,7 @@ Essaim.prototype.initBloc = function()
 
     // Bouton pour diminuer / agrandir la fenêtre
     var buttonWindow = document.createElement('button');
+    buttonWindow.id ="Rid_Button_MiniMaxi_"+this.nom;
     buttonWindow.className = "Rcl_Button_Minimize";
     buttonWindow.addEventListener('click', function (event)
     {
@@ -979,6 +980,21 @@ Essaim.prototype.chercheNomReponse = function()
 
 
 //---------------------------------//
+    
+    Essaim.prototype.reduireBloc = function()
+    {
+        console.log(this.nom);
+        if(document.getElementById("Rid_Button_MiniMaxi_"+this.nom).className=="Rcl_Button_Minimize")
+        {
+            document.getElementById("RidPrBloc_"+this.nom).className = "Rcl_Bloc_Essaim Rcl_Closed";
+            document.getElementById("Rid_Button_MiniMaxi_"+this.nom).className="Rcl_Button_Maximize";
+            
+        }
+    }
+
+	
+
+	//---------------------------------//
 
 
 Essaim.prototype.toOEF = function()
