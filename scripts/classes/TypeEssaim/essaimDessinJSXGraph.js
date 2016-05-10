@@ -234,8 +234,8 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup)
      var $div_bouton_action = $("<div class='actionLeft' ></div>")
          .appendTo($left_panel);
 
-     var $div_menu_contextuel = $("<div class='menu_contextuel'></div>")
-         .appendTo($left_panel);
+     /*var $div_menu_contextuel = $("<div class='menu_contextuel'></div>")
+         .appendTo($left_panel);*/
 
      this.inputZone = $("<div></div>").appendTo($left_panel);
 
