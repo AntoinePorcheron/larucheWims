@@ -13,6 +13,9 @@ var GLOB_axe = "axis";
 var GLOB_angle = "angle";
 var GLOB_arc = "arc";
 
+var TYPE_USABLE_VAR = ["integer", "real"];
+
+var type= ["point", "line", "circle", "arrow", "segment", "axis", "angle", "arc"]
 // variable permettant de sauvegarder l'état actuel du dessin*/
 var saveState = {};
 var selectListener = [];
@@ -281,7 +284,6 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup)
      EssaimJSXGraph.prototype.initEnonce.call(this);
      EssaimJSXGraph.prototype.initAnalyse.call(this);
 
-     console.log(rucheSys.listeVariables);
  }
 
 
@@ -496,6 +498,7 @@ EssaimJSXGraph.prototype.menuOptions = function (element) {
                     })
             }
         },
+
 	supprime:{
 	    nom:"Supprimer",
 	    callback: function(){
@@ -504,6 +507,18 @@ EssaimJSXGraph.prototype.menuOptions = function (element) {
 	    }
 	}
     };
+    
+    options.point = {
+	lier:{
+	    nom:"Lier",
+	    callback:function(){
+		var tmp = self.getUsableVar();
+		element.setPosition(JXG.COORDS_BY_SCREEN, [tmp[0], element.Y()]);
+		console.log(tmp[0]);
+	    }
+	}
+	
+    }
 	
     options.image = {
         resize: {
@@ -1190,7 +1205,8 @@ EssaimJSXGraph.prototype.initEventListener = function ($top_panel, $left_panel) 
 	}else{
 	    self.unsetContextMenu();
 	}
-    })
+	self.getUsableVar();
+    });
 }
 
 
@@ -1206,7 +1222,7 @@ EssaimJSXGraph.prototype.saveSelection = function (objects) {
 	/*console.log("Sauvegarde", getLen(objects[i].childElement), objects[i].elType);*/
 	if (objects[i].elType === "point" && objects[i].getAttribute("visible")) {
 	    objets.push(objects[i]);
-        } else if (objects[i].elType !== "point" /*&& type.indexOf(objects[i].elType) !== -1*/) {
+        } else if (objects[i].elType !== "point" && type.indexOf(objects[i].elType) !== -1) {
 	    objets.push(objects[i]);
         }
     }
@@ -1357,6 +1373,22 @@ EssaimJSXGraph.prototype.removeElement = function(element){
     this.brd.removeObject(element);
     
 }
+
+/**
+ * Fonction qui retourne toute les variable que l'on peut lié au graphe
+ */
+EssaimJSXGraph.prototype.getUsableVar = function(){
+    var usableVar = [];
+    var varBase = rucheSys.listeVariables;
+    for (var i in varBase){
+	if (TYPE_USABLE_VAR.indexOf(varBase[i].format.nom) !== -1/* in TYPE_USABLE_VAR*/){
+	    usableVar.push(varBase[i]);
+	}
+    }
+    return usableVar;
+}
+
+
 /**
  * Fonction qui permet de recuperer les coordonnées d'un clic sur le graphe
  * @param event
