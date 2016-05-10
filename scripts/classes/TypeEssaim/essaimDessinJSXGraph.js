@@ -210,9 +210,8 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup)
 
      this.brd = JXG.JSXGraph.initBoard('box' + this.numero,
 				       {
-					   axis: this.axis,
+					   axis: false,
 					   keepaspectratio: true,
-					   /*boundingbox: [-5, 5, 5, -5],*/
 					   grid: false,
 					   showCopyright: false
 				       });
@@ -1314,6 +1313,7 @@ EssaimJSXGraph.prototype.loadSelection = function (name) {
 			}
 			this.brd.create(objets[i].elType, res, {name:objets[i].name});
 			}
+
         }
     }
 }
