@@ -11,7 +11,6 @@ var GLOB_arrow = "arrow";
 var GLOB_segment = "segment";
 var GLOB_axe = "axis";
 var GLOB_angle = "angle";
-var GLOB_arc = "arc";
 
 var TYPE_USABLE_VAR = ["integer", "real"];
 
@@ -545,6 +544,46 @@ EssaimJSXGraph.prototype.menuOptions = function (element) {
     return options
 };
 
+/*
+/* TODO 
+ * remplacer tous les this.mode et tous les self.mode par this/self.updateMode
+ *
+*/
+/* Met à jour le mode courant *
+EssaimJSXGraph.prototype.updateMode = function (nouveauMode){
+	var ancienMode = this.mode;
+	this.mode = nouveauMode;
+	this.modeInUse
+}
+
+/* Permet de savoir quel mode est entrain d'être utilisé *
+EssaimJSXGraph.prototype.modeInUse = function (mode){
+	switch(this.mode){
+		case GLOB_point:
+			$button_point.css({"border":"2px solid gray"});
+			break;
+		case GLOB_ligne:
+			$button_ligne.css({"border":"2px solid gray"});
+			break;
+		case GLOB_cercle:
+			$button_cercle.css({"border":"10px solid gray"});
+			break;
+		case GLOB_arrow:
+			$button_arrow.css({"border":"2px solid gray"});
+			break;
+		case GLOB_segment:
+			$button_segment.css({"border":"2px solid gray"});
+			break;
+		case GLOB_axe:
+			$button_axis.css({"border":"2px solid gray"});
+			break;
+		case GLOB_angle:
+			$button_angle.css({"border":"2px solid gray"});
+			break;
+		default:
+			$button_libre.css({"border":"2px solid gray"});
+	}
+}*/
 
 /**
  * insère une image dans un point
