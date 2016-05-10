@@ -813,6 +813,9 @@ input:-moz-placeholder { color:rgba(255,10,0,0.5); }
 	background-color: rgb(255,160,15);
 }
 
+#blocFocus .menu_contextuel{
+    display:block;
+}
 /******************************************************************************************
  ********************************* STYLES ANALYSE *****************************************/
 .Rcl_Menu_Analyse {

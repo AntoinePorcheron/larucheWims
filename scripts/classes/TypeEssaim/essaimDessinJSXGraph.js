@@ -53,7 +53,6 @@ EssaimJSXGraph = function (num) {
     /*Bidouille pour regler compatibilité sous firefox*/
     this.lastEvent;
 
-    /*this.previsualisation = flse;*/
     this.previsualisedObject = undefined;
 
     this.surpage;
@@ -62,7 +61,7 @@ EssaimJSXGraph = function (num) {
 
     this.deroulant;
 
-    this.inputBoxMenu = $("<div></div>");
+    this.inputBoxMenu = $("<div class='menu_contextuel'></div>");
 }
 //------------ Déclaration comme classe dérivée de Essaim -------------//
 EssaimJSXGraph.prototype = Object.create(Essaim.prototype);
@@ -254,9 +253,9 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup)
      this.modeSelect = modeSelect;
 
 
-     this.$divMenu.appendTo( $bloc_contenu/*$div_brd/*$div_menu_contextuel*/);
-     this.$menuButtons.appendTo( $bloc_contenu/*$div_brd/*$div_menu_contextuel*/);
-     this.inputBoxMenu.appendTo( $bloc_contenu/*$div_brd/*$div_menu_contextuel*/);
+     this.$divMenu.appendTo( $bloc_contenu);
+     this.$menuButtons.appendTo( $bloc_contenu);
+     this.inputBoxMenu.appendTo( $bloc_contenu);
 
      this.initBoutonForme($div_bouton_forme);
      this.initBoutonAction($div_bouton_action);
@@ -498,8 +497,16 @@ EssaimJSXGraph.prototype.menuOptions = function (element) {
                         alert(err)
                     })
             }
-        }
+        },
+	supprime:{
+	    nom:"Supprimer",
+	    callback: function(){
+		self.brd.removeObject(element);
+	    }
+	}
     };
+	
+    
     options.image = {
         resize: {
 	    nom: "Changer la taille",
@@ -646,8 +653,8 @@ EssaimJSXGraph.prototype.getTopUnderMouse = function () {
 EssaimJSXGraph.prototype.buildMenu = function (element) {
     // Pour indiquer les options dans le menu par rapport aux types des éléments
     var buildButton = function (option) {
-        return $("<input type='button' value='Changer nom'/>")
-            .html(option.nom)
+        return $("<input type='button' value='" + option.nom + "'/>")
+            .html(option.nom) 
             .click(option.callback)
     };
     var options = this.menuOptions(element);
