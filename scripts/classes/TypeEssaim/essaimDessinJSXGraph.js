@@ -546,60 +546,61 @@ EssaimJSXGraph.prototype.menuOptions = function (element) {
     return options
 };
 
-/*
+
 /* TODO 
  * remplacer tous les this.mode et tous les self.mode par this/self.updateMode
  *
- *
-/* Met à jour le mode courant *
+ */
+/* Met à jour le mode courant */
 EssaimJSXGraph.prototype.updateMode = function (nouveauMode){
 	var ancienMode = this.mode;
 	this.modeInUse = nouveauMode;
-	for ( i = 0, i < 7, i++ ) {
-		if ( modeInUse === i ) {
+	for ( i = 0; i < 7; i++ ) {
+		if ( modeInUse(donnees.valeur) === i ) {
 			
 		}
 	}
 	
 }
 
-/* Permet de savoir quel mode est entrain d'être utilisé *
+/* Permet de savoir quel mode est entrain d'être utilisé */
 EssaimJSXGraph.prototype.modeInUse = function (mode){
-	var donnees = { boutonCourant : '', valeur : 0};
+	var donnees = { boutonCourant, valeur };
 	switch(this.mode){
 		case GLOB_point:
-			 = $button_point;
-			return 1;
+			donnees.boutonCourant = $button_point;
+			donnees.valeur = 1;
 			break;
 		case GLOB_ligne:
-			boutonCourant = $button_ligne;
-			return 2;
+			donnees.boutonCourant = $button_ligne;
+			donnees.valeur = 2;
 			break;
 		case GLOB_cercle:
-			boutonCourant = $button_cercle;
-			return 3;
+			donnees.boutonCourant = $button_cercle;
+			donnees.valeur = 3;
 			break;
 		case GLOB_arrow:
-			boutonCourant = $button_arrow;
-			return 4;
+			donnees.boutonCourant = $button_arrow;
+			donnees.valeur = 4;
 			break;
 		case GLOB_segment:
-			boutonCourant = $button_segment;
-			return 5;
+			donnees.boutonCourant = $button_segment;
+			donnees.valeur = 5;
 			break;
 		case GLOB_axe:
-			boutonCourant = $button_axis;
-			return 6;
+			donnees.boutonCourant = $button_axis;
+			donnees.valeur = 6;
 			break;
 		case GLOB_angle:
-			boutonCourant = $button_angle;
-			return 7;
+			donnees.boutonCourant = $button_angle;
+			donnees.valeur = 7;
 			break;
 		default:
-			boutonCourant = $button_libre;
-			return 8;
+			donnees.boutonCourant = $button_libre;
+			donnees.valeur = 8;
 	}
-}*/
+	return donnees;
+}
 
 /**
  * insère une image dans un point
