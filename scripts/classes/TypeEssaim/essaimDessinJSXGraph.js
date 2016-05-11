@@ -511,8 +511,9 @@ EssaimJSXGraph.prototype.menuOptions = function (element) {
 	    nom:"Lier",
 	    callback:function(){
 		var tmp = self.getUsableVar();
-		element.setPosition(JXG.COORDS_BY_SCREEN, [tmp[0], element.Y()]);
-		console.log(tmp[0]);
+		element.setPosition(JXG.COORDS_BY_SCREEN, [tmp[0].recupDonnees(), element.Y()]);
+		/*console.log(tmp[0]);*/
+		
 	    }
 	}
 	
@@ -1413,16 +1414,13 @@ EssaimJSXGraph.prototype.getUsableVar = function(){
     var varBase = rucheSys.listeVariables;
     for (var i in varBase){
 	if (TYPE_USABLE_VAR.indexOf(varBase[i].format.nom) !== -1){
-	    usableVar.push(varBase[i]);
 	    console.log(varBase[i]);
-	    /*console.log(document.getElementById("" + varBase[i].name));*/
-	    /*console.log(varBase[i].recupDonnees());*/
-	    console.log(document.getElementById("RidPrBloc_Content_"+varBase[i].nom).value);
+	    usableVar.push(varBase[i]);
+	    console.log(varBase[i].recupDonnees());
 	}
     }
     return usableVar;
 }
-
 
 /**
  * Fonction qui permet de recuperer les coordonnées d'un clic sur le graphe
@@ -1465,6 +1463,32 @@ function getLen(object) {
     return -1
 }
 
+/**
+ * Fonction qui permet de crée un menu déroulant à l'aide d'un tableau qui contient les options dans le bloc 
+ * parent. Cette fonction détruit le contenu du bloc parent. On peut définir un id pour le select, 
+ * par défaut il est null
+ * @param options - Tableau qui contient les options désirée
+ * @param parent - element dans lequel le select se trouvera
+ * @param id - Id du select
+ */
+function createOption(options, parent, id=null){
+    parent.empty();
+    var $select_tmp = $("<select></select>").appendTo(parent);;
+    if (id){
+	parent.attr("id", id);
+    }
+    
+    for (var i in options){
+	$("<option></option>").html(options[i]).appendTo($select_tmp);
+    }
+    return parent;
+}
+
+/*function getValueVar(var){
+    /*if (var.*/
+/*}*/
+
 $(document).ready(function () {
     rucheSys.initClasseEssaim(EssaimJSXGraph)
 });
+
