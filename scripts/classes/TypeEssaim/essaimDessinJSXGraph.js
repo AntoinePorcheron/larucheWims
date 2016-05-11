@@ -814,9 +814,19 @@ EssaimJSXGraph.prototype.multiSelect = function () {
         })
         .html("Tout Select")
         .click(function () {
-            console.log(self.brd.objects)
-            self.stackMultiSelect = $.merge([], Object.keys(self.brd.objects));
-            self.$selection.html(JSON.stringify(self.stackMultiSelect))
+            var keys = Object.keys(self.brd.objects);
+            var html = [];
+            for(var i = 0; i < keys.length; i++){
+                var element = self.brd.objects[keys[i]];
+                if(element.elType != "text" && element.name){
+                    self.stackMultiSelect.push(element)
+                }
+            }
+            var select = self.stackMultiSelect;
+            for (i = 0; i < select.length; i++) {
+                html.push(select[i].elType + " " + select[i].name)
+            }
+            self.$selection.html(JSON.stringify(html));
         });
     var $ok = $("<input type='button' value ='Ok' />").appendTo(this.$multiSelect)
         .html("ok")
