@@ -14,7 +14,6 @@ function Condition(numero)
 
 	//--------- METHODES ---------//
 
-
 	this.creerBloc = function()
 	/*
 	 * Fonction qui permet de créer un bloc dans l'onglet préparation
@@ -27,27 +26,67 @@ function Condition(numero)
 		var liste = document.createElement("LI");
 		var div_fils = document.createElement("DIV");
 		liste.id = "RidPrBloc_"+this.nom;
-		
+        var posDrag = document.createAttribute("posdrag");
+        posDrag.value=0;
+        bloc_pere.setAttributeNode(posDrag);
+        
+
 		/* Modifications pour le drag and drop */
 		//On gère l'envoi
 		liste.draggable = true;
-
 		liste.addEventListener('dragstart', function(e) {
-
+                if(bloc_pere.getAttribute("posdrag")==0){
+                    bloc_pere.setAttribute("posdrag",""+e.clientY);
+                }
         		e.dataTransfer.setData('text/plain', liste.id);
         		//e.dataTransfer.setDragImage(dragImg, 40, 40); // Une position de 40x40 pixels centrera l'image (de 80x80 pixels) sous le curseur
         
     		});
+        
+            // On gère le changement d'apparence entre les deux fonctions. 
+
+        
+
+        liste.addEventListener('dragleave', function(e) {
+             //Lorsqu'on sort d'une zone de drop.
+             this.style.marginBottom = ""; 
+            this.style.borderBottom="";      
+            this.style.marginTop = "";
+            this.style.borderTop="";
+            console.log('Sortie de zone');
+         });
+    
 
 		//On gère la réception
-    		liste.addEventListener('dragover', function(e) {
-        		e.preventDefault(); // Annule l'interdiction de drop
-        		console.log('Un élément survole la zone');
-    		});
+        liste.addEventListener('dragover', function(e) {
+            e.preventDefault(); // Annule l'interdiction de drop
+            if(e!=this)
+                {
+                    console.log("start : "+bloc_pere.getAttribute("posdrag"));
+                    console.log("over : "+e.clientY);
+                    if(bloc_pere.getAttribute("posdrag")<e.clientY)
+                    {
+                        this.style.marginBottom = "30px"; //Marge ajoutée
+                        this.style.borderBottom="2px dotted red";
+                    }
+                    else
+                    {
+                        this.style.marginTop = "0px";
+                        this.style.borderTop="2px dotted red";
+                    }
+                
+                }
+        });
 
    		liste.addEventListener('drop', function(e) {
         	/*Cette fonction sert à décrire ce qui se passera pour le bloc ciblé ce qui se passera lorsqu'on lachera un objet droppable sur lui */
-        
+       this.style.marginBottom = ""; 
+        this.style.borderBottom="";      
+        this.style.marginTop = "";
+        this.style.borderTop="";
+        if(bloc_pere.getAttribute("posdrag")!=""+0){
+            bloc_pere.setAttribute("posdrag",0);
+        }
         var nomZoneIn=" "; //on va récupérer l'id du bloc reçu. 
         nomZoneIn=e.dataTransfer.getData('text/plain'); // Affiche le contenu du type MIME « text/plain »
         console.log('Données reçu : ' + nomZoneIn);
@@ -163,11 +202,11 @@ function Condition(numero)
 				buttonWindow.className = "";
 				buttonWindow.className = "Rcl_Button_Maximize";
 				buttonWindow.parentNode.parentNode.className = "";
-				buttonWindow.parentNode.parentNode.className = "Rcl_Bloc Rcl_Closed";
+				buttonWindow.parentNode.parentNode.className = "Rcl_Closed";
                 //cache les zones d'edition
-                div_condition.className = "Rcl_Mini_Editor_hidden";
-                div_conditionTrue.className = "Rcl_Mini_Editor_hidden";
-                div_conditionFalse.className = "Rcl_Mini_Editor_hidden";
+                div_condition.className += " Rcl_Mini_Editor_hidden";
+                div_conditionTrue.className += " Rcl_Mini_Editor_hidden";
+                div_conditionFalse.className += " Rcl_Mini_Editor_hidden";
 			}
 			else
 			{
@@ -176,9 +215,9 @@ function Condition(numero)
 				buttonWindow.parentNode.parentNode.className = "";
 				buttonWindow.parentNode.parentNode.className = "Rcl_Bloc";
                 //reaffiche les zones d'edition
-                div_condition.className = "Rcl_Droppable Rcl_Mini_Editor";
-                div_conditionTrue.className = "Rcl_Droppable";
-                div_conditionFalse.className = "Rcl_Droppable";
+                div_condition.className = div_condition.className.replace(" Rcl_Mini_Editor_hidden","");
+                div_conditionTrue.className = div_condition.className.replace(" Rcl_Mini_Editor_hidden","").replace(" Rcl_Mini_Editor","");
+                div_conditionFalse.className = div_condition.className.replace(" Rcl_Mini_Editor_hidden","").replace(" Rcl_Mini_Editor","");
 			};
 		}, 
 		true);

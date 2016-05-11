@@ -4,13 +4,13 @@
  *
 */
 
-function Variable(nom){
+function Variable(nom) {
 
 	//--------- ATTRIBUTS ---------//
 
 
 	this.nom = nom;			// nom de la variable.
-	this.format = null;		// type de la variable, contient les données (beurk...)
+	this.format = "base_var";		// type de la variable, contient les données
                             // à modifier en relation de classe parente-dérivée
 	this.valeur = "";		// valeur de la variable
 	this.proto = "Variable"; // type de la variable
@@ -187,8 +187,20 @@ Variable.prototype.ajoutBlocDansPreparation = function()
     // Création du bouton de suppression de cette variable
     var button = document.createElement('button');
     var txt = document.createTextNode( this.nom );
+    
+    //Valeur de la variable affichee quand reduite
+    var valvar = $("<span>", {
+                       id: "RidPrBloc_ValVar_"+this.nom,
+                       class: "Rcl_ValVar"
+                       });
+    valvar.html(" ");
+    valvar.val="none yet";
+    var contvalue=document.getElementById("RidPrBloc_Content_"+this.nom);
+    contvalue="defaut";
+    
+    
     button.id = "Rid_Button_Delete_" + this.nom;
-    button.className = "Rcl_Button_Delete"
+    button.className = "Rcl_Button_Delete";
     // bouton de suppression des variable depuis les blocs
     button.onclick = function(){
         variable = li[0].id.slice("RidPrBloc_".length,li[0].id.length);// On supprime le "RidPrBloc_" devant le nom de la variable
@@ -199,17 +211,28 @@ Variable.prototype.ajoutBlocDansPreparation = function()
 
     /* Bouton pour diminuer / agrandir la fenêtre */
     var buttonWindow = document.createElement('button');
+    buttonWindow.id = "Rid_Button_MiniMaxi_"+this.nom;
     buttonWindow.className = "Rcl_Button_Minimize";
     buttonWindow.addEventListener(	
         'click', 
         function (event) 
         { 
+            IDvar = buttonWindow.id.slice("Rid_Button_MiniMaxi_".length,buttonWindow.id.length);
             if (buttonWindow.className == "Rcl_Button_Minimize")
             {
                 buttonWindow.className = "";
                 buttonWindow.className = "Rcl_Button_Maximize";
                 buttonWindow.parentNode.parentNode.parentNode.className = "";
-                buttonWindow.parentNode.parentNode.parentNode.className = "Rcl_Bloc Rcl_Closed";
+                buttonWindow.parentNode.parentNode.parentNode.className = "Rcl_Closed";
+                if(" "+document.getElementById("RidPrBloc_Content_"+IDvar).value.length < 11)
+                    {
+                    document.getElementById("RidPrBloc_ValVar_"+IDvar).innerHTML=" "+document.getElementById("RidPrBloc_Content_"+IDvar).value;
+                    }
+                else{
+                    document.getElementById("RidPrBloc_ValVar_"+IDvar).innerHTML=" "+document.getElementById("RidPrBloc_Content_"+IDvar).value.substr(0,10)+"...";
+                }
+               document.getElementById("RidPrBloc_Content_"+IDvar).className = "Rcl_Droppable Rcl_Mini_Editor_hidden";
+                
             }
             else 
             {
@@ -217,6 +240,8 @@ Variable.prototype.ajoutBlocDansPreparation = function()
                 buttonWindow.className = "Rcl_Button_Minimize";
                 buttonWindow.parentNode.parentNode.parentNode.className = "";
                 buttonWindow.parentNode.parentNode.parentNode.className = "Rcl_Bloc";
+                document.getElementById("RidPrBloc_ValVar_"+IDvar).innerHTML=" ";
+                document.getElementById("RidPrBloc_Content_"+IDvar).className = "Rcl_Droppable";
             };
         }, 
         true
@@ -269,13 +294,13 @@ Variable.prototype.ajoutBlocDansPreparation = function()
     divEnTeteVar.append(txt);
     divEnTeteVar.append(boutonChoixType);
     divEnTeteVar.append(affNomType);
+    divEnTeteVar.append(valvar);
 //		bloc.appendChild(select);
     li.append(bloc);
     
     $("#Rid_Prep_Blocs").append(li);
     drag();
 }
-
 function drag(){ 
     /* Gestion du drag and drop xcvb*/
     /* Cette fonction fait en sorte que les blocs de variable soient droppables */
@@ -283,30 +308,87 @@ function drag(){
     console.log('Entrée dans la fonction drag');
     console.log(cpt);
     var T_rc1_drag =document.querySelectorAll(".Rcl_Bloc");
-    var rc1_drag = T_rc1_drag[T_rc1_drag.length-1]
+    var rc1_drag = T_rc1_drag[T_rc1_drag.length-1];
 
+    
 
     console.log(rc1_drag.id);
     cpt++;
 
-    //var rc1_drag =document.querySelector("#Rid_Prep_Blocs");
-   //rc1_drag.draggable = true;
+    var bloc_pere =document.getElementById("Rid_Prep_Blocs");
+    var posDrag = document.createAttribute("posdrag");
+    posDrag.value=0;
+    bloc_pere.setAttributeNode(posDrag);
+    
     rc1_drag.addEventListener('dragstart', function(e) {
-
+        if(bloc_pere.getAttribute("posdrag")==0){
+                    bloc_pere.setAttribute("posdrag",""+e.clientY);
+                }
+        
         e.dataTransfer.setData('text/plain', rc1_drag.id);
         //e.dataTransfer.setDragImage(dragImg, 40, 40); // Une position de 40x40 pixels centrera l'image (de 80x80 pixels) sous le curseur
         
     });
 
     //On gère la réception
+    
+    
     rc1_drag.addEventListener('dragover', function(e) {
+        //Lorsqu'on survole la zone avec l'élément droppé
         e.preventDefault(); // Annule l'interdiction de drop
+        e.stopPropagation;
+        if(e!=this)
+            {
+                //###############################################################
+       console.log("start : "+bloc_pere.getAttribute("posdrag"));
+        console.log("over : "+e.clientY);
+        if(bloc_pere.getAttribute("posdrag")<e.clientY)
+        {
+            this.style.marginBottom = "30px"; //Marge ajoutée
+            this.style.borderBottom="2px dotted red";
+        }
+        else
+        {
+            this.style.marginTop = "0px";
+            this.style.borderTop="2px dotted red";
+        }
+                
+                //###############################################################
+                
+            }
+        
         console.log('Un élément survole la zone');
+        
     });
+    
+     rc1_drag.addEventListener('dragenter', function(e) {
+         //Lorsqu'on entre dans la zone de drop
+         console.log('Un élément est entré dans la zone');
+         
+     });
+                        
+    rc1_drag.addEventListener('dragleave', function(e) {
+         //Lorsqu'on sort d'une zone de drop.
+        this.style.marginBottom = ""; 
+        this.style.borderBottom="";      
+        this.style.marginTop = "";
+        this.style.borderTop="";
+        console.log('Sortie de zone');
+     });
+    
+         
 
    rc1_drag.addEventListener('drop', function(e) {
        /*Cette fonction sert à décrire ce qui se passera pour le bloc ciblé ce qui se passera lorsqu'on lachera un objet droppable sur lui */
          
+       this.style.marginBottom = ""; 
+        this.style.borderBottom="";
+       this.style.marginTop = "";
+        this.style.borderTop="";
+       if(bloc_pere.getAttribute("posdrag")!=""+0){
+           bloc_pere.setAttribute("posdrag",0);
+        }
+       
        var nomZoneIn=" "; //on va récupérer l'id du bloc reçu. 
         nomZoneIn=e.dataTransfer.getData('text/plain'); // Affiche le contenu du type MIME « text/plain »
         console.log('Données reçu : ' + nomZoneIn);
@@ -387,7 +469,7 @@ function drag(){
            
         });
 
-    /* Fin des modifs */
+
 }
 
 	//---------------------------------//

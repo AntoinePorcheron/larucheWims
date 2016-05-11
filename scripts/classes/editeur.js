@@ -33,9 +33,18 @@ function Editeur(id,ruc,bool,toolbar){
                               }
                               });
 		this.edit.on('selection-change', function(range) {
+            if(range){
+                document.getElementById(id).className+=" Rcl_Droppable_focus";
+            }
+            else{
+                var typedrop = document.getElementById(id).className.replace(" Rcl_Droppable_focus", "");
+                document.getElementById(id).className=typedrop;
+            }
 		});
 		
 		this.edit.on('text-change', function(delta, source) {
+            var txt=document.getElementById(id);
+            txt.value=document.getElementById(id).textContent;
 		});
 	}
 
