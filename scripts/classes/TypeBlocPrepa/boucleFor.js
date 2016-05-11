@@ -27,27 +27,65 @@ function BoucleFor(numero)
 		var liste = document.createElement("LI");
 		var div_fils = document.createElement("DIV");
 		liste.id = "RidPrBloc_"+this.nom;
+        var posDrag = document.createAttribute("posdrag");
+        posDrag.value=0;
+        bloc_pere.setAttributeNode(posDrag);
 		
 		/* Modifications pour le drag and drop */
 		//On gère l'envoi
 		liste.draggable = true;
 
 		liste.addEventListener('dragstart', function(e) {
-
+            if(bloc_pere.getAttribute("posdrag")==0){
+                    bloc_pere.setAttribute("posdrag",""+e.clientY);
+                }
         e.dataTransfer.setData('text/plain', liste.id);
         //e.dataTransfer.setDragImage(dragImg, 40, 40); // Une position de 40x40 pixels centrera l'image (de 80x80 pixels) sous le curseur
         
     	});
-
+        
+        // On gère le changement d'apparence entre les deux fonctions. 
+    
+        liste.addEventListener('dragleave', function(e) {
+             //Lorsqu'on sort d'une zone de drop.
+           this.style.marginBottom = ""; 
+            this.style.borderBottom="";      
+            this.style.marginTop = "";
+            this.style.borderTop="";
+            console.log('Sortie de zone');
+         });
+    
 		//On gère la réception
-    	liste.addEventListener('dragover', function(e) {
+        liste.addEventListener('dragover', function(e) {
         e.preventDefault(); // Annule l'interdiction de drop
-        console.log('Un élément survole la zone');
-    	});
+        if(e!=this)
+            {
+                console.log("start : "+bloc_pere.getAttribute("posdrag"));
+                    console.log("over : "+e.clientY);
+                    if(bloc_pere.getAttribute("posdrag")<e.clientY)
+                    {
+                        this.style.marginBottom = "30px"; //Marge ajoutée
+                        this.style.borderBottom="2px dotted red";
+                    }
+                    else
+                    {
+                        this.style.marginTop = "0px";
+                        this.style.borderTop="2px dotted red";
+                    }
+            }
+        });
 
    		liste.addEventListener('drop', function(e) {
         /*Cette fonction sert à décrire ce qui se passera pour le bloc ciblé ce qui se passera lorsqu'on lachera un objet droppable sur lui */
         
+        this.style.marginBottom = ""; 
+            this.style.borderBottom="";      
+            this.style.marginTop = "";
+            this.style.borderTop="";
+            if(bloc_pere.getAttribute("posdrag")!=""+0){
+            bloc_pere.setAttribute("posdrag",0);
+        }
+            
         var nomZoneIn=" "; //on va récupérer l'id du bloc reçu. 
         nomZoneIn=e.dataTransfer.getData('text/plain'); // Affiche le contenu du type MIME « text/plain »
         console.log('Données reçu : ' + nomZoneIn);
@@ -156,6 +194,7 @@ function BoucleFor(numero)
 
 		// Bouton pour diminuer / agrandir la fenêtre 
 		var buttonWindow = document.createElement('button');
+        buttonWindow.id="Rid_Button_MiniMaxi_"+this.nom;
 		buttonWindow.className = "Rcl_Button_Minimize";
 		buttonWindow.addEventListener('click', function (event) 
 		{ 
@@ -163,10 +202,12 @@ function BoucleFor(numero)
 			{
 				buttonWindow.className = "";
 				buttonWindow.className = "Rcl_Button_Maximize";
-				buttonWindow.parentNode.parentNode.className = "Rcl_Bloc Rcl_Closed";
-                div_forDebut.className = "Rcl_Mini_Editor_hidden";
-                div_forFin.className = "Rcl_Mini_Editor_hidden";
-                div_forInstruction.className = "Rcl_Mini_Editor_hidden";
+				buttonWindow.parentNode.parentNode.className = "Rcl_Closed";
+                div_forDebut.className += " Rcl_Mini_Editor_hidden";
+                div_forFin.className += " Rcl_Mini_Editor_hidden";
+                div_forInstruction.className += " Rcl_Mini_Editor_hidden";
+                
+               
 			}
 			else
 			{
@@ -174,9 +215,10 @@ function BoucleFor(numero)
 				buttonWindow.className = "Rcl_Button_Minimize";
 				buttonWindow.parentNode.parentNode.className = "";
 				buttonWindow.parentNode.parentNode.className = "Rcl_Bloc";
-                div_forDebut.className = "Rcl_Droppable Rcl_Mini_Editor";
-                div_forFin.className = "Rcl_Droppable Rcl_Mini_Editor";
-                div_forInstruction.className = "Rcl_Droppable";
+                div_forDebut.className = div_forDebut.className.replace(" Rcl_Mini_Editor_hidden","");
+                div_forFin.className = div_forFin.className.replace(" Rcl_Mini_Editor_hidden","");
+                div_forInstruction.className = div_forInstruction.className.replace(" Rcl_Mini_Editor_hidden","");
+               
 			};
 		}, 
 		true);
@@ -267,6 +309,23 @@ function BoucleFor(numero)
 	}
 
 
+
+	//---------------------------------//
+    
+    this.reduireBloc = function()
+    {
+        console.log(this.nom);
+        if(document.getElementById("Rid_Button_MiniMaxi_"+this.nom).className=="Rcl_Button_Minimize")
+        {
+            document.getElementById("RidPrBloc_"+this.nom).className="Rcl_Closed";
+            document.getElementById("Rid_Button_MiniMaxi_"+this.nom).className="Rcl_Button_Maximize";
+            document.getElementById("forDebut" + this.nom).className += " Rcl_Mini_Editor_hidden";
+            document.getElementById("forFin" + this.nom).className += " Rcl_Mini_Editor_hidden";
+            document.getElementById("forInstruction" + this.nom).className += " Rcl_Mini_Editor_hidden";
+        }
+    }
+
+	
 
 	//---------------------------------//
 
