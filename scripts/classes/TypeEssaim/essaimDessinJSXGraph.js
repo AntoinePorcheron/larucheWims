@@ -238,7 +238,7 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup)
      var $div_menu_contextuel = $("<div></div>")
          .appendTo($left_panel);
 
-     this.inputZone = $("<div></div>").appendTo($left_panel);
+     this.inputZone = $("<div class='zoneInput'></div>").appendTo($left_panel);
 
      this.$multiSelect.appendTo($left_panel).hide();
      this.$selection.appendTo(this.$multiSelect).hide();
@@ -549,40 +549,54 @@ EssaimJSXGraph.prototype.menuOptions = function (element) {
 /* TODO 
  * remplacer tous les this.mode et tous les self.mode par this/self.updateMode
  *
-*/
+ *
 /* Met à jour le mode courant *
 EssaimJSXGraph.prototype.updateMode = function (nouveauMode){
 	var ancienMode = this.mode;
-	this.mode = nouveauMode;
-	this.modeInUse
+	this.modeInUse = nouveauMode;
+	for ( i = 0, i < 7, i++ ) {
+		if ( modeInUse === i ) {
+			
+		}
+	}
+	
 }
 
 /* Permet de savoir quel mode est entrain d'être utilisé *
 EssaimJSXGraph.prototype.modeInUse = function (mode){
+	var donnees = { boutonCourant : '', valeur : 0};
 	switch(this.mode){
 		case GLOB_point:
-			$button_point.css({"border":"2px solid gray"});
+			 = $button_point;
+			return 1;
 			break;
 		case GLOB_ligne:
-			$button_ligne.css({"border":"2px solid gray"});
+			boutonCourant = $button_ligne;
+			return 2;
 			break;
 		case GLOB_cercle:
-			$button_cercle.css({"border":"10px solid gray"});
+			boutonCourant = $button_cercle;
+			return 3;
 			break;
 		case GLOB_arrow:
-			$button_arrow.css({"border":"2px solid gray"});
+			boutonCourant = $button_arrow;
+			return 4;
 			break;
 		case GLOB_segment:
-			$button_segment.css({"border":"2px solid gray"});
+			boutonCourant = $button_segment;
+			return 5;
 			break;
 		case GLOB_axe:
-			$button_axis.css({"border":"2px solid gray"});
+			boutonCourant = $button_axis;
+			return 6;
 			break;
 		case GLOB_angle:
-			$button_angle.css({"border":"2px solid gray"});
+			boutonCourant = $button_angle;
+			return 7;
 			break;
 		default:
-			$button_libre.css({"border":"2px solid gray"});
+			boutonCourant = $button_libre;
+			return 8;
 	}
 }*/
 
@@ -903,7 +917,7 @@ EssaimJSXGraph.prototype.inputbox = function (label, parent, hint, showButton, t
     var $input = $("<input />")
         .attr({"type":type, "placeholder":hint})
         .appendTo($box);
-    var $submit = $("<input type='button' value='Valider' />")
+    var $submit = $("<input class='bouton_valider' type='button' value='Valider' />")
         .html("ok")
         .click(function (event) {
             if (!$input.val() || !$input.val().length) {
