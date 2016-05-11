@@ -14,7 +14,7 @@ var GLOB_angle = "angle";
 
 var TYPE_USABLE_VAR = ["integer", "real"];
 
-var type= ["line", "circle", "arrow", "segment", "axis", "angle", "arc"]
+var type= ["line", "circle", "arrow", "segment", "axis", "angle", "image"]
 // variable permettant de sauvegarder l'état actuel du dessin*/
 var saveState = {};
 var selectListener = [];
@@ -511,7 +511,8 @@ EssaimJSXGraph.prototype.menuOptions = function (element) {
 	    nom:"Lier",
 	    callback:function(){
 		var tmp = self.getUsableVar();
-		element.setPosition(JXG.COORDS_BY_SCREEN, [tmp[0].recupDonnees(), element.Y()]);
+		console.log(tmp[0]);
+		element.setPosition(JXG.COORDS_BY_SCREEN, [getValueVar(tmp[0]), element.Y()]);
 		/*console.log(tmp[0]);*/
 		
 	    }
@@ -1501,17 +1502,25 @@ function createOption(options, parent, id){
 
 /**
  * Fonction qui permet de recuperer la valeurs entiere ou flottante en fonction de sont type
- * @param variable - 
+ * @param {string} variable - Contient la valeur de l'élément
  * @return {Number} - 
  */
 function getValueVar(variable){
-    switch (variable){
-    case:
+    var err;
+    switch (variable.format.nom){
+    case "integer":
+	err = parseInt(variable.recupDonnees(), 10);
 	break;
-    case:
+    case "real":
+	err = parseFloat(variable.recupDonnees());
 	break;
     default:
 	console.error("Type inconnue, la variable ne peut etre traiter.");
+    }
+    if (err = NaN){
+	console.error("Aucun éléments viable appartient à la chaine " + variable);
+    }else{
+	return err;
     }
 }
 
