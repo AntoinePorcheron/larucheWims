@@ -564,7 +564,7 @@ EssaimJSXGraph.prototype.updateMode = function (nouveauMode){
 
 /* Permet de savoir quel mode est entrain d'être utilisé */
 EssaimJSXGraph.prototype.modeInUse = function (mode){
-	var donnees = { boutonCourant, valeur };
+	var donnees = { boutonCourant: {}, valeur: 0 };
 	switch(this.mode){
 		case GLOB_point:
 			donnees.boutonCourant = $button_point;
