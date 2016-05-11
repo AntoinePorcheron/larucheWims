@@ -781,11 +781,11 @@ input:-moz-placeholder { color:rgba(255,10,0,0.5); }
 }
 #blocFocus .leftMenu .zoneInput{
 	padding-top:15%;
-	width:90%;
+	width:87%;
 }
 
 #blocFocus .leftMenu .zoneInput .bouton_valider{
-	width:110%;
+	width:115%;
 }
 
 #blocFocus .leftMenu input{

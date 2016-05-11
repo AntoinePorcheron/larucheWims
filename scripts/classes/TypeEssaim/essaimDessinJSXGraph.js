@@ -547,7 +547,7 @@ EssaimJSXGraph.prototype.menuOptions = function (element) {
 };
 
 
-/* TODO 
+/* TODO à faire
  * remplacer tous les this.mode et tous les self.mode par this/self.updateMode
  *
  */
@@ -560,7 +560,6 @@ EssaimJSXGraph.prototype.updateMode = function (nouveauMode){
 			
 		}
 	}
-	
 }
 
 /* Permet de savoir quel mode est entrain d'être utilisé */
