@@ -33,9 +33,21 @@ function Editeur(id,ruc,bool,toolbar){
                               }
                               });
 		this.edit.on('selection-change', function(range) {
+            if(range){
+                var bloc_pere =document.getElementById("Rid_Prep_Vars");
+                bloc_pere.setAttribute("focusedit",id);
+                var bloc_pere2 =document.getElementById("Rid_Analyse_Vars");
+                bloc_pere2.setAttribute("focusedit",id);
+                document.getElementById(id).style.backgroundColor="lightgreen";
+            }
+            else{
+                document.getElementById(id).style.backgroundColor="";
+            }
 		});
 		
 		this.edit.on('text-change', function(delta, source) {
+            var txt=document.getElementById(id);
+            txt.value=document.getElementById(id).textContent;
 		});
 	}
 
@@ -445,6 +457,7 @@ function Editeur(id,ruc,bool,toolbar){
             this.edit.setSelection(range2.end + 1,range2.end + 1);
         }
     }
+    
 
     //---------------------------------//
 
@@ -981,11 +994,29 @@ function Editeur(id,ruc,bool,toolbar){
     // permet de recevoir du texte de l'élément envoyé !
     document.querySelector('#editor-container').addEventListener('drop', function(e) {
         var nomBoutton=" ";
-        nomBoutton=e.dataTransfer.getData('text/plain'); // Affiche le contenu du type MIME « text/plain »
+        nomBoutton=e.dataTransfer.getData("texte"); // Affiche le contenu du type MIME « text/plain »
         console.log('Données reçu : ' + nomBoutton);
+        
+        var typeRecuVariable; // vaut supérieur à 0
+        var typeRecuEssaim;
+        
+        typeRecuVariable  = nomBoutton.indexOf("RidEnVa");// vaudra >0 si c'est une variable
+        typeRecuEssaim = nomBoutton.indexOf("bouton"); // vaudra >0 si c'est une variable
         nomBoutton='#'+nomBoutton;
         buttonDD=document.querySelector(nomBoutton);
-        buttonDD.onclick(); // On va simuler l'activation du bouton 
+        console.log("typeRecuVariable = "+typeRecuVariable);
+        
+        
+        if(typeRecuEssaim>=0)
+            {
+                buttonDD.onclick(); // On va simuler l'activation du bouton 
+                console.log("L'élement recu est de type essaim");
+            }
+        else if(typeRecuVariable>=0)
+            {
+                buttonDD.ondblclick();
+                console.log("L'élement recu est de type variable");
+            }
 
 
     });

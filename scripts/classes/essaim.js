@@ -38,16 +38,23 @@ Essaim.prototype.initBloc = function()
  * crée les boutons de suppression/déplacement/...
  */
 {
-    var bloc_pere = document.getElementById("Rid_Prep_Blocs");
-    var liste = document.createElement("LI");
-    liste.id = "RidPrBloc_"+this.nom;
-    liste.className = "Rcl_Bloc_Essaim Rcl_Bloc";
-    
-    /* début des modifs pour le drap and drop */
-    /*liste.draggable = true;*/
-
+ var bloc_pere = document.getElementById("Rid_Prep_Blocs");
+ var liste = document.createElement("LI");
+ liste.id = "RidPrBloc_"+this.nom;
+ liste.className = "Rcl_Bloc_Essaim Rcl_Bloc";
+ var posDrag = document.createAttribute("posdrag");
+ posDrag.value=0;
+ bloc_pere.setAttributeNode(posDrag);
+ 
+ /* début des modifs pour le drap and drop */
+ liste.draggable = true;
+ var posDrag=0;
+ 
     liste.addEventListener('dragstart', function(e) {
-
+        
+        if(bloc_pere.getAttribute("posdrag")==0){
+                    bloc_pere.setAttribute("posdrag",""+e.clientY);
+                }
         e.dataTransfer.setData('text/plain', liste.id);
         e.dataTransfer.setDragImage(dragImg, 40, 40); // Une position de 40x40 pixels centrera l'image (de 80x80 pixels) sous le curseur
         
@@ -59,12 +66,49 @@ Essaim.prototype.initBloc = function()
     //On gère la réception
     liste.addEventListener('dragover', function(e) {
         e.preventDefault(); // Annule l'interdiction de drop
+        if(e!=this)
+            {
+                if(bloc_pere.getAttribute("posdrag")<e.clientY)
+        {
+            this.style.marginBottom = "30px"; //Marge ajoutée
+            this.style.borderBottom="2px dotted red";
+        }
+        else
+        {
+            this.style.marginTop = "0px";
+            this.style.borderTop="2px dotted red";
+        }
+            }
         console.log('Un élément survole la zone');
     });
+    // On gère le changement d'apparence entre les deux fonctions. 
+    
+    liste.addEventListener('dragenter', function(e) {
+         //Lorsqu'on entre dans la zone de drop
+         console.log('Entrée dans zone !');
+     });
+                        
+    liste.addEventListener('dragleave', function(e) {
+         //Lorsqu'on sort d'une zone de drop.
+         this.style.marginBottom = ""; 
+        this.style.borderBottom="";      
+        this.style.marginTop = "";
+        this.style.borderTop="";
+        console.log('Sortie de zone');
+     });
+    
+    
 
    liste.addEventListener('drop', function(e) {
         /*Cette fonction sert à décrire ce qui se passera pour le bloc ciblé ce qui se passera lorsqu'on lachera un objet droppable sur lui */
         
+        this.style.marginBottom = ""; 
+        this.style.borderBottom="";      
+        this.style.marginTop = "";
+        this.style.borderTop="";
+       if(bloc_pere.getAttribute("posdrag")!=""+0){
+            bloc_pere.setAttribute("posdrag",0);
+        }
         var nomZoneIn=" "; //on va récupérer l'id du bloc reçu. 
         nomZoneIn=e.dataTransfer.getData('text/plain'); // Affiche le contenu du type MIME « text/plain »
         console.log('Données reçu : ' + nomZoneIn);
@@ -165,6 +209,7 @@ Essaim.prototype.initBloc = function()
 
     // Bouton pour diminuer / agrandir la fenêtre
     var buttonWindow = document.createElement('button');
+    buttonWindow.id ="Rid_Button_MiniMaxi_"+this.nom;
     buttonWindow.className = "Rcl_Button_Minimize";
     buttonWindow.addEventListener('click', function (event)
     {
@@ -172,7 +217,7 @@ Essaim.prototype.initBloc = function()
         {
             buttonWindow.className = "";
             buttonWindow.className = "Rcl_Button_Maximize";
-            buttonWindow.parentNode.parentNode.className = "Rcl_Bloc_Essaim Rcl_Bloc Rcl_Closed";
+            buttonWindow.parentNode.parentNode.className = "Rcl_Bloc_Essaim Rcl_Closed";
         }
         else
         {
@@ -691,7 +736,7 @@ Essaim.prototype.initEnonce = function()
     //permet d'envoyer des données à la zone de drop
     bouton.addEventListener('dragstart', function(e) {
 
-        e.dataTransfer.setData('text/plain', bouton.id);
+        e.dataTransfer.setData("texte", bouton.id);
         
     });
 
@@ -935,6 +980,21 @@ Essaim.prototype.chercheNomReponse = function()
 
 
 //---------------------------------//
+    
+    Essaim.prototype.reduireBloc = function()
+    {
+        console.log(this.nom);
+        if(document.getElementById("Rid_Button_MiniMaxi_"+this.nom).className=="Rcl_Button_Minimize")
+        {
+            document.getElementById("RidPrBloc_"+this.nom).className = "Rcl_Bloc_Essaim Rcl_Closed";
+            document.getElementById("Rid_Button_MiniMaxi_"+this.nom).className="Rcl_Button_Maximize";
+            
+        }
+    }
+
+	
+
+	//---------------------------------//
 
 
 Essaim.prototype.toOEF = function()
