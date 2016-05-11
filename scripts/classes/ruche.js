@@ -1255,6 +1255,16 @@ Ruche.prototype.toutReduire = function ()
     }
 }
 //---------------------------------//
+Ruche.prototype.toutAgrandir = function ()
+/* fonction qui permet de réduire tous les blocs 
+*/ 
+{
+    for (i=0 ; i < this.listeBlocPrepa.length; i++)
+    {
+        this.listeBlocPrepa[i].agrandirBloc();
+    }
+}
+//---------------------------------//
 
 Ruche.prototype.ajoutBlocEssaim = function (ClasseDeriveeEssaim, elemRecup)
     /*

@@ -306,7 +306,15 @@ var lgPrev= Essaim.prototype.trouverPrecedent(id_drop,this);
         }
     }
 
-	
+	this.agrandirBloc =function()
+    {
+        if(document.getElementById("Rid_Button_MiniMaxi_"+this.nom).className=="Rcl_Button_Maximize")
+            {
+                document.getElementById("Rid_Button_MiniMaxi_"+this.nom).className= "Rcl_Button_Minimize";
+				document.getElementById("RidPrBloc_"+this.nom).className= "Rcl_Bloc";
+                document.getElementById("RidPrBloc_Content_"+this.nom).className = document.getElementById("RidPrBloc_Content_"+this.nom).className.replace(" Rcl_Mini_Editor_hidden","");
+            }
+    }
 
 	//---------------------------------//
 

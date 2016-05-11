@@ -311,8 +311,18 @@ function Condition(numero)
             document.getElementById("condF" + this.nom).className+= " Rcl_Mini_Editor_hidden";
         }
     }
+    this.agrandirBloc = function()
+    {
+        if(document.getElementById("Rid_Button_MiniMaxi_"+this.nom).className=="Rcl_Button_Maximize")
+            {
+                document.getElementById("RidPrBloc_"+this.nom).className="Rcl_Bloc";
+                document.getElementById("Rid_Button_MiniMaxi_"+this.nom).className="Rcl_Button_Minimize";
+                document.getElementById("cond" + this.nom).className=document.getElementById("cond" + this.nom).className.replace(" Rcl_Mini_Editor_hidden","");
+                document.getElementById("condT" + this.nom).className=document.getElementById("condT" + this.nom).className.replace(" Rcl_Mini_Editor_hidden","").replace(" Rcl_Mini_Editor","");
+                document.getElementById("condF" + this.nom).className=document.getElementById("condF" + this.nom).className.replace(" Rcl_Mini_Editor_hidden","").replace(" Rcl_Mini_Editor","");
+            }
+    }
 
-	
 
 	//---------------------------------//
 

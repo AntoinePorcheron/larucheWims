@@ -318,8 +318,18 @@ function BoucleFor(numero)
             document.getElementById("forInstruction" + this.nom).className += " Rcl_Mini_Editor_hidden";
         }
     }
-
-	
+    
+    this.agrandirBloc = function()
+    {
+        if(document.getElementById("Rid_Button_MiniMaxi_"+this.nom).className=="Rcl_Button_Maximize")
+        {
+            document.getElementById("Rid_Button_MiniMaxi_"+this.nom).className= "Rcl_Button_Minimize";
+            document.getElementById("RidPrBloc_"+this.nom).className = "Rcl_Bloc";
+            document.getElementById("forDebut" + this.nom).className=document.getElementById("forDebut" + this.nom).className.replace(" Rcl_Mini_Editor_hidden","");
+            document.getElementById("forFin" + this.nom).className=document.getElementById("forFin" + this.nom).className.replace(" Rcl_Mini_Editor_hidden","");
+            document.getElementById("forInstruction" + this.nom).className=document.getElementById("forInstruction" + this.nom).className.replace(" Rcl_Mini_Editor_hidden","");
+        }
+    }
 
 	//---------------------------------//
 

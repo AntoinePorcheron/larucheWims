@@ -149,7 +149,21 @@ Variable.prototype.ajoutVarDansMenuListePreparation = function()
             
         }
     }
-
+    
+    Variable.prototype.agrandirBloc = function()
+    {
+        console.log(this.nom);
+        if(document.getElementById("Rid_Button_MiniMaxi_"+this.nom).className=="Rcl_Button_Maximize")
+        {
+            document.getElementById("Rid_Button_MiniMaxi_"+this.nom).className = "Rcl_Button_Minimize";
+            document.getElementById("RidPrBloc_"+this.nom).className = "Rcl_Bloc";
+            if(document.getElementById("RidPrBloc_Content_"+this.nom)!=null)
+            {
+                document.getElementById("RidPrBloc_ValVar_"+this.nom).innerHTML=" ";
+                document.getElementById("RidPrBloc_Content_"+this.nom).className = "Rcl_Droppable";
+            }
+        }
+    }
 	
 
 	//---------------------------------//

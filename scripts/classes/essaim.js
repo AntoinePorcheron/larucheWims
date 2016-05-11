@@ -985,6 +985,16 @@ Essaim.prototype.chercheNomReponse = function()
             
         }
     }
+    
+    Essaim.prototype.agrandirBloc =function()
+    {
+        if(document.getElementById("Rid_Button_MiniMaxi_"+this.nom).className=="Rcl_Button_Maximize")
+            {
+                document.getElementById("Rid_Button_MiniMaxi_"+this.nom).className= "Rcl_Button_Minimize";
+                document.getElementById("RidPrBloc_"+this.nom).className = "Rcl_Bloc_Essaim Rcl_Bloc";
+            }
+    }
+
 
 	
 
