@@ -1485,9 +1485,22 @@ function createOption(options, parent, id=null){
     return parent;
 }
 
-/*function getValueVar(var){
-    /*if (var.*/
-/*}*/
+
+/**
+ * Fonction qui permet de recuperer la valeurs entiere ou flottante en fonction de sont type
+ * @param variable - 
+ * @return {Number} - 
+ */
+function getValueVar(variable){
+    switch (variable){
+    case:
+	break;
+    case:
+	break;
+    default:
+	console.error("Type inconnue, la variable ne peut etre traiter.");
+    }
+}
 
 $(document).ready(function () {
     rucheSys.initClasseEssaim(EssaimJSXGraph)
