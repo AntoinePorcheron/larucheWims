@@ -21,7 +21,7 @@ EssaimFlydraw = function(num)
     //--------- Déclaration comme classe dérivée de Essaim ---------//
 
 EssaimFlydraw.prototype = Object.create(Essaim.prototype);
-EssaimFlydraw.prototype.constructor = EssaimFlydraw;   // y parait qu'il faut corriger le constructeur...
+EssaimFlydraw.prototype.constructor = EssaimFlydraw;
 
     // Définit les nouveaux attributs
 

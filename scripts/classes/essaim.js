@@ -38,18 +38,18 @@ Essaim.prototype.initBloc = function()
  * crée les boutons de suppression/déplacement/...
  */
 {
-    var bloc_pere = document.getElementById("Rid_Prep_Blocs");
-    var liste = document.createElement("LI");
-    liste.id = "RidPrBloc_"+this.nom;
-    liste.className = "Rcl_Bloc_Essaim Rcl_Bloc";
-    var posDrag = document.createAttribute("posdrag");
-    posDrag.value=0;
-    bloc_pere.setAttributeNode(posDrag);
-    
-    /* début des modifs pour le drap and drop */
-    liste.draggable = true;
-    var posDrag=0;
-
+ var bloc_pere = document.getElementById("Rid_Prep_Blocs");
+ var liste = document.createElement("LI");
+ liste.id = "RidPrBloc_"+this.nom;
+ liste.className = "Rcl_Bloc_Essaim Rcl_Bloc";
+ var posDrag = document.createAttribute("posdrag");
+ posDrag.value=0;
+ bloc_pere.setAttributeNode(posDrag);
+ 
+ /* début des modifs pour le drap and drop */
+ liste.draggable = true;
+ var posDrag=0;
+ 
     liste.addEventListener('dragstart', function(e) {
         
         if(bloc_pere.getAttribute("posdrag")==0){
@@ -113,7 +113,7 @@ Essaim.prototype.initBloc = function()
 
         // On va gérer le précédent
         var previous = id_drop.previousElementSibling;//l'élément précédent le bloc droppé
-        
+       
         var next = id_drop.nextElementSibling;//l'élément suivant le bloc droppé
 
        var lgNext= Essaim.prototype.trouverSuivant(id_drop,this); //Permet de donner à cb de cases se trouve le bloc ciblé wxc

@@ -8,9 +8,9 @@ Composant = function(nom){
 
 	//--------- ATTRIBUTS ---------//
     
-
-	this.nom = nom;			// nom du composant.
-	this.valeur = "";		// valeur du composant
+    
+    this.nom = nom;			// nom du composant.
+    this.valeur = "";		// valeur du composant
     this.proto = "Composant";   // nature de la classe parente
     
     // Définition des paramètres. Tableau de tableaux.

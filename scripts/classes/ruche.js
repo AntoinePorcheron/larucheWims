@@ -1835,7 +1835,12 @@ Ruche.prototype.sauvegarde = function ()
     setTimeout(function () {
         $(".Rcl_OK_Light_SaveLoad").css("visibility", "hidden")
     }, 300);
-}
+    // local storage
+    var local = store.existLocal("json", json);
+    if(local){
+        store.local("json", json)
+    }
+};
 
 
 //---------------------------------//
@@ -1846,17 +1851,18 @@ Ruche.prototype.charge = function ()
      * Fonction qui charge tous les éléments de l'objet JSON donné par l'utilisateur
      */ {
 
-    var txt = document.getElementById("Rid_Zone_Sauvegarde").value;
+    var txt = store.local("json") || document.getElementById("Rid_Zone_Sauvegarde").value;
+    $("#Rid_Zone_Sauvegarde").html(txt);
     if (txt != "") {
-        var errorJSON = 'false';
+        var errorJSON = false;
         try {
             var json = JSON.parse(txt);
         }
         catch (e) {
             alert("Ereur de format dans le fichier de sauvegarde (erreur JSON)");
-            errorJSON = 'true';
+            errorJSON = true;
         }
-        if (errorJSON != 'true') {
+        if (!errorJSON) {
             editor.deleteText(0, editor.getLength());
             this.reset(json);
             editor.setHTML(json.enonce.enonce_Html_sauve);
@@ -1867,6 +1873,7 @@ Ruche.prototype.charge = function ()
             this.reloadEditors(json.listeEditeur);
             this.modifieVarJson();
         }
+	console.log(json);
     }
 
     $(".Rcl_OK_Light_SaveLoad").css("visibility", "visible");
