@@ -793,11 +793,23 @@ EssaimJSXGraph.prototype.multiSelect = function () {
     this.$selection.html("").show();
     this.$multiSelectMenu.html("");
     this.$multiSelectMenu.show();
+    var $tout = $("<input />").appendTo(this.$multiSelect)
+        .attr({
+            type: "button",
+            value: "Tout Select"
+        })
+        .html("Tout Select")
+        .click(function () {
+            console.log(self.brd.objects)
+            self.stackMultiSelect = $.merge([], Object.keys(self.brd.objects));
+            self.$selection.html(JSON.stringify(self.stackMultiSelect))
+        });
     var $ok = $("<input type='button' value ='Ok' />").appendTo(this.$multiSelect)
         .html("ok")
         .click(function (event) {
             self.brd.off("up", tmp);
             self.$button_libre.trigger("click");
+            $tout.remove();
             $ok.remove();
             $clean.remove();
             self.buildMultiSelectMenu()
@@ -1472,7 +1484,8 @@ function getLen(object) {
  * @param parent - element dans lequel le select se trouvera
  * @param id - Id du select
  */
-function createOption(options, parent, id=null){
+function createOption(options, parent, id){
+    id = id || null;
     parent.empty();
     var $select_tmp = $("<select></select>").appendTo(parent);;
     if (id){
