@@ -819,7 +819,8 @@ Variable.prototype.recupDonnees = function()
 	 *
 	 */
 	{
-		this.valeur = document.getElementById("RidPrBloc_Content_"+this.nom).value;		
+	    this.valeur = document.getElementById("RidPrBloc_Content_"+this.nom).value;
+	    return this.valeur;
 	}
 
 

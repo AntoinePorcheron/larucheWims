@@ -1412,8 +1412,12 @@ EssaimJSXGraph.prototype.getUsableVar = function(){
     var usableVar = [];
     var varBase = rucheSys.listeVariables;
     for (var i in varBase){
-	if (TYPE_USABLE_VAR.indexOf(varBase[i].format.nom) !== -1/* in TYPE_USABLE_VAR*/){
+	if (TYPE_USABLE_VAR.indexOf(varBase[i].format.nom) !== -1){
 	    usableVar.push(varBase[i]);
+	    console.log(varBase[i]);
+	    /*console.log(document.getElementById("" + varBase[i].name));*/
+	    /*console.log(varBase[i].recupDonnees());*/
+	    console.log(document.getElementById("RidPrBloc_Content_"+varBase[i].nom).value);
 	}
     }
     return usableVar;
