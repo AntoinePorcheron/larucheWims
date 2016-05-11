@@ -6,7 +6,7 @@
  * @param affichage - element qui contiendra le bouton qui permet le réaffichage du bloc
  */
 BlocFocus = function(content, affichage){
-    this.proto = "BlocFocus"
+    this.proto = "BlocFocus";
     this.container;
     this.content;
     this.background;
