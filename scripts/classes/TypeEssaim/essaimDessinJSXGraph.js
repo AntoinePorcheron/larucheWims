@@ -876,10 +876,11 @@ EssaimJSXGraph.prototype.cleanMultiSelection = function () {
  * @param type - le type du input
  * @returns {*}, $.Deferred.promise()
  */
-EssaimJSXGraph.prototype.inputbox = function (label, parent, hint, showButton=true, type="text") {
+EssaimJSXGraph.prototype.inputbox = function (label, parent, hint, showButton, type) {
     /*console.log(parent);*/
     label = label || "";
     type = type || "text";
+    showButton = showButton || true;
     var def = $.Deferred();
     this.inputZone.html("");
     var $box = $("<div></div>")

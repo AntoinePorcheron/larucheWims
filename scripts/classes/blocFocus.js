@@ -120,7 +120,8 @@ BlocFocus.prototype.setContent = function(newContent){
  * Fonction qui permet de faire apparaitre le bloc sur la page
  * @param time - Temps de l'animation complete en milliseconde.
  */
-BlocFocus.prototype.show = function(time = 150){
+BlocFocus.prototype.show = function(time){
+	time = time || 150;
     this.container.fadeIn(time);
 }
 
@@ -129,7 +130,8 @@ BlocFocus.prototype.show = function(time = 150){
  * Fonction qui permet de masquer le bloc de la page
  * @param time - Temps de l'animation complete en milliseconde.
  */
-BlocFocus.prototype.hide = function(time = 150){
+BlocFocus.prototype.hide = function(time){
+	time = time || 150
     this.container.fadeOut(time);
 }
 
