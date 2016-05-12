@@ -176,7 +176,9 @@ EssaimJSXGraph.prototype.creerBloc = function(dataRecup)
      * - un bloc au sommet qui contient les formes que l'on peut créer sur le graphe
      * - un bloc plus central qui contient le graphe en lui même
      */
-    var $left_panel = $("<div class=\"leftMenu\"></div>").css({
+    var $left_panel = $("<div></div>")
+	.attr({"class":"leftMenu", "id":"lp_"+this.numero})
+	.css({
         "position": "absolute",
         "width": GLOB_largeur,
         "height": this.surpage.height(),
@@ -222,8 +224,6 @@ EssaimJSXGraph.prototype.creerBloc = function(dataRecup)
     }).appendTo($top_panel);
     var $div_bouton_action = $("<div class='actionLeft' ></div>").appendTo(
         $left_panel);
-    var $div_menu_contextuel = $("<div></div>").attr("id", "dmc_" + this.numero)
-        .appendTo($left_panel);
     this.inputZone = $("<div></div>").attr("class", "zoneInput").appendTo(
         $left_panel);
     this.$multiSelect.appendTo($left_panel).hide();
@@ -232,6 +232,8 @@ EssaimJSXGraph.prototype.creerBloc = function(dataRecup)
     var modeSelect = function(event) {
         self.mode = GLOB.libre;
     };
+
+    /*var $div_choix_lier*/
     
     /******************************
      * A ne pas modifier
@@ -487,6 +489,7 @@ EssaimJSXGraph.prototype.menuOptions = function(element) {
         lier: {
             nom: "Lier",
             callback: function() {
+		
                 var tmp = getUsableVar();
                 element.addConstraint([function(){ return getValueVar(tmp[0]) }, element.Y()]);
 		self.brd.fullUpdate();
@@ -803,6 +806,8 @@ EssaimJSXGraph.prototype.multiSelect = function() {
     // pour eviter deux fois cliquer
     var self = this;
     // ok button
+    var tmpSelector = "#lp_"+this.numero;
+    this.$multiSelect.appendTo($(tmpSelector));
     this.$multiSelect.html("Multi-Select").show();
     this.$selection.html("").show();
     this.$multiSelectMenu.html("");
@@ -841,6 +846,7 @@ EssaimJSXGraph.prototype.multiSelect = function() {
 								       });
     this.$selection.appendTo(this.$multiSelect);
     this.$multiSelectMenu.appendTo(this.$multiSelect);
+    console.log(this.$multiSelect);
     this.brd.on("up", tmp);
 };
 /**
@@ -927,6 +933,7 @@ EssaimJSXGraph.prototype.inputbox = function(label, parent, hint, showButton,
     }
     return def.promise();
 };
+
 /**
  * TODO
  */
@@ -1216,7 +1223,6 @@ EssaimJSXGraph.prototype.initEventListener = function($top_panel, $left_panel) {
 	self.hideAllContext();
     });
 
-    /*TODO : cacher menu contextuel et toute chose inutile au réaffichage*/
     this.surpage.on("hide", function(){
 	self.hideAllContext();
     });
