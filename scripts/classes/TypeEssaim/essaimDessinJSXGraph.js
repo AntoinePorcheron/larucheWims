@@ -423,11 +423,11 @@ EssaimJSXGraph.prototype.toOEF = function() {
                 p3 = brdElement.point3;
                 /*On crée une ligne temporaire pour obtenir l'angle de "base" à partir de l'axe X*/
                 var tmpLine = this.brd.create("line", [p1, p2]);
-                var valAngleAxeX = (tmpLine.getAngle() * 360) / (2 *
-								 Math.PI);
+                var valAngleAxeX = /*radToDeg(tmpLine.getAngle());*/
+		(tmpLine.getAngle() * 360) / (2 * Math.PI);
                 this.brd.removeObject(tmpLine);
-                var valAngle = (brdElement.Value() * 360) / (2 * Math.PI) +
-                    valAngleAxeX;
+                var valAngle = /*radToDeg(brdElement.Value())*/
+		(brdElement.Value() * 360) / (2 * Math.PI) + valAngleAxeX;
                 OEF += "arc " + p1.X() + "," + p1.Y() + "," + "1,1," +
                     valAngleAxeX + "," + valAngle + ",black\n";
                 break;
@@ -489,10 +489,38 @@ EssaimJSXGraph.prototype.menuOptions = function(element) {
         lier: {
             nom: "Lier",
             callback: function() {
-		
-                var tmp = getUsableVar();
+		var options = getUsableVar();
+		options.push("Defaut");
+		console.log(options);
+		console.log("ici");
+		var id_left = "#lp_"+self.numero;
+		var id_foption = "#optx_"+self.numero;
+		var id_soption = "#opty_"+self.numero;
+		console.log(id_left);
+		var tmp_left = $("<div></div>").appendTo($(id_left));
+		$("<p></p>").html("X").appendTo(tmp_left);
+		/*var firstSelect = $("<select></select>");*/
+		createOption(options, tmp_left, "optx_"+self.numero);
+		$("<p></p>").html("Y").appendTo(tmp_left);
+		/*var secondSelect = $("<select></select");*/
+		createOption(options, tmp_left,"opty_"+self.numero);
+		$("<input/>")
+		    .attr({"type":"button", "value":"Valider"})
+		    .appendTo(tmp_left)
+		    .click(function(){
+			console.log($(id_left).val())});
+		/*self.showInputBoxMenu();*/
+		/*$.when(self.inputbox("Yolo", self.inputBoxMenu, "Test"))
+		    .done(function(nom){
+			console.log(nom);
+		    })
+		.fail(function(err){
+		    
+		});*/
+		/*self.inputBoxMenu = $("<div></div>").html("Yolo je sais pas quoi mettre").show();*/
+                /*var tmp = getUsableVar();
                 element.addConstraint([function(){ return getValueVar(tmp[0]) }, element.Y()]);
-		self.brd.fullUpdate();
+		self.brd.fullUpdate();*/
             }
         }
     };
@@ -532,7 +560,7 @@ EssaimJSXGraph.prototype.menuOptions = function(element) {
 	    nom: "Lier",
 	    callback: function(){
 		var tmp = getUsableVar();
-		element.setAngle(function(){ return getValueVar(tmp[0])});
+		element.setAngle(function(){ return degToRad(getValueVar(tmp[0]))});
 		self.brd.fullUpdate();
 	    }
 	}
@@ -1061,11 +1089,11 @@ EssaimJSXGraph.prototype.initBoutonAction = function(parent) {
     }, function(event) {
         self.saveSelection(self.brd.objects);
     });
-    var $button_undo = $(
+    /*var $button_undo = $(
         "<input type='button' value='Annuler' title=\"Permet d'annuler la dernière action.\" />."
-    ).appendTo($div_bouton_action).click(function(event) {
+    ).appendTo($div_bouton_action).click(function(event) {*/
         //TODO fonction undo (annuler/retour action précédente)
-    });
+/*    });*/
     EssaimJSXGraph.prototype.$button_libre = $button_libre;
 };
 /**
@@ -1366,8 +1394,7 @@ EssaimJSXGraph.prototype.removeElement = function(element) {
 
 EssaimJSXGraph.prototype.showContextMenu = function(pos, element){
     var self = this;
-    this.hideAllContext();
-    
+    this.hideContextMenu();
     var tmp = "#test_" + this.numero;
     this.$menuContextuel.css({
         "position": "absolute",
@@ -1377,13 +1404,8 @@ EssaimJSXGraph.prototype.showContextMenu = function(pos, element){
         "z-index": "5"})
 	.click(function() {
             self.hideContextMenu();
-	    self.inputBoxMenu
-		.css({
-		    "position": "absolute",
-		    "left": pos.x - 5,
-		    "top": pos.y - 5,
-		    "z-index": "5"})
-		.show();
+	    self.showInputBoxMenu(pos);
+	    
 	})
 	.appendTo($(tmp))
 	.show();
@@ -1393,6 +1415,17 @@ EssaimJSXGraph.prototype.showContextMenu = function(pos, element){
 EssaimJSXGraph.prototype.hideContextMenu = function(){
     this.$menuContextuel.empty();
     this.$menuContextuel.hide();
+}
+
+EssaimJSXGraph.prototype.showInputBoxMenu = function(pos){
+    /*this.hideInputBoxMenu();*/
+    this.inputBoxMenu
+	.css({
+	    "position": "absolute",
+	    "left": pos.x - 5,
+	    "top": pos.y - 5,
+	    "z-index": "5"})
+	.show();
 }
 
 /**
@@ -1475,13 +1508,14 @@ function getLen(object) {
 
 function createOption(options, parent, id) {
     id = id || null;
-    parent.empty();
     var $select_tmp = $("<select></select>").appendTo(parent);
     if (id) {
         parent.attr("id", id);
     }
     for (var i in options) {
-        $("<option></option>").html(options[i]).appendTo($select_tmp);
+        $("<option></option>")
+	    .attr("value",options[i])
+	    .html(options[i]).appendTo($select_tmp);
     }
     return parent;
 }
@@ -1511,6 +1545,14 @@ function getValueVar(variable) {
     } else {
         return err;
     }
+}
+
+function degToRad(deg){
+    return (2*Math.PI * deg) / 360
+}
+
+function radToDeg(rad){
+    return (rad * 360) / (2 * Math.PI);
 }
 
 $(document).ready(function() {
