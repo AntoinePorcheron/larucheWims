@@ -1,15 +1,13 @@
 /*TODO : 
- * - Corriger bug multi-graphe menu contextuel qui se balade
  * - Faire les autre TODO
  * - Lien avec les variables
  * - Essayer un scénario
- * - Retirer un max de variable global
  * - Retirer un max d'attribut de la classe (tout les divs quasiment)
  * - trouver d'autre TODO
- * - Ne pas dormir
  * - Refactor certaine fonction
  * - Corriger bug point lors de drag d'objet
  * - Generer code OEF correspondant (variable lié)
+ * - Corriger sauvegarde du site en JSON
  */
 
 /*
@@ -28,15 +26,6 @@ var GLOB =
 	axe:"axis",
 	angle:"angle"
     };
-
-var GLOB_libre = "libre";
-var GLOB_point = "point";
-var GLOB_ligne = "line";
-var GLOB_cercle = "circle";
-var GLOB_arrow = "arrow";
-var GLOB_segment = "segment";
-var GLOB_axe = "axis";
-var GLOB_angle = "angle";
 
 /*Variable qui contient les différente sauvegarde des différent graphe*/
 var saveState = {};
@@ -105,8 +94,9 @@ Essaim.prototype.aUneAide = false;
 EssaimJSXGraph.prototype.gereTailleImageEnonce = true;
 
 /*Variable de classe*/
-EssaimJSXGraph.prototype.$divMenu = $("<div></div>").attr("class",
-							  "menu_contextuel").hide();
+EssaimJSXGraph.prototype.$menuContextuel = $("<div></div>")
+    .attr("class", "menu_contextuel")
+    .hide();
 EssaimJSXGraph.prototype.stackMultiSelect = [];
 EssaimJSXGraph.prototype.$multiSelect = $("<div></div>").html("Multi-Select");
 EssaimJSXGraph.prototype.$selection = $("<div></div>");
@@ -172,6 +162,7 @@ EssaimJSXGraph.prototype.creerBloc = function(dataRecup)
     /*On fait en sorte de ne pas avoir le clic droit sur cette zone, 
      *pour avoir le menu contextuel personnalisé*/
     var $bloc_contenu = $("<div></div>")
+	.attr("id", "test_"+this.numero)
 	.on("contextmenu", function(event) {
             event.preventDefault();
             return false;});
@@ -239,14 +230,15 @@ EssaimJSXGraph.prototype.creerBloc = function(dataRecup)
     this.$selection.appendTo(this.$multiSelect).hide();
     this.$multiSelectMenu.appendTo(this.$multiSelect).hide();
     var modeSelect = function(event) {
-        self.mode = GLOB_libre;
+        self.mode = GLOB.libre;
     };
     
     /******************************
      * A ne pas modifier
      */
     this.modeSelect = modeSelect;
-    this.$divMenu.appendTo($bloc_contenu);
+    var tmpTestSelector = "#test_" + this.numero
+    this.$menuContextuel.appendTo($(tmpTestSelector));
     this.inputBoxMenu.appendTo($bloc_contenu);
     this.initBoutonForme($div_bouton_forme);
     this.initBoutonAction($div_bouton_action);
@@ -322,11 +314,11 @@ EssaimJSXGraph.prototype.toOEF = function() {
         var brdElement = this.brd.objects[element];
         if (brdElement.getAttribute("visible")) {
             switch (brdElement.getType()) {
-            case GLOB_point:
+            case GLOB.point:
                 OEF += "point " + brdElement.X() + "," + brdElement.Y() +
                     ",black\n";
                 break;
-            case GLOB_ligne:
+            case GLOB.ligne:
                 p1 = brdElement.point1;
                 p2 = brdElement.point2;
                 /*a et b correspondent aux vecteurs de translation des deux points qui
@@ -339,24 +331,24 @@ EssaimJSXGraph.prototype.toOEF = function() {
                     "," + (-a + p2.X()) + "," + (-b + p2.Y()) +
                     ",black\n";
                 break;
-            case GLOB_cercle:
+            case GLOB.cercle:
                 OEF += "circle " + brdElement.center.X() + "," +
                     brdElement.center.Y() + "," + (brdElement.Radius() *
 						   this.brd.unitX) + ",black\n";
                 break;
-            case GLOB_segment:
+            case GLOB.segment:
                 p1 = brdElement.point1;
                 p2 = brdElement.point2;
                 OEF += "segment " + p1.X() + "," + p1.Y() + "," + p2.X() +
                     "," + p2.Y() + ",black\n";
                 break;
-            case GLOB_arrow:
+            case GLOB.fleche:
                 p1 = brdElement.point1;
                 p2 = brdElement.point2;
                 OEF += "arrow " + p1.X() + "," + p1.Y() + "," + p2.X() +
                     "," + p2.Y() + ",7,black\n";
                 break;
-            case GLOB_axe:
+            case GLOB.axe:
                 /*On recupère les deux points qui définisse un axe*/
                 var brd = this.brd;
                 p1 = brdElement.point1;
@@ -423,7 +415,7 @@ EssaimJSXGraph.prototype.toOEF = function() {
                 brd.removeObject(bot_line_tmp);
                 brd.removeObject(side_line_tmp);
                 break;
-            case GLOB_angle:
+            case GLOB.angle:
                 p1 = brdElement.point1;
                 p2 = brdElement.point2;
                 p3 = brdElement.point3;
@@ -473,7 +465,7 @@ EssaimJSXGraph.prototype.menuOptions = function(element) {
             callback: function() {
                 $.when(self.inputbox("", self.inputBoxMenu, "Nom"))
                     .done(function(nom) {
-                        element.name = nom;
+                        element.name = nom.toUpperCase();
                         element.setAttribute({
                             "withLabel": true
                         });
@@ -529,13 +521,46 @@ EssaimJSXGraph.prototype.menuOptions = function(element) {
 					  tmp.usrSize
 					 ]);
             }
-        }
+        }	
     };
+
+    options.angle = {
+	lier:{
+	    nom: "Lier",
+	    callback: function(){
+		var tmp = getUsableVar();
+		element.setAngle(function(){ return getValueVar(tmp[0])});
+		self.brd.fullUpdate();
+	    }
+	}
+    }
+
+    options.segment = {
+	lier:{
+	    nom: "Lier",
+	    callback: function(){
+		var tmp = getUsableVar();
+		element.setAttribute("length", function(){ return getValueVar(tmp[0])});
+		self.brd.fullUpdate();
+	    }
+	}
+    }
+
+    options.circle = {
+	lier:{
+	    nom: "Lier",
+	    callback: function(){
+		var tmp = getUsableVar();
+		element.setRadius((function(){ return getValueVar(tmp[0])}));
+		self.brd.fullUpdate();
+	    }
+	}
+    }
     return options;
 };
 
 
-/* TODO 
+/* TODO à faire
  * remplacer tous les this.mode et tous les self.mode par this/self.updateMode
  *
  */
@@ -570,31 +595,31 @@ EssaimJSXGraph.prototype.getMode = function(){
         valeur: null
     };
     switch (this.mode) {
-    case GLOB_point:
+    case GLOB.point:
         donnees.boutonCourant = $button_point;
         donnees.valeur = 1;
         break;
-    case GLOB_ligne:
+    case GLOB.ligne:
         donnees.boutonCourant = $button_ligne;
         donnees.valeur = 2;
         break;
-    case GLOB_cercle:
+    case GLOB.cercle:
         donnees.boutonCourant = $button_cercle;
         donnees.valeur = 3;
         break;
-    case GLOB_arrow:
+    case GLOB.fleche:
         donnees.boutonCourant = $button_arrow;
         donnees.valeur = 4;
         break;
-    case GLOB_segment:
+    case GLOB.segment:
         donnees.boutonCourant = $button_segment;
         donnees.valeur = 5;
         break;
-    case GLOB_axe:
+    case GLOB.axe:
         donnees.boutonCourant = $button_axis;
         donnees.valeur = 6;
         break;
-    case GLOB_angle:
+    case GLOB.angle:
         donnees.boutonCourant = $button_angle;
         donnees.valeur = 7;
         break;
@@ -604,6 +629,7 @@ EssaimJSXGraph.prototype.getMode = function(){
     }
     return donnees;
 };*/
+
 
 /**
  * insère une image dans un point
@@ -625,16 +651,18 @@ EssaimJSXGraph.prototype.fillImageIntoPoint = function(url, pointExiste) {
     function getSize(paint) {
         return paint.visProp.size;
     }
-    var coodsToPixel = /*30*/ this.brd.unitX; /*TODO - A TESTER*/
+    var coordsToPixelX = /*30*/ this.brd.unitX; /*TODO - A VERIFIER*/
+    var coordsToPixelY = this.brd.unitY;
     //TODO to have an exact ratio
-    var width = getSize(pointExiste) / coodsToPixel;
+    var width = getSize(pointExiste) / coordsToPixelX;
+    var height = getSize(pointExiste) / coordsToPixelY
     var point = (function() {
         var point = getCoord2D(pointExiste);
         point[0] -= width / 2;
-        point[1] -= width / 2;
+        point[1] -= height / 2;
         return point;
     })();
-    return this.brd.create("image", [url, point, [width, width]]);
+    return this.brd.create("image", [url, point, [width, height]]);
 };
 /**
  * fait apparaitre une fenêtre pour charger une image.
@@ -718,7 +746,7 @@ EssaimJSXGraph.prototype.buildMenu = function(element) {
             if (options[list[key]]) {
                 var option = Object.keys(options[list[key]]);
                 for (var i = 0; i < option.length; i++) {
-                    self.$divMenu.append(buildButton(options[list[key]]
+                    self.$menuContextuel.append(buildButton(options[list[key]]
 						     [option[i]]));
                 }
             }
@@ -726,41 +754,20 @@ EssaimJSXGraph.prototype.buildMenu = function(element) {
     })(["common", element.getType()]);
 };
 
-/*TODO : separer en sous fonction (une qui recupere le point, l'autre qui gere le menu contextuel)*/
 /**
  * Sélectionne un objet pour le menu contextuel
  */
 EssaimJSXGraph.prototype.selection = function(event) {
+    this.hideAllContext();
     var element = this.getTopUnderMouse();
-    var self = this;
-    /*this.*/
-    /*On ne doit pas pouvoir séléctioner du text, ça n'a pas de sens...*/
-    /*As long as element could return null, we test it isn't*/
-    if (element && element.getType() && element.getType() !== "text") {
-        var positionInputBox = {
+    if (element && element.getType() && element.getType() !== "text"){
+	var position  = {
             "x": event.clientX,
-            "y": event.clientY
-        };
-        this.unsetContextMenu();
-        this.inputBoxMenu.css({
-            "position": "absolute",
-            "left": positionInputBox.x - 5,
-            "top": positionInputBox.y - 5,
-            "z-index": "100000"
-        }).show();
-        this.$divMenu.css({
-            "position": "absolute",
-            "left": positionInputBox.x + 5,
-            "top": positionInputBox.y + 5,
-            "border": "1px black solid",
-            "z-index": "100"
-        }).click(function() {
-            self.$divMenu.hide();
-        }).show();
-        this.buildMenu(element);
-    } else {
-        this.unsetContextMenu();
-    }
+            "y": event.clientY};
+	this.showContextMenu(position, element);
+    }else{
+	console.log("Pas d'élément");
+    };
 };
 
 /**
@@ -790,7 +797,7 @@ EssaimJSXGraph.prototype.multiSelect = function() {
         }
         self.$selection.html(JSON.stringify(html));
     };
-    this.mode = GLOB_libre;
+    this.mode = GLOB.libre;
     this.stackMultiSelect = [];
     this.brd.off("up", tmp);
     // pour eviter deux fois cliquer
@@ -950,37 +957,37 @@ EssaimJSXGraph.prototype.initBoutonForme = function(parent) {
     var $button_point = $(
         "<input type='button' value='Point' title=\"Permet de créer un point.\"/>"
     ).appendTo($div_bouton_forme).click(function(event) {
-        self.mode = GLOB_point;
+        self.mode = GLOB.point;
     });
     var $button_ligne = $(
         "<input type='button' value='Droite' title=\"Permet de créer une droite. On utilise deux points pour cela.\"/>"
     ).appendTo($div_bouton_forme).click(function(event) {
-        self.mode = GLOB_ligne;
+        self.mode = GLOB.ligne;
     });
     var $button_cercle = $(
         "<input type='button' value='Cercle' title=\"Permet de créer un cercle. On utilise deux points pour cela.\"/>"
     ).appendTo($div_bouton_forme).click(function(event) {
-        self.mode = GLOB_cercle;
+        self.mode = GLOB.cercle;
     });
     var $button_segment = $(
         "<input type='button' value='Segment' title=\"Permet de créer un segment. On utilise deux points pour cela.\"/>"
     ).appendTo($div_bouton_forme).click(function(event) {
-        self.mode = GLOB_segment;
+        self.mode = GLOB.segment;
     });
     var $button_arrow = $(
         "<input type='button' value='Vecteur' title=\"Permet de créer un vecteur. On utilise deux points pour cela.\"/>"
     ).appendTo($div_bouton_forme).click(function(event) {
-        self.mode = GLOB_arrow;
+        self.mode = GLOB.fleche;
     });
     var $button_axis = $(
         "<input type='button' value='Axe' title=\"Permet de créer un axe. On utilise deux points pour cela.\"/>"
     ).appendTo($div_bouton_forme).click(function(event) {
-        self.mode = GLOB_axe;
+        self.mode = GLOB.axe;
     });
     var $button_angle = $(
         "<input type='button' value='Angle' title=\"Permet de créer un angle en utiliant 3 points\"/>"
     ).appendTo($div_bouton_forme).click(function(event) {
-        self.mode = GLOB_angle;
+        self.mode = GLOB.angle;
     });
 };
 /**
@@ -1005,7 +1012,7 @@ EssaimJSXGraph.prototype.initBoutonAction = function(parent) {
     var $button_libre = $(
         "<input type='button' value='Déplacer' title=\"Permet de déplacer des objets dans le graphe.\"/>"
     ).appendTo($div_bouton_action).click(function(event) {
-        self.mode = GLOB_libre;
+        self.mode = GLOB.libre;
     });
     /**
      * button supprimer
@@ -1088,7 +1095,7 @@ EssaimJSXGraph.prototype.initEventListener = function($top_panel, $left_panel) {
             var coords = getMouseCoords(event, self.brd);
             var userCoord = brd.getUsrCoordsOfMouse(event);
             var objet;
-            if (self.mode !== GLOB_libre) {
+            if (self.mode !== GLOB.libre) {
                 var point;
                 for (var element in brd.objects) {
                     if (brd.objects[element].hasPoint(coords.scrCoords[
@@ -1104,7 +1111,7 @@ EssaimJSXGraph.prototype.initEventListener = function($top_panel, $left_panel) {
                      * On différencie le cas ou on fait des points de construction,
                      * pour faire les points plus petit
                      */
-                    if (mode !== GLOB_point) {
+                    if (mode !== GLOB.point) {
                         point = brd.create("point", userCoord, {
                             size: 1
                         });
@@ -1115,16 +1122,16 @@ EssaimJSXGraph.prototype.initEventListener = function($top_panel, $left_panel) {
                 objet = point;
                 self.point.push(point);
                 switch (mode) {
-                case GLOB_point:
+                case GLOB.point:
                     self.point = [];
                     break;
-                case GLOB_ligne:
+                case GLOB.ligne:
                     if (self.point.length === 2) {
                         objet = brd.create(self.mode, self.point);
                         self.point = [];
                     }
                     break;
-                case GLOB_cercle:
+                case GLOB.cercle:
                     if (self.point.length === 1) {
                         self.previsualisedObject = self.brd.create(
                             self.mode, [self.point[0],
@@ -1137,25 +1144,25 @@ EssaimJSXGraph.prototype.initEventListener = function($top_panel, $left_panel) {
                         self.point = [];
                     }
                     break;
-                case GLOB_arrow:
+                case GLOB.fleche:
                     if (self.point.length === 2) {
                         objet = brd.create(self.mode, self.point);
                         self.point = [];
                     }
                     break;
-                case GLOB_segment:
+                case GLOB.segment:
                     if (self.point.length === 2) {
                         objet = brd.create(self.mode, self.point);
                         self.point = [];
                     }
                     break;
-                case GLOB_axe:
+                case GLOB.axe:
                     if (self.point.length === 2) {
                         objet = self.createDraggableAxis(self.point);
                         self.point = [];
                     }
                     break;
-                case GLOB_angle:
+                case GLOB.angle:
                     if (self.point.length === 3) {
                         objet = brd.create(self.mode, self.point);
                         self.point = [];
@@ -1174,7 +1181,7 @@ EssaimJSXGraph.prototype.initEventListener = function($top_panel, $left_panel) {
                 }
                 if (objet) {
                     objet.on("drag", function() {
-                        self.mode = GLOB_libre;
+                        self.mode = GLOB.libre;
                         self.point = [];
                         self.brd.removeObject(self.previsualisedObject);
                         self.previsualisedObject =
@@ -1199,19 +1206,20 @@ EssaimJSXGraph.prototype.initEventListener = function($top_panel, $left_panel) {
         if (event.buttons === 2) {
             self.selection(event);
         } else {
-            self.unsetContextMenu();
+            self.hideContextMenu();
         }
     });
 
     this.surpage.on("show", function(){
 	self.brd.fullUpdate();
 	self.updateDeroulant();
+	self.hideAllContext();
     });
 
     /*TODO : cacher menu contextuel et toute chose inutile au réaffichage*/
     this.surpage.on("hide", function(){
-
-    }
+	self.hideAllContext();
+    });
 };
 /**
  * Fonction qui ajoute une sauvegarde de l'élément passer en parametre
@@ -1298,12 +1306,15 @@ EssaimJSXGraph.prototype.updateDeroulant = function() {
 /**
  *  Fonction qui reinitialise l'affichage du menu contextuel
  */
-EssaimJSXGraph.prototype.unsetContextMenu = function() {
-    this.$divMenu.empty();
-    this.$divMenu.hide();
+EssaimJSXGraph.prototype.hideAllContext = function() {
+    this.hideContextMenu();
+    this.hideInputBoxMenu();
+};
+
+EssaimJSXGraph.prototype.hideInputBoxMenu = function(){
     this.inputBoxMenu.empty();
     this.inputBoxMenu.hide();
-};
+}
 /**
  *Fonction qui permet de crée des axes sans grille que l'on peut déplacer.
  */
@@ -1347,12 +1358,35 @@ EssaimJSXGraph.prototype.removeElement = function(element) {
     this.brd.removeObject(element);
 };
 
-EssaimJSXGraph.prototype.showContextMenu = function(){
+EssaimJSXGraph.prototype.showContextMenu = function(pos, element){
+    var self = this;
+    this.hideAllContext();
     
+    var tmp = "#test_" + this.numero;
+    this.$menuContextuel.css({
+        "position": "absolute",
+        "left": pos.x + 5,
+        "top": pos.y + 5,
+        "border": "1px black solid",
+        "z-index": "5"})
+	.click(function() {
+            self.hideContextMenu();
+	    self.inputBoxMenu
+		.css({
+		    "position": "absolute",
+		    "left": pos.x - 5,
+		    "top": pos.y - 5,
+		    "z-index": "5"})
+		.show();
+	})
+	.appendTo($(tmp))
+	.show();
+    this.buildMenu(element);
 }
 
 EssaimJSXGraph.prototype.hideContextMenu = function(){
-    
+    this.$menuContextuel.empty();
+    this.$menuContextuel.hide();
 }
 
 /**

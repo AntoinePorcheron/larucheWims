@@ -1,5 +1,45 @@
 # Dessin JSXGraph
 
+## 0. How to Build (NodeJS)
+
+### 0.1 nightly
+
+#### 0.1.1 installer les dependancies
+
+```shell
+$ npm install argv
+$ npm install minify
+```
+
+#### 0.1.2 Build
+
+```shell
+$ cd ./release
+$ node make.js
+```
+
+Vous aurez `res.js` et `res.min.js` dans cette repertoire.
+
+### 0.2 release (TODO)
+
+(Installer les dependencies si necessaire)
+
+```shell
+$ cd ./release
+$ node release.js
+```
+
+Vous aurez tout pret (le fichier `larucheWims.min.js` est genere et rempli la longue liste de `<script>` dans `index.html`, et `index.html` est backup tout dans cette repertoire)
+
+```
+Why build?
+C'est plus vite de charger un seul fichier que vingt.
+
+Est-ce jQuery est compris dans le seul fichier?
+Non.
+C'est plus vite de charger, deux seul fichier que vingt.
+```
+
 ## x Menu Contextuel
 
 Le menu contextuel est met dans sont propre scope.
