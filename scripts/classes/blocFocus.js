@@ -23,11 +23,13 @@ BlocFocus = function(content, affichage){
     if (content !== undefined){
 	content.appendTo(this.content);
     }
-    var $button = $("<input type='button' value='Afficher'/>")
+    var $button = $("<input />")
+	.attr({'type':'button', 'value':'Afficher', 'title':'Affiche le graphe.'})
 	.click(function(){
 	    self.show();
 	})
 	.appendTo($(affichage));
+	
     /*this.container.hide();*/
     
 }

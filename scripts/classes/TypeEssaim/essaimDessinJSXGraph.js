@@ -1,13 +1,17 @@
 /*TODO : 
- * - Faire les autre TODO
  * - Lien avec les variables
- * - Essayer un scénario
+ * - Generer code OEF correspondant (variable lié)
+ * - Creer variable via dessins
+ * - Corriger sauvegarde du site en JSON
+ * - bug multiselect
+ * - Surbrillance multiselect
+ * - proportion graphe image
+ * - Bug sauvegarde multiselect
+ * - Faire les autre TODO
  * - Retirer un max d'attribut de la classe (tout les divs quasiment)
  * - trouver d'autre TODO
  * - Refactor certaine fonction
- * - Corriger bug point lors de drag d'objet
- * - Generer code OEF correspondant (variable lié)
- * - Corriger sauvegarde du site en JSON
+ * - affichage miniature graphe
  */
 
 /*
@@ -44,10 +48,10 @@ EssaimJSXGraph = function(num) {
     this.numero = num; // numéro de l'essaim
     this.proto = "EssaimJSXGraph"; // nature de la classe
 
-    // permet de définir dans quel mode l'utilisateur se trouve 
+    // permet de définir dans quel mode l'utilisateur se trouve
     //(mode point, mode ligne...)
-    this.mode = GLOB.libre;
-
+    this.mode;
+    
     // contient un ensemble de point (une ligne = 2 points par exemple). 
     //Permet de créer un objet
     this.point = [];
@@ -56,9 +60,9 @@ EssaimJSXGraph = function(num) {
     this.brd;
     
     // variable permettant la création de la grille
-    this.grid = false;
+    this.grid = "false";
     
-    /*Bidouille pour regler compatibilité sous firefox*/
+    /* Règle compatibilité sous firefox*/
     this.lastEvent;
     
     /*Contient un element qui permet d'afficher la prévisualisation pour certain dessin*/
@@ -67,7 +71,8 @@ EssaimJSXGraph = function(num) {
     /*Page de "couverture" pour simplifier le dessin dans un graphe*/
     this.surpage;
     
-    /*this.inputBoxMenu = $("<div></div>");*/
+    this.hauteur_graphe = 200;
+    this.largeur_graphe  = 200;
 };
 
 //------------ Déclaration comme classe dérivée de Essaim -------------//
@@ -204,12 +209,57 @@ EssaimJSXGraph.prototype.creerBloc = function(dataRecup)
         "bottom": 0,
         "right": 0
     }).appendTo($bloc_contenu);
+
+    	$("<div></div>")
+	.attr({'id':'edjg_resize_bloc_' + this.numero})
+	.appendTo(self.divBloc).hide();
+    
+    var $champHauteur = $("<input/>")
+	.attr({'type':'text',
+	       'placeholder':'Hauteur', 
+	       'value':self.hauteur_graphe, 
+	       'id':'champ_hauteur_' + this.numero,
+	       'class':'edjg_resize'})
+	.appendTo($("#edjg_resize_bloc_" + this.numero));
+    var $champLargeur = $("<input />")
+	.attr({'type':'text',
+	       'placeholder':'Largeur', 
+	       'value':self.largeur_graphe, 
+	       'id':'champ_largeur_' + this.numero,
+	       'class':'edjg_resize'})
+	.appendTo($("#edjg_resize_bloc_" + this.numero));
+    var $button_validate = $("<input/>")
+	.attr({'type':'button', 
+	       'value':'Valider', 
+	       'title':'Valide la sélection',
+	       'class':'edjg_resize'})
+	.click(function(){
+	    self.hauteur_graphe = $("#champ_hauteur_" + self.numero).val();
+	    self.largeur_graphe = $("#champ_largeur_" + self.numero).val();
+	    $("#edjg_resize_bloc_" + self.numero).hide();
+	    $("#edjg_bouton_resize_" + self.numero).show();
+	}).appendTo($("#edjg_resize_bloc_" + this.numero))
+    
+    var $button_resize = $("<input />")
+	.attr({'type':'button',
+	       'value':'Changer taille',
+	       'id':'edjg_bouton_resize_' + this.numero, 
+	       'title':'Permet de changer la taille du graphe généré en OEF.'})
+	.click(function(){	
+	    $("#edjg_resize_bloc_" + self.numero).show();
+	    $("#edjg_bouton_resize_" + self.numero).hide();
+	})
+	.appendTo(self.divBloc);
+    
     this.brd = JXG.JSXGraph.initBoard('box' + this.numero, {
         axis: false,
         keepaspectratio: true,
         grid: this.grid,
-        showCopyright: false
+        showCopyright: false,
+	pan:{enable:true, needShift:false}
     });
+
+    console.log(this.brd)/*.setAttribute("pan", false);*/
 
     /* -----------------------------------
        Création des blocs div pour les menus
@@ -267,7 +317,7 @@ EssaimJSXGraph.prototype.creerBloc = function(dataRecup)
     $("<div></div>")
 	.attr({"id":"edjg_mc_"+this.numero,
 	       "class":"menu_contextuel"})
-	.appendTo($("#test_"+this.numero)/*tmpTestSelector*/));
+	.appendTo($("#test_"+this.numero)/*tmpTestSelector*/);
     /*this.inputBoxMenu*/
     $("<div></div>")
 	.attr({"id":"edjg_ibm_"+this.numero})
@@ -292,6 +342,10 @@ EssaimJSXGraph.prototype.creerBloc = function(dataRecup)
 
     /*On met à jour le deroulant car celui ci peut déjà posseder des éléments d'autres graphes.*/
     this.updateDeroulant();
+    
+    /*On met par défaut dans le mode libre*/
+    this.updateMode(GLOB.libre);
+    
     EssaimJSXGraph.prototype.initEnonce.call(this);
     EssaimJSXGraph.prototype.initAnalyse.call(this);
 };
@@ -301,7 +355,6 @@ EssaimJSXGraph.prototype.nouveauComposant = function(classeComposant) {
 };
 EssaimJSXGraph.prototype.detruitBloc = function() {
     /*JXG.JSXGraph.freeBoard(this.brd);*/
-    /*this.brd = null;*/
     Essaim.prototype.detruitBloc.call(this);
 };
 /**
@@ -465,8 +518,7 @@ EssaimJSXGraph.prototype.toOEF = function() {
             }
         }
     }
-    OEF += "}\n\\text{url" + this.nom + " = draw(200,200\n\\" + this.nom +
-        ")}";
+    OEF += "}\n\\text{url" + this.nom + " = draw(" + this.hauteur_graphe + "," + this.largeur_graphe + "\n\\" + this.nom + ")}"
     return OEF;
 };
 
@@ -524,12 +576,9 @@ EssaimJSXGraph.prototype.menuOptions = function(element) {
             callback: function() {
 		var options = getUsableVar();
 		options.push("Defaut");
-		console.log(options);
-		console.log("ici");
-		var id_left = "#lp_"+self.numero;
-		var id_foption = "#optx_"+self.numero;
-		var id_soption = "#opty_"+self.numero;
-		console.log(id_left);
+		/*console.log(options);
+		  console.log("ici");*/
+		/*console.log(id_left);*/
 		var tmp_left = $("<div></div>")
 		    .appendTo($(id_left));
 		$("<p></p>")
@@ -541,8 +590,8 @@ EssaimJSXGraph.prototype.menuOptions = function(element) {
 		$("<input/>")
 		    .attr({"type":"button", "value":"Valider"})
 		    .appendTo(tmp_left)
-		    .click(function(){
-			console.log($(id_left).val())});
+		    /*.click(function(){*/
+			/*console.log($(id_left).val())});*/
 		/*self.showInputBoxMenu();*/
 		/*$.when(self.inputbox("Yolo", self.inputBoxMenu, "Test"))
 		    .done(function(nom){
@@ -624,25 +673,20 @@ EssaimJSXGraph.prototype.menuOptions = function(element) {
     return options;
 };
 
-
-/* TODO à faire
- * remplacer tous les this.mode et tous les self.mode par this/self.updateMode
- *
- */
-
 /**
  * Met à jour le mode courant 
  * @param nouveauMode - nouveau mode qui va etre appliquer
  */
 EssaimJSXGraph.prototype.updateMode = function(nouveauMode) {
-    this.mode = nouveauMode;
-    /*var ancienMode = this.mode;
-    this.modeInUse = nouveauMode;
-    for (i = 0; i < 7; i++) {
-        if (modeInUse(donnees.valeur) === i) {}
-    }*/
+    if (this.mode){
+	$("#edjg_bouton_"+this.numero+"_" + this.mode)
+	    .css({"background":"rgb(216,191,216)"});
+    }
+	this.mode = nouveauMode;
+    console.log(nouveauMode);
+    $("#edjg_bouton_"+this.numero+"_" + this.mode)
+	.css({"background":"#f47d64"});
 };
-
 
 /**
  * Retourne le mode courant
@@ -651,50 +695,6 @@ EssaimJSXGraph.prototype.updateMode = function(nouveauMode) {
 EssaimJSXGraph.prototype.getMode = function(){
     return this.mode;
 }
-
-/*TODO : Surbrillance*/
-/* Permet de savoir quel mode est entrain d'être utilisé */
-/*EssaimJSXGraph.prototype.modeInUse = function(mode) {
-    var donnees = {
-        boutonCourant: null,
-        valeur: null
-    };
-    switch (this.mode) {
-    case GLOB.point:
-        donnees.boutonCourant = $button_point;
-        donnees.valeur = 1;
-        break;
-    case GLOB.ligne:
-        donnees.boutonCourant = $button_ligne;
-        donnees.valeur = 2;
-        break;
-    case GLOB.cercle:
-        donnees.boutonCourant = $button_cercle;
-        donnees.valeur = 3;
-        break;
-    case GLOB.fleche:
-        donnees.boutonCourant = $button_arrow;
-        donnees.valeur = 4;
-        break;
-    case GLOB.segment:
-        donnees.boutonCourant = $button_segment;
-        donnees.valeur = 5;
-        break;
-    case GLOB.axe:
-        donnees.boutonCourant = $button_axis;
-        donnees.valeur = 6;
-        break;
-    case GLOB.angle:
-        donnees.boutonCourant = $button_angle;
-        donnees.valeur = 7;
-        break;
-    default:
-        donnees.boutonCourant = $button_libre;
-        donnees.valeur = 8;
-    }
-    return donnees;
-};*/
-
 
 /**
  * insère une image dans un point
@@ -801,8 +801,10 @@ EssaimJSXGraph.prototype.getTopUnderMouse = function() {
 EssaimJSXGraph.prototype.buildMenu = function(element) {
     // Pour indiquer les options dans le menu par rapport aux types des éléments
     var buildButton = function(option) {
-        return $("<input type='button' value='" + option.nom + "'/>").click(
-            option.callback);
+        return $("<input/>")
+	    .attr({"type":"button",
+		  "value":option.nom})
+	    .click(option.callback);
     };
     var options = this.menuOptions(element);
     var self = this;
@@ -856,43 +858,36 @@ EssaimJSXGraph.prototype.multiSelect = function() {
                 self.stackMultiSelect.push(element)
             }
         }
-	/*console.log("yolo");*/
-        //interface
+	//interface
 	console.log($("#edjg_s_" + self.numero));
 	$("#edjg_s_"+self.numero)
 	    .html("");
-        /*self.$selection.html("");*/
         var html = [];
         var select = self.stackMultiSelect;
         for (var i = 0; i < select.length; i++) {
             html.push(select[i].getType() + " " + select[i].name);
         }
-        /*self.$selection*/
-	$("#edjg_s_"+self.numero)
+        $("#edjg_s_"+self.numero)
 	    .html(JSON.stringify(html));
     };
-    this.mode = GLOB.libre;
+    this.updateMode(GLOB.libre);
     this.stackMultiSelect = [];
     this.brd.off("up", tmp);
     console.log("yolo");
     // pour eviter deux fois cliquer
     // ok button
     var tmpSelector = "#lp_"+this.numero;
-    /*this.$multiSelect.*/
     $("#edjg_ms_"+this.numero)
 	.appendTo($(tmpSelector));
-    /*this.$multiSelect.*/
     $("#edjg_ms_"+this.numero)
 	.html("Multi-Select").show();
-    /*this.$selection*/
     $("#edjg_s_"+this.numero)
 	.html("")
 	.show();
-    /*var self = this;*/
     this.$multiSelectMenu.html("");
     this.$multiSelectMenu.show();
     var $tout = $("<input />")
-	.appendTo(/*this.$multiSelect*/$("#edjg_ms_"+this.numero))
+	.appendTo($("#edjg_ms_"+this.numero))
 	.attr({"type": "button",
                "value": "Tout Select"})
 	.html("Tout Select").click(function() {
@@ -908,12 +903,13 @@ EssaimJSXGraph.prototype.multiSelect = function() {
             for (i = 0; i < select.length; i++) {
 		html.push(select[i].getType() + " " + select[i].name);
 	    }
-            /*self.$selection*/
-	    console.log(self.numero);
+            console.log(self.numero);
 	    $("#edjg_s_"+self.numero)
 		.html(JSON.stringify(html));
 	});
-    var $ok = $("<input type='button' value ='Ok' />")
+    var $ok = $("<input/>")
+	.attr({"type":"button",
+	       "value":"Ok"})
 	.appendTo($("#edjg_ms_"+this.numero))
         .html("ok").click(function(event) {
             self.brd.off("up", tmp);
@@ -925,8 +921,10 @@ EssaimJSXGraph.prototype.multiSelect = function() {
         });
 
     // clean button
-    var $clean = $("<input type='button' value='Effacer' />")
-	.appendTo(/*this.$multiSelect*/$("#edjg_ms_"+this.numero))
+    var $clean = $("<input/>")
+	.attr({"type":"button",
+	      "value":"Effacer"})
+	.appendTo($("#edjg_ms_"+this.numero))
 	.html("Effacer").click(function() {
 	    self.cleanMultiSelection();
 	});
@@ -971,14 +969,17 @@ EssaimJSXGraph.prototype.buildMultiSelectMenu = function() {
     };
     var key = Object.keys(menu);
     var buildButton = function(option) {
-        return $("<input type='button' value=" + option.nom +
-                 " title=\"Permet de supprimer toute la sélection.\"/>")
-            .html(option.nom).click(option.callback);
+        return $("<input/>")
+	    .attr({"type":"button",
+		   "value": option.nom,
+		   "title":"Permet de supprimer toute la sélection."})
+            .html(option.nom)
+	    .click(option.callback);
     };
     for (var i = 0; i < key.length; i++) {
         self.$multiSelectMenu.append(buildButton(menu[key[i]]));
     }
-    self.$multiSelectMenu.appendTo(/*self.$multiSelect*/$("#edjg_ms_"+self.numero));
+    self.$multiSelectMenu.appendTo($("#edjg_ms_"+self.numero));
 };
 /**
  * effacer les selections multiples
@@ -1009,9 +1010,11 @@ EssaimJSXGraph.prototype.inputbox = function(label, parent, hint, showButton,
         "type": type,
         "placeholder": hint
     }).appendTo($box);
-    var $submit = $(
-        "<input class='bouton_valider' type='button' value='Valider' />"
-    ).html("ok").click(function(event) {
+    var $submit = $("<input/>")
+	.attr({"class":"bouton_valider",
+	      "type":"button",
+	      "value":"Valider"})
+	.html("ok").click(function(event) {
         if (!$input.val() || !$input.val().length) {
             def.reject("La valeur n'est pas definie.");
         } else {
@@ -1052,39 +1055,76 @@ EssaimJSXGraph.prototype.initBoutonForme = function(parent) {
        * - axe
        * - angle
        */
-    var $button_point = $(
-        "<input type='button' value='Point' title=\"Permet de créer un point.\"/>")
-	.appendTo($div_bouton_forme).click(function(event) {
+
+    var entete_id = "edjg_bouton_" + this.numero + "_";
+
+    var $button_point = $("<input/>")
+	.attr({"type":"button",
+	       "value":"Point",
+	       "title":"Permet de créer un point", 
+	      "id":entete_id + GLOB.point})
+	.appendTo($div_bouton_forme)
+	.click(function(event) {
 	    self.updateMode(GLOB.point);
         });
-    var $button_ligne = $(
-        "<input type='button' value='Droite' title=\"Permet de créer une droite. On utilise deux points pour cela.\"/>")
-	.appendTo($div_bouton_forme).click(function(event) {
+
+    var $button_ligne = $("<input/>")
+	.attr({"type":"button",
+	       "value":"Droite",
+	       "title":"Permet de créer une droite. On utilise deux points pour cela.",
+	      "id":entete_id + GLOB.ligne})
+	.appendTo($div_bouton_forme)
+	.click(function(event) {
 	    self.updateMode(GLOB.ligne);
 	});
-    var $button_cercle = $(
-        "<input type='button' value='Cercle' title=\"Permet de créer un cercle. On utilise deux points pour cela.\"/>")
-	.appendTo($div_bouton_forme).click(function(event) {
+
+    var $button_cercle = $("<input />")
+	.attr({"type":"button",
+	   "value":"Cercle",
+	   "title":"Permet de créer un cercle. On utilise deux points pour cela.",
+	   "id":entete_id + GLOB.cercle})
+	.appendTo($div_bouton_forme)
+	.click(function(event) {
 	    self.updateMode(GLOB.cercle);
 	});
-    var $button_segment = $(
-	"<input type='button' value='Segment' title=\"Permet de créer un segment. On utilise deux points pour cela.\"/>")
-	.appendTo($div_bouton_forme).click(function(event) {
+
+    var $button_segment = $("<input/>")
+	.attr({"type":"button",
+	      "value":"Segment",
+	      "title":"Permet de créer un segment. On utilise deux points pour cela.",
+	      "id":entete_id + GLOB.segment})
+	.appendTo($div_bouton_forme)
+	.click(function(event) {
 	    self.updateMode(GLOB.segment);
 	});
-    var $button_arrow = $(
-        "<input type='button' value='Vecteur' title=\"Permet de créer un vecteur. On utilise deux points pour cela.\"/>")
-	.appendTo($div_bouton_forme).click(function(event) {
+
+    var $button_arrow = $("<input/>")
+	.attr({"type":"button",
+	      "value":"Vecteur",
+	      "title":"Permet de créer un vecteur. On utilise deux points pour cela.",
+	      "id":entete_id + GLOB.fleche})
+	.appendTo($div_bouton_forme)
+	.click(function(event) {
 	    self.updateMode(GLOB.fleche);
 	});
-    var $button_axis = $(
-	"<input type='button' value='Axe' title=\"Permet de créer un axe. On utilise deux points pour cela.\"/>")
-	.appendTo($div_bouton_forme).click(function(event) {
+
+    var $button_axis = $("<input/>")
+	.attr({"type":"button",
+	      "value":"Axe",
+	      "title":"Permet de créer un axe. On utilise deux points pour cela.",
+	      "id":entete_id + GLOB.axe})
+	.appendTo($div_bouton_forme)
+	.click(function(event) {
 	    self.updateMode(GLOB.axe);
         });
-    var $button_angle = $(
-        "<input type='button' value='Angle' title=\"Permet de créer un angle en utiliant 3 points\"/>")
-	.appendTo($div_bouton_forme).click(function(event) {
+
+    var $button_angle = $("<input/>")
+	.attr({"type":"button",
+	      "value":"Angle",
+	      "title":"Permet de créer un angle en utilisant 3 points.",
+	      "id":entete_id + GLOB.angle})
+	.appendTo($div_bouton_forme)
+	.click(function(event) {
 	    self.updateMode(GLOB.angle);
         });
 };
@@ -1107,10 +1147,13 @@ EssaimJSXGraph.prototype.initBoutonAction = function(parent) {
        * - supprimer (à mettre plus tard dans le menu contextuel)
        * - multi-selection
        */
-    var $button_libre = $(
-        "<input type='button' value='Déplacer' title=\"Permet de déplacer des objets dans le graphe.\"/>"
-    ).appendTo($div_bouton_action).click(function(event) {
-        self.mode = GLOB.libre;
+    var $button_libre = $("<input/>")
+	.attr({"type":"button",
+	       "value":"Déplacer",
+	       "title":"Permet de déplacer des objets dans le graphe.",
+	      "id":"edjg_bouton_"+this.numero + "_" + GLOB.libre})
+	.appendTo($div_bouton_action).click(function(event) {
+            self.updateMode(GLOB.libre);
     });
     /**
      * button supprimer
@@ -1120,7 +1163,11 @@ EssaimJSXGraph.prototype.initBoutonAction = function(parent) {
      * il marche une fois et puis revient en mode selection
      * @type {*|{trigger, _default}|jQuery}
      */
-    var $button_image = $("<input type='button' value='Importer image'/>").appendTo(
+    var $button_image = $("<input/>").
+	attr({"type":"button",
+	     "value":"Importer image",
+	     "id":"edjg_bouton_im_"+this.numero})
+	.appendTo(
         $div_bouton_action).click(function(event) {
             self.popupImageUploader(function(event) {
 		var result = event.target.result;
@@ -1130,36 +1177,49 @@ EssaimJSXGraph.prototype.initBoutonAction = function(parent) {
 		self.brd.update();
             });
 	});
-    var $multiselect = $(
-        "<input type='button' value ='Multi-select' title = \"Action de multi-sélection\" />"
-    ).appendTo($div_bouton_action).click(function(event) {
-        self.multiSelect();
-    });
-    var $button_switch_grille = $(
-        "<input type='button' value = 'Grille' title=\"Affiche/enlève la grille.\" />"
-    ).appendTo($div_bouton_action).click(function(event) {
-        self.switchGrid();
-    });
-    /*this.deroulant = */
+    
+    var $multiselect = $("<input/>")
+	.attr({"type":"button",
+	      "value":"Multi-select",
+	      "title":"Action de multi-sélection"})
+	.appendTo($div_bouton_action).click(function(event) {
+            self.multiSelect();
+	});
+    
+    var $button_switch_grille = $("<input/>")
+	.attr({"type":"button",
+	      "value":"Grille",
+	      "title":"Affiche/enlève la grille."})
+	.appendTo($div_bouton_action).click(function(event) {
+            self.switchGrid();
+	});
+    
     $("<select></select>")
 	.attr({"id":"edjg_deroul_"+this.numero})
 	.appendTo($div_bouton_action);
-    var $charger = $("<input type='button' value='Charger'/>").click(
-        function(event) {
-            self.loadSelection($("#edjg_deroul_"+self.numero).val());
-        }).appendTo($div_bouton_action);
-    var $save = $(
-        "<input type='button' value = 'Ajout dans BaD' title=\"Permet de sauvegarder des éléments du graphique dans une boite à dessin.\" />"
-    ).appendTo($div_bouton_action).click({
-        charge: $charger
-    }, function(event) {
-        self.saveSelection(self.brd.objects);
-    });
+    
+    var $charger = $("<input/>")
+	.attr({"type":"button",
+	       "value":"Charger"})
+	.click(
+            function(event) {
+		self.loadSelection($("#edjg_deroul_"+self.numero).val());
+            }).appendTo($div_bouton_action);
+    
+    var $save = $("<input/>")
+	.attr({"type":"button",
+	       "value":"Ajout dans BaD",
+	       "title":"Permet de sauvegarder des éléments du graphique dans une boite à dessin."})
+	.appendTo($div_bouton_action)
+	.click(function(event) {
+            self.saveSelection(self.brd.objects);
+	});
     /*var $button_undo = $(
         "<input type='button' value='Annuler' title=\"Permet d'annuler la dernière action.\" />."
     ).appendTo($div_bouton_action).click(function(event) {*/
         //TODO fonction undo (annuler/retour action précédente)
 /*    });*/
+    
     EssaimJSXGraph.prototype.$button_libre = $button_libre;
 };
 /**
@@ -1282,7 +1342,7 @@ EssaimJSXGraph.prototype.initEventListener = function($top_panel, $left_panel) {
                 }
                 if (objet) {
                     objet.on("drag", function() {
-                        self.mode = GLOB.libre;
+                        self.updateMode(GLOB.libre);
                         self.point = [];
                         self.brd.removeObject(self.previsualisedObject);
                         self.previsualisedObject =
@@ -1589,12 +1649,13 @@ function createOption(options, parent, id) {
     }
     return parent;
 }
+
+
 /**
  * Fonction qui permet de recuperer la valeurs entiere ou flottante en fonction de sont type
  * @param {string} variable - Contient la valeur de l'élément
  * @return {Number} -
  */
-
 function getValueVar(variable) {
     var err;
     switch (variable.format.nom) {
@@ -1616,11 +1677,21 @@ function getValueVar(variable) {
         return err;
     }
 }
-
+	
+/**
+ * Fonction qui converti une valeur en degres en radian
+ * @param deg - valeur a convertir en radian
+ * @return {number} - Radian obtenu a partir du degres
+ */
 function degToRad(deg){
     return (2*Math.PI * deg) / 360
 }
 
+/**
+ * Fonction qui converti une valeur en radien en degres
+ * @param rad - Valeur a convertir en degres
+ * @return {number} - Degres obtenu a partir du radian
+ */
 function radToDeg(rad){
     return (rad * 360) / (2 * Math.PI);
 }
