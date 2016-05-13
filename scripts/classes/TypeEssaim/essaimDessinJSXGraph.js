@@ -52,7 +52,7 @@ EssaimJSXGraph = function (num) {
     this.menu_enregistre = true;
     this.ms = false;
 
-    /*Bidouille pour regler compatibilité sous firefox*/
+    /* Règle compatibilité sous firefox*/
     this.lastEvent;
 
     this.previsualisedObject = undefined;
@@ -64,6 +64,9 @@ EssaimJSXGraph = function (num) {
     this.deroulant;
 
     this.inputBoxMenu = $("<div></div>");
+	
+	this.hauteur_graphe = 200;
+	this.largeur_graphe  = 200;
 }
 //------------ Déclaration comme classe dérivée de Essaim -------------//
 EssaimJSXGraph.prototype = Object.create(Essaim.prototype);
@@ -166,7 +169,35 @@ EssaimJSXGraph.prototype.creerBloc = function (dataRecup)
 	     });
      
      this.surpage = new BlocFocus($bloc_contenu, this.divBloc);
-
+	 
+	 //Permet de changer la taille du graphe OEF généré
+	$("<div></div>")
+	.attr({'id':'edjg_resize_bloc_' + this.numero})
+	.appendTo(self.divBloc).hide();
+	 
+	var $champHauteur = $("<input class='edjg_resize' />")
+		.attr({'type':'text','placeholder':'Hauteur', 'value':self.hauteur_graphe, 'id':'champ_hauteur_' + this.numero})
+		.appendTo($("#edjg_resize_bloc_" + this.numero));
+	var $champLargeur = $("<input class='edjg_resize'/>")
+		.attr({'type':'text','placeholder':'Largeur', 'value':self.largeur_graphe, 'id':'champ_largeur_' + this.numero})
+		.appendTo($("#edjg_resize_bloc_" + this.numero));
+	var $button_validate = $("<input class='edjg_resize' />")
+		.attr({'type':'button', 'value':'Valider', 'title':'Valide la sélection'})
+			.click(function(){
+				self.hauteur_graphe = $("#champ_hauteur_" + self.numero).val();
+				self.largeur_graphe = $("#champ_largeur_" + self.numero).val();
+				$("#edjg_resize_bloc_" + self.numero).hide();
+				$("#edjg_bouton_resize_" + self.numero).show();
+		}).appendTo($("#edjg_resize_bloc_" + this.numero))
+	
+	var $button_resize = $("<input />")
+	.attr({'type':'button','value':'Changer taille','id':'edjg_bouton_resize_' + this.numero, 'title':'Permet de changer la taille du graphe généré en OEF.'})
+	.click(function(){	
+		$("#edjg_resize_bloc_" + self.numero).show();
+		$("#edjg_bouton_resize_" + self.numero).hide();
+	})
+	.appendTo(self.divBloc);
+	
      // **** Fabrication du contenu du bloc ****
 
      /* Le panneau d'affichage du graphe est composé de trois blocs
@@ -450,7 +481,7 @@ EssaimJSXGraph.prototype.toOEF = function () {
             }
         }
     }
-    OEF += "}\n\\text{url" + this.nom + " = draw(200,200\n\\" + this.nom + ")}"
+    OEF += "}\n\\text{url" + this.nom + " = draw(" + this.hauteur_graphe + "," + this.largeur_graphe + "\n\\" + this.nom + ")}"
     return OEF;
 }
 
