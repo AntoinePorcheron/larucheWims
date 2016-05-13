@@ -67,9 +67,7 @@ EssaimJSXGraph = function(num) {
     /*Page de "couverture" pour simplifier le dessin dans un graphe*/
     this.surpage;
     
-    this.inputZone;
-    this.deroulant;
-    this.inputBoxMenu = $("<div></div>");
+    /*this.inputBoxMenu = $("<div></div>");*/
 };
 
 //------------ Déclaration comme classe dérivée de Essaim -------------//
@@ -94,12 +92,13 @@ Essaim.prototype.aUneAide = false;
 EssaimJSXGraph.prototype.gereTailleImageEnonce = true;
 
 /*Variable de classe*/
-EssaimJSXGraph.prototype.$menuContextuel = $("<div></div>")
-    .attr("class", "menu_contextuel")
-    .hide();
+/*EssaimJSXGraph.prototype.$menuContextuel = $("<div></div>")
+    .attr({"class":"menu_contextuel", "id":"edjg_mc_"+this.numero})
+    .hide();*/
 EssaimJSXGraph.prototype.stackMultiSelect = [];
-EssaimJSXGraph.prototype.$multiSelect = $("<div></div>").html("Multi-Select");
-EssaimJSXGraph.prototype.$selection = $("<div></div>");
+
+/*EssaimJSXGraph.prototype.$multiSelect = $("<div></div>").attr({"id":"edjg_ms_"+this.numero}).html("Multi-Select");*/
+/*EssaimJSXGraph.prototype.$selection = $("<div></div>").attr({"id":"edjg_s_"+this.numero});*/
 EssaimJSXGraph.prototype.$multiSelectMenu = $("<div></div>");
 
 //------------ METHODES -----------------//
@@ -162,7 +161,7 @@ EssaimJSXGraph.prototype.creerBloc = function(dataRecup)
     /*On fait en sorte de ne pas avoir le clic droit sur cette zone, 
      *pour avoir le menu contextuel personnalisé*/
     var $bloc_contenu = $("<div></div>")
-	.attr("id", "test_"+this.numero)
+	.attr({"id":"test_"+this.numero})
 	.on("contextmenu", function(event) {
             event.preventDefault();
             return false;});
@@ -177,21 +176,24 @@ EssaimJSXGraph.prototype.creerBloc = function(dataRecup)
      * - un bloc plus central qui contient le graphe en lui même
      */
     var $left_panel = $("<div></div>")
-	.attr({"class":"leftMenu", "id":"lp_"+this.numero})
-	.css({
-        "position": "absolute",
-        "width": GLOB_largeur,
-        "height": this.surpage.height(),
-        "bottom": 0,
-        "top": 0
-    }).appendTo($bloc_contenu);
-    var $top_panel = $("<div class=\"topMenu\"></div>").css({
-        "position": "absolute",
-        "width": this.surpage.width() - GLOB_largeur,
-        "height": GLOB_hauteur,
-        "top": 0,
-        "display": "inline"
-    }).appendTo($bloc_contenu);
+	.attr({"class":"leftMenu", 
+	       "id":"lp_"+this.numero})
+	.css({ "position": "absolute",
+               "width": GLOB_largeur,
+               "height": this.surpage.height(),
+               "bottom": 0,
+               "top": 0})
+	.appendTo($bloc_contenu);
+    
+    var $top_panel = $("<div></div>")
+	.attr({"class":"topMenu"})
+	.css({"position": "absolute",
+              "width": this.surpage.width() - GLOB_largeur,
+              "height": GLOB_hauteur,
+              "top": 0,
+              "display": "inline"
+	     })
+	.appendTo($bloc_contenu);
     var $div_brd = $("<div></div>").attr({
         "id": "box" + this.numero,
         "class": "jxgbox"
@@ -219,18 +221,38 @@ EssaimJSXGraph.prototype.creerBloc = function(dataRecup)
      * - div_menu_contextuel : bloc pour le menu contextuel
      */
     // markbyyan
-    var $div_bouton_forme = $("<div></div>").css({
-        "display": "inline"
-    }).appendTo($top_panel);
-    var $div_bouton_action = $("<div class='actionLeft' ></div>").appendTo(
+    var $div_bouton_forme = $("<div></div>")
+	.css({"display": "inline"})
+	.appendTo($top_panel);
+    var $div_bouton_action = $("<div></div>")
+	.attr({"class":"actionLeft"})
+	.appendTo($left_panel);
+    $("<div></div>")
+	.attr({
+	    "class":"zoneInput",
+	    "id":"edjg_zi_"+this.numero})
+	.appendTo(
         $left_panel);
-    this.inputZone = $("<div></div>").attr("class", "zoneInput").appendTo(
-        $left_panel);
-    this.$multiSelect.appendTo($left_panel).hide();
-    this.$selection.appendTo(this.$multiSelect).hide();
-    this.$multiSelectMenu.appendTo(this.$multiSelect).hide();
+        $("<div></div>")
+	.attr({"id":"edjg_ms_"+this.numero})
+	.html("Multi-Select")
+	.appendTo($left_panel)
+	.hide();
+    
+    /*this.$selection*/
+    /*= */
+    console.log($("#edjg_ms_"+this.numero));
+    $("<div></div>")
+	.attr({"id":"edjg_s_"+this.numero})
+	.html("yolo")
+	.appendTo($("#edjg_ms_"+this.numero))
+	/*.hide();*/
+    console.log($("#edjg_s_" + this.numero).html());
+    this.$multiSelectMenu
+	.appendTo($("#edjg_ms_"+this.numero))
+	.hide();
     var modeSelect = function(event) {
-        self.mode = GLOB.libre;
+	self.updateMode(GLOB.libre);
     };
 
     /*var $div_choix_lier*/
@@ -240,8 +262,16 @@ EssaimJSXGraph.prototype.creerBloc = function(dataRecup)
      */
     this.modeSelect = modeSelect;
     var tmpTestSelector = "#test_" + this.numero
-    this.$menuContextuel.appendTo($(tmpTestSelector));
-    this.inputBoxMenu.appendTo($bloc_contenu);
+    /*is.$menuContextuel.*/
+    /*$("#edjg_mc_"+this.numero)*/
+    $("<div></div>")
+	.attr({"id":"edjg_mc_"+this.numero,
+	       "class":"menu_contextuel"})
+	.appendTo($("#test_"+this.numero)/*tmpTestSelector*/));
+    /*this.inputBoxMenu*/
+    $("<div></div>")
+	.attr({"id":"edjg_ibm_"+this.numero})
+	.appendTo($bloc_contenu);
     this.initBoutonForme($div_bouton_forme);
     this.initBoutonAction($div_bouton_action);
     this.initEventListener($top_panel, $left_panel);
@@ -439,6 +469,7 @@ EssaimJSXGraph.prototype.toOEF = function() {
         ")}";
     return OEF;
 };
+
 /**
  * Genere le code OEF qui correspond à la partie "statement", code necessaire pour l'affichage de l'image
  */
@@ -446,6 +477,7 @@ EssaimJSXGraph.prototype.toOEFFromStatement = function(idReponse) {
     return "<img src=\"\\url" + this.nom + "\" alt=\"Erreur avec l'image " +
         this.nom + "\"/>";
 };
+
 /**
  * supprime une image dans le plateau
  * @param image: JSXGraph.element(image), la variable qui indique une image de JSXGraph
@@ -453,6 +485,7 @@ EssaimJSXGraph.prototype.toOEFFromStatement = function(idReponse) {
 EssaimJSXGraph.prototype.removeImage = function(image) {
     this.brd.removeObject(image);
 };
+
 /**
  * ici on definit les options du menu contextuel
  * @param element, callback argument
@@ -465,7 +498,7 @@ EssaimJSXGraph.prototype.menuOptions = function(element) {
         changeNom: {
             nom: "Changer le nom",
             callback: function() {
-                $.when(self.inputbox("", self.inputBoxMenu, "Nom"))
+                $.when(self.inputbox("",$("#edjg_ibm_"+self.numero), "Nom"))
                     .done(function(nom) {
                         element.name = nom.toUpperCase();
                         element.setAttribute({
@@ -497,12 +530,13 @@ EssaimJSXGraph.prototype.menuOptions = function(element) {
 		var id_foption = "#optx_"+self.numero;
 		var id_soption = "#opty_"+self.numero;
 		console.log(id_left);
-		var tmp_left = $("<div></div>").appendTo($(id_left));
-		$("<p></p>").html("X").appendTo(tmp_left);
-		/*var firstSelect = $("<select></select>");*/
+		var tmp_left = $("<div></div>")
+		    .appendTo($(id_left));
+		$("<p></p>")
+		    .html("X")
+		    .appendTo(tmp_left);
 		createOption(options, tmp_left, "optx_"+self.numero);
 		$("<p></p>").html("Y").appendTo(tmp_left);
-		/*var secondSelect = $("<select></select");*/
 		createOption(options, tmp_left,"opty_"+self.numero);
 		$("<input/>")
 		    .attr({"type":"button", "value":"Valider"})
@@ -528,9 +562,9 @@ EssaimJSXGraph.prototype.menuOptions = function(element) {
         resize: {
             nom: "Changer la taille",
             callback: function() {
-                $.when(self.inputbox(
-                    "Entrer la largeur et la hauteur, separer par , ",
-                    self.inputBoxMenu)).done(function(data) {
+                $.when(
+		    self.inputbox("Entrer la largeur et la hauteur, separer par , ",$("#edjg_ibm_"+self.numero)))
+			.done(function(data) {
 			var width = parseInt(data.match(
 				/^ *[^,]* *,/)[0].replace(
 					/,/, ""));
@@ -777,7 +811,8 @@ EssaimJSXGraph.prototype.buildMenu = function(element) {
             if (options[list[key]]) {
                 var option = Object.keys(options[list[key]]);
                 for (var i = 0; i < option.length; i++) {
-                    self.$menuContextuel.append(buildButton(options[list[key]]
+                    /*self.$menuContextuel*/
+			$("#edjg_mc_"+self.numero).append(buildButton(options[list[key]]
 						     [option[i]]));
                 }
             }
@@ -807,58 +842,79 @@ EssaimJSXGraph.prototype.selection = function(event) {
  * le bouton ok stop la multi-selection puis fait apparaitre un menu
  * le bouton effacer efface la multi-selection
  */
+/*TODO : REFACTOR ICI + element peut etre null*/
 EssaimJSXGraph.prototype.multiSelect = function() {
+    var self = this;
     var tmp = function() {
         self.$button_libre.trigger("click");
         var element = self.getTopUnderMouse();
         if (element.getType()) {
-            var tmp = self.stackMultiSelect.indexOf(element);
-            if (tmp >= 0) {
-                self.stackMultiSelect.splice(tmp, 1);
+            var tmp_arr = self.stackMultiSelect.indexOf(element);
+            if (tmp_arr >= 0) {
+                self.stackMultiSelect.splice(tmp_arr, 1);
             } else {
                 self.stackMultiSelect.push(element)
             }
         }
+	/*console.log("yolo");*/
         //interface
-        self.$selection.html("");
+	console.log($("#edjg_s_" + self.numero));
+	$("#edjg_s_"+self.numero)
+	    .html("");
+        /*self.$selection.html("");*/
         var html = [];
         var select = self.stackMultiSelect;
         for (var i = 0; i < select.length; i++) {
             html.push(select[i].getType() + " " + select[i].name);
         }
-        self.$selection.html(JSON.stringify(html));
+        /*self.$selection*/
+	$("#edjg_s_"+self.numero)
+	    .html(JSON.stringify(html));
     };
     this.mode = GLOB.libre;
     this.stackMultiSelect = [];
     this.brd.off("up", tmp);
+    console.log("yolo");
     // pour eviter deux fois cliquer
-    var self = this;
     // ok button
     var tmpSelector = "#lp_"+this.numero;
-    this.$multiSelect.appendTo($(tmpSelector));
-    this.$multiSelect.html("Multi-Select").show();
-    this.$selection.html("").show();
+    /*this.$multiSelect.*/
+    $("#edjg_ms_"+this.numero)
+	.appendTo($(tmpSelector));
+    /*this.$multiSelect.*/
+    $("#edjg_ms_"+this.numero)
+	.html("Multi-Select").show();
+    /*this.$selection*/
+    $("#edjg_s_"+this.numero)
+	.html("")
+	.show();
+    /*var self = this;*/
     this.$multiSelectMenu.html("");
     this.$multiSelectMenu.show();
-    var $tout = $("<input />").appendTo(this.$multiSelect).attr({
-        type: "button",
-        value: "Tout Select"
-    }).html("Tout Select").click(function() {
-        var keys = Object.keys(self.brd.objects);
-        var html = [];
-        for (var i = 0; i < keys.length; i++) {
-            var element = self.brd.objects[keys[i]];
-            if (element.getType() != "text" && element.name) {
-                self.stackMultiSelect.push(element);
+    var $tout = $("<input />")
+	.appendTo(/*this.$multiSelect*/$("#edjg_ms_"+this.numero))
+	.attr({"type": "button",
+               "value": "Tout Select"})
+	.html("Tout Select").click(function() {
+            var keys = Object.keys(self.brd.objects);
+            var html = [];
+            for (var i = 0; i < keys.length; i++) {
+		var element = self.brd.objects[keys[i]];
+		if (element.getType() != "text" && element.name) {
+                    self.stackMultiSelect.push(element);
+		}
             }
-        }
-        var select = self.stackMultiSelect;
-        for (i = 0; i < select.length; i++) {
-            html.push(select[i].getType() + " " + select[i].name);
-        }
-        self.$selection.html(JSON.stringify(html));
-    });
-    var $ok = $("<input type='button' value ='Ok' />").appendTo(this.$multiSelect)
+            var select = self.stackMultiSelect;
+            for (i = 0; i < select.length; i++) {
+		html.push(select[i].getType() + " " + select[i].name);
+	    }
+            /*self.$selection*/
+	    console.log(self.numero);
+	    $("#edjg_s_"+self.numero)
+		.html(JSON.stringify(html));
+	});
+    var $ok = $("<input type='button' value ='Ok' />")
+	.appendTo($("#edjg_ms_"+this.numero))
         .html("ok").click(function(event) {
             self.brd.off("up", tmp);
             self.$button_libre.trigger("click");
@@ -867,14 +923,20 @@ EssaimJSXGraph.prototype.multiSelect = function() {
             $clean.remove();
             self.buildMultiSelectMenu();
         });
+
     // clean button
-    var $clean = $("<input type='button' value='Effacer' />").appendTo(this
-								       .$multiSelect).html("Effacer").click(function() {
-									   self.cleanMultiSelection();
-								       });
-    this.$selection.appendTo(this.$multiSelect);
-    this.$multiSelectMenu.appendTo(this.$multiSelect);
-    console.log(this.$multiSelect);
+    var $clean = $("<input type='button' value='Effacer' />")
+	.appendTo(/*this.$multiSelect*/$("#edjg_ms_"+this.numero))
+	.html("Effacer").click(function() {
+	    self.cleanMultiSelection();
+	});
+    /*this.$selection*/
+
+    $("#edjg_s_"+this.numero)
+	.appendTo(/*this.$multiSelect*/ $("#edjg_ms_"+this.numero));
+    this.$multiSelectMenu.appendTo($("#edjg_ms_"+this.numero));
+    console.log(this.numero);
+    /*console.log(this.$multiSelect);*/
     this.brd.on("up", tmp);
 };
 /**
@@ -916,14 +978,15 @@ EssaimJSXGraph.prototype.buildMultiSelectMenu = function() {
     for (var i = 0; i < key.length; i++) {
         self.$multiSelectMenu.append(buildButton(menu[key[i]]));
     }
-    self.$multiSelectMenu.appendTo(self.$multiSelect);
+    self.$multiSelectMenu.appendTo(/*self.$multiSelect*/$("#edjg_ms_"+self.numero));
 };
 /**
  * effacer les selections multiples
  */
 EssaimJSXGraph.prototype.cleanMultiSelection = function() {
     this.stackMultiSelect = [];
-    this.$selection.html("");
+    /*this.$selection*/
+    $("#edjg_s_"+this.numero).html("");
     this.$multiSelectMenu.html("");
 };
 /**
@@ -939,7 +1002,7 @@ EssaimJSXGraph.prototype.inputbox = function(label, parent, hint, showButton,
     type = type || "text";
     showButton = showButton || true;
     var def = $.Deferred();
-    this.inputZone.empty();
+    $("#edjg_zi_"+this.numero).empty();
     var $box = $("<div></div>").appendTo(parent);
     var $label = $("<div></div>").html(label).appendTo($box);
     var $input = $("<input />").attr({
@@ -990,40 +1053,40 @@ EssaimJSXGraph.prototype.initBoutonForme = function(parent) {
        * - angle
        */
     var $button_point = $(
-        "<input type='button' value='Point' title=\"Permet de créer un point.\"/>"
-    ).appendTo($div_bouton_forme).click(function(event) {
-        self.mode = GLOB.point;
-    });
+        "<input type='button' value='Point' title=\"Permet de créer un point.\"/>")
+	.appendTo($div_bouton_forme).click(function(event) {
+	    self.updateMode(GLOB.point);
+        });
     var $button_ligne = $(
-        "<input type='button' value='Droite' title=\"Permet de créer une droite. On utilise deux points pour cela.\"/>"
-    ).appendTo($div_bouton_forme).click(function(event) {
-        self.mode = GLOB.ligne;
-    });
+        "<input type='button' value='Droite' title=\"Permet de créer une droite. On utilise deux points pour cela.\"/>")
+	.appendTo($div_bouton_forme).click(function(event) {
+	    self.updateMode(GLOB.ligne);
+	});
     var $button_cercle = $(
-        "<input type='button' value='Cercle' title=\"Permet de créer un cercle. On utilise deux points pour cela.\"/>"
-    ).appendTo($div_bouton_forme).click(function(event) {
-        self.mode = GLOB.cercle;
-    });
+        "<input type='button' value='Cercle' title=\"Permet de créer un cercle. On utilise deux points pour cela.\"/>")
+	.appendTo($div_bouton_forme).click(function(event) {
+	    self.updateMode(GLOB.cercle);
+	});
     var $button_segment = $(
-        "<input type='button' value='Segment' title=\"Permet de créer un segment. On utilise deux points pour cela.\"/>"
-    ).appendTo($div_bouton_forme).click(function(event) {
-        self.mode = GLOB.segment;
-    });
+	"<input type='button' value='Segment' title=\"Permet de créer un segment. On utilise deux points pour cela.\"/>")
+	.appendTo($div_bouton_forme).click(function(event) {
+	    self.updateMode(GLOB.segment);
+	});
     var $button_arrow = $(
-        "<input type='button' value='Vecteur' title=\"Permet de créer un vecteur. On utilise deux points pour cela.\"/>"
-    ).appendTo($div_bouton_forme).click(function(event) {
-        self.mode = GLOB.fleche;
-    });
+        "<input type='button' value='Vecteur' title=\"Permet de créer un vecteur. On utilise deux points pour cela.\"/>")
+	.appendTo($div_bouton_forme).click(function(event) {
+	    self.updateMode(GLOB.fleche);
+	});
     var $button_axis = $(
-        "<input type='button' value='Axe' title=\"Permet de créer un axe. On utilise deux points pour cela.\"/>"
-    ).appendTo($div_bouton_forme).click(function(event) {
-        self.mode = GLOB.axe;
-    });
+	"<input type='button' value='Axe' title=\"Permet de créer un axe. On utilise deux points pour cela.\"/>")
+	.appendTo($div_bouton_forme).click(function(event) {
+	    self.updateMode(GLOB.axe);
+        });
     var $button_angle = $(
-        "<input type='button' value='Angle' title=\"Permet de créer un angle en utiliant 3 points\"/>"
-    ).appendTo($div_bouton_forme).click(function(event) {
-        self.mode = GLOB.angle;
-    });
+        "<input type='button' value='Angle' title=\"Permet de créer un angle en utiliant 3 points\"/>")
+	.appendTo($div_bouton_forme).click(function(event) {
+	    self.updateMode(GLOB.angle);
+        });
 };
 /**
  * Fonction qui initialise tout les boutons qui gèrent les actions que l'on peut faire dans le
@@ -1077,10 +1140,13 @@ EssaimJSXGraph.prototype.initBoutonAction = function(parent) {
     ).appendTo($div_bouton_action).click(function(event) {
         self.switchGrid();
     });
-    this.deroulant = $("<select></select>").appendTo($div_bouton_action);
+    /*this.deroulant = */
+    $("<select></select>")
+	.attr({"id":"edjg_deroul_"+this.numero})
+	.appendTo($div_bouton_action);
     var $charger = $("<input type='button' value='Charger'/>").click(
         function(event) {
-            self.loadSelection(self.deroulant.val());
+            self.loadSelection($("#edjg_deroul_"+self.numero).val());
         }).appendTo($div_bouton_action);
     var $save = $(
         "<input type='button' value = 'Ajout dans BaD' title=\"Permet de sauvegarder des éléments du graphique dans une boite à dessin.\" />"
@@ -1241,7 +1307,8 @@ EssaimJSXGraph.prototype.initEventListener = function($top_panel, $left_panel) {
         if (event.buttons === 2) {
             self.selection(event);
         } else {
-            self.hideContextMenu();
+            /*self.hideContextMenu();*/
+	    self.hideAllContext();
         }
     });
 
@@ -1275,7 +1342,7 @@ EssaimJSXGraph.prototype.saveSelection = function(objects) {
             }
         }
     }
-    $.when(this.inputbox("Entrer un nom", self.inputZone)).done(function(
+    $.when(this.inputbox("Entrer un nom", $("#edjg_zi_"+this.numero))).done(function(
         name) {
         if (saveState[name] === undefined) {
             saveState[name] = {
@@ -1331,9 +1398,9 @@ EssaimJSXGraph.prototype.loadSelection = function(name) {
  * Fonction qui met à jour le menu déroulant des sauvegarde de tout les graphes existant
  */
 EssaimJSXGraph.prototype.updateDeroulant = function() {
-    this.deroulant.empty();
+    $("#edjg_deroul_"+this.numero).empty();
     for (var name in saveState) {
-        $("<option>" + name + "</option>").appendTo(this.deroulant);
+        $("<option>" + name + "</option>").appendTo($("#edjg_deroul_"+this.numero));
     }
 };
 
@@ -1346,8 +1413,8 @@ EssaimJSXGraph.prototype.hideAllContext = function() {
 };
 
 EssaimJSXGraph.prototype.hideInputBoxMenu = function(){
-    this.inputBoxMenu.empty();
-    this.inputBoxMenu.hide();
+    $("#edjg_ibm_"+this.numero).empty();
+    $("#edjg_ibm_"+this.numero).hide();
 }
 /**
  *Fonction qui permet de crée des axes sans grille que l'on peut déplacer.
@@ -1396,7 +1463,9 @@ EssaimJSXGraph.prototype.showContextMenu = function(pos, element){
     var self = this;
     this.hideContextMenu();
     var tmp = "#test_" + this.numero;
-    this.$menuContextuel.css({
+    /*this.$menuContextuel*/
+    $("#edjg_mc_"+this.numero)
+	.css({
         "position": "absolute",
         "left": pos.x + 5,
         "top": pos.y + 5,
@@ -1413,13 +1482,14 @@ EssaimJSXGraph.prototype.showContextMenu = function(pos, element){
 }
 
 EssaimJSXGraph.prototype.hideContextMenu = function(){
-    this.$menuContextuel.empty();
-    this.$menuContextuel.hide();
+    /*this.$menuContextuel*/
+    $("#edjg_mc_"+this.numero).empty();
+    /*this.$menuContextuel*/
+    $("#edjg_mc_"+this.numero).hide();
 }
 
 EssaimJSXGraph.prototype.showInputBoxMenu = function(pos){
-    /*this.hideInputBoxMenu();*/
-    this.inputBoxMenu
+    $("#edjg_ibm_"+this.numero)
 	.css({
 	    "position": "absolute",
 	    "left": pos.x - 5,
