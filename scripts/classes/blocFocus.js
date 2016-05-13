@@ -15,7 +15,7 @@ BlocFocus = function(content, affichage){
     this.headerHeight = 20;
     
     /*Contient un ensemble de fonction à effectuer lors du resize du bloc*/
-    this.resizeListener = [];
+    this.eventListener = {};
     
     /*Initialisation du bloc*/
     var self = this;
@@ -95,8 +95,8 @@ BlocFocus.prototype.initBloc = function(){
 	    
 	    /*Ici, on fait appelle à toute les fonctions contenu dans le tableau pour effectuer
 	     * le comportement attendu lors du redimensionnement de cet element.*/
-	    for (var i = 0; i < self.resizeListener.length; i++){
-		self.resizeListener[i]();
+	    for (var i in self.eventListener["resize"]){
+		self.eventListener["resize"][i]();
 	    }
 	}, 5);
     });
@@ -123,7 +123,11 @@ BlocFocus.prototype.setContent = function(newContent){
  * @param time - Temps de l'animation complete en milliseconde.
  */
 BlocFocus.prototype.show = function(time){
-	time = time || 150;
+    for (var i in this.eventListener["show"]){
+	this.eventListener["show"][i]();
+    }
+    
+    time = time || 150;
     this.container.fadeIn(time);
 }
 
@@ -133,8 +137,11 @@ BlocFocus.prototype.show = function(time){
  * @param time - Temps de l'animation complete en milliseconde.
  */
 BlocFocus.prototype.hide = function(time){
-	time = time || 150
+    time = time || 150
     this.container.fadeOut(time);
+    for (var i in this.eventListener["hide"]){
+	this.eventListener["hide"][i]();
+    }
 }
 
 /**
@@ -142,9 +149,9 @@ BlocFocus.prototype.hide = function(time){
  * Fonction qui ajoute un ecouteurs de resize
  * @param fun - fonction à executer lors d'un redimensionnement
  */
-BlocFocus.prototype.resize = function(fun){
+/*BlocFocus.prototype.resize = function(fun){
     this.resizeListener.push(fun);
-}
+}*/
 
 /**
  * width
@@ -169,6 +176,20 @@ BlocFocus.prototype.height = function(){
 	console.error("Un comportement anormal à eu lieu, le bloc de contenu est vide.");
     }else{
 	return this.content.height();
+    }
+}
+
+/**
+ * Fonction qui permet d'ajouter un listener d'event.
+ * @param eventName - Nom de l'evenement sur lequel on veut rajouter un listener, les valeurs
+ * viable actuellement sont "show", "hide", et "resize".
+ * @param func - Fonction à executer lors d'un evenement du type eventName effectuer.
+ */
+BlocFocus.prototype.on = function(eventName, func){
+    if (this.eventListener[eventName]){
+	this.eventListener[eventName].append(func)
+    }else{
+	this.eventListener[eventName] = [func];
     }
 }
 
