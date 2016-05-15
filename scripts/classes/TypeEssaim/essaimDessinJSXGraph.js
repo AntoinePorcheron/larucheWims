@@ -7,7 +7,6 @@
  * - Faire les autre TODO
  * - trouver d'autre TODO
  * - affichage miniature graphe
- * - revoir le switch en mode déplacer
  */
 
 /*
@@ -251,14 +250,21 @@ EssaimJSXGraph.prototype.creerBloc = function(dataRecup)
 	    $("#edjg_bouton_resize_" + self.numero).hide();
 	})
 	.appendTo(this.divBloc);
+    
+    if (!dataRecup){
+	this.brd = JXG.JSXGraph.initBoard('box' + this.numero, {
+	    axis: false,
+	    keepaspectratio: true,
+	    grid: this.grid,
+	    showCopyright: false,
+	    pan:{enable:true, needShift:false}
+	});
+    }else{
+	/*this.brd = JXG.JSXGraph.loadBoardFromString('box'+this.numero, dataRecup*/
+    }
 
-    this.brd = JXG.JSXGraph.initBoard('box' + this.numero, {
-	axis: false,
-	keepaspectratio: true,
-	grid: this.grid,
-	showCopyright: false,
-	pan:{enable:true, needShift:false}
-    });
+    /*console.log(this.brd.attr.pan/*getAttribute("pan")*//*);*/
+    /*this.brd.getAttribute("pan");*/
 
     //TODO : Trouver une solution au probleme du DATA RECUP
     /*}*/
@@ -583,21 +589,48 @@ EssaimJSXGraph.prototype.menuOptions = function(element) {
 	    nom: "Lier",
 	    callback: function() {
 		var options = getUsableVar();
-		options.push("Defaut");
-
+		/*options.push("Defaut");*/
+		options["Defaut"] = "Default";
+		console.log(options);
 		var tmp_left = $("<div></div>")
-		    .appendTo($(id_left));
+		    .appendTo($("#lp_"+self.numero));
 		$("<p></p>")
 		    .html("X")
 		    .appendTo(tmp_left);
-		createOption(options, tmp_left, "optx_"+self.numero);
+		var tmp1 = createOption(options, tmp_left, "optx_"+self.numero);
 		$("<p></p>")
 		    .html("Y")
 		    .appendTo(tmp_left);
 		
-		createOption(options, tmp_left,"opty_"+self.numero);
+		var tmp2 = createOption(options, tmp_left,"opty_"+self.numero);
 		
 		$("<input/>")
+		    .attr({"type":"button", "value":"Valider"})
+		    .appendTo(tmp_left)
+		    .click(function(){
+			/*var tmp = */
+			
+			var x = $("#optx_"+self.numero).val();
+			var y = $("#opty_"+self.numero).val();
+			if (x !== "Defaut"){
+			    element
+				.addConstraint(/*JXG.COORDS_BY_SCREEN, */
+					     [function(){
+						 return getValueVar(options[x])}, element.Y()]);
+			}
+			if (y !== "Defaut"){
+			    element
+				./*setPosition*/addConstraint(/*JXG.COORDS_BY_SCREEN, */
+					     [element.X(), 
+					      function(){
+						  return getValueVar(options[y])}]);
+					     
+			}
+			console.log(self.brd);
+			self.brd.fullUdpate();
+		    });
+		/*.setPosition(JXG.COORDS_BY_USER,self.brd.getUsrCoordsOfMouse(event));*/
+		/*$("<input/>")
 		    .attr({"type":"button", "value":"Valider"})
 		    .appendTo(tmp_left)
 		    .click(function(){
@@ -608,7 +641,7 @@ EssaimJSXGraph.prototype.menuOptions = function(element) {
 			    .fail(function(err){
 				
 			    });
-		    });
+		    });*/
 			/*self.inputBoxMenu = $("<div></div>").html("Yolo je sais pas quoi mettre").show();*/
 		/*var tmp = getUsableVar();
 		  element.addConstraint([function(){ return getValueVar(tmp[0]) }, element.Y()]);
@@ -694,7 +727,23 @@ EssaimJSXGraph.prototype.updateMode = function(nouveauMode) {
     this.mode = nouveauMode;
     $("#edjg_bouton_"+this.numero+"_" + this.mode)
 	.css({"background":"#f47d64"});
+    
+    this.setMovableBoard();
 };
+
+
+/**
+ * Fonction qui permet de definir si il faut appuyer sur shift ou non pour deplacer la grille.
+ * Lorsque l'on se trouve en mode libre, le déplacement se fait naturellement en simple drag,
+ * sinon, il faut appuyer sur shift pour permettre le déplacement
+ */
+EssaimJSXGraph.prototype.setMovableBoard = function(){
+    if (this.mode === GLOB.libre){
+	this.brd.attr.pan.needshift = false;
+    }else{
+	this.brd.attr.pan.needshift = true;
+    }
+}
 
 /**
  * Retourne le mode courant
@@ -1334,8 +1383,7 @@ EssaimJSXGraph.prototype.initEventListener = function($top_panel, $left_panel) {
                         self.updateMode(GLOB.libre);
                         self.point = [];
                         self.brd.removeObject(self.previsualisedObject);
-                        self.previsualisedObject =
-                            undefined;
+                        self.previsualisedObject = undefined;
                     });
                 }
             } else {
@@ -1347,8 +1395,8 @@ EssaimJSXGraph.prototype.initEventListener = function($top_panel, $left_panel) {
     this.brd.on('move', function(event) {
         self.lastEvent = event;
         if (self.previsualisedObject) {
-            self.previsualisedObject.point2.setPosition(JXG.COORDS_BY_USER,
-							self.brd.getUsrCoordsOfMouse(event));
+            self.previsualisedObject.point2
+		.setPosition(JXG.COORDS_BY_USER,self.brd.getUsrCoordsOfMouse(event));
             self.brd.update();
         }
     });
@@ -1644,11 +1692,12 @@ function switchSelectedElement(element, selected){
  * Fonction qui retourne toute les variable que l'on peut lié au graphe
  */
 function getUsableVar() {
-    var usableVar = [];
+    var usableVar = {};
     var varBase = rucheSys.listeVariables;
     for (var i in varBase) {
         if (["real", "integer"].indexOf(varBase[i].format.nom) !== -1) {
-            usableVar.push(varBase[i]);
+	    usableVar[varBase[i].nom] = varBase[i];
+	    console.log(varBase[i]);
         }
     }
     return usableVar;
@@ -1704,15 +1753,16 @@ function getLen(object) {
  * @param id - Id du select
  */
 function createOption(options, parent, id) {
+    console.log(options);
     id = id || null;
     var $select_tmp = $("<select></select>").appendTo(parent);
     if (id) {
-        parent.attr("id", id);
+        $select_tmp.attr("id", id);
     }
     for (var i in options) {
         $("<option></option>")
-	    .attr("value",options[i])
-	    .html(options[i]).appendTo($select_tmp);
+	    .attr("value",/*options[*/i/*]*/)
+	    .html(/*options[*/i/*]*/).appendTo($select_tmp);
     }
     return parent;
 }
