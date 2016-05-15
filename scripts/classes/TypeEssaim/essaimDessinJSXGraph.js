@@ -1,5 +1,14 @@
 /*TODO : 
  * - Lien avec les variables
+ *   - Fait avec les points (un point se rapporte à deux variable, x et y)
+ *   - Une lignes est definie par un point et un coef dir ou 2 points
+ *   - Un segment est definie par deux point (4 var)
+ *   - un cercle par 2 point ou 1 point et le rayon (dur)
+ *   - un angles est definie par 2 points (axe d'origine)(non necessaire, a reflechir) 
+ *     et une valeurs d'angle
+ *   - un axe est definie par une origine et une norme
+ *   - un vecteurs est definie par ... bah j'en sais fichtre rien... 
+       une origine, une orientation et une "force" peut etre?
  * - Generer code OEF correspondant (variable lié)
  * - Creer variable via dessins
  * - Corriger sauvegarde du site en JSON
@@ -7,6 +16,7 @@
  * - Faire les autre TODO
  * - trouver d'autre TODO
  * - affichage miniature graphe
+ * - Regler bug drag point du cercle
  */
 
 /*
@@ -260,33 +270,10 @@ EssaimJSXGraph.prototype.creerBloc = function(dataRecup)
 	    pan:{enable:true, needShift:false}
 	});
     }else{
-	/*this.brd = JXG.JSXGraph.loadBoardFromString('box'+this.numero, dataRecup*/
+	//TODO : Trouver une solution au probleme du DATA RECUP
     }
 
-    /*console.log(this.brd.attr.pan/*getAttribute("pan")*//*);*/
-    /*this.brd.getAttribute("pan");*/
-
-    //TODO : Trouver une solution au probleme du DATA RECUP
-    /*}*/
-    /*    if (dataRecup){
-	  console.log(dataRecup.brd.objects);
-	  /*correctJSON(dataRecup);*/
-    /*	console.log(dataRecup.brd.objects);
-	for (var i in dataRecup.brd.objects){
-	console.log(dataRecup.brd.objects[i]);
-	try{
-	this.brd.objects[i] = JSON.parse(dataRecup.brd.objects[i]);
-	}catch (err){
-	console.error("YOLO : ",err);
-	}
-	/*console.log(dataRecup.brd.objects[i]);*/
-    /*	}
-	this.brd.fullUpdate();
-	/*this.brd.objects = dataRecup.brd.objects;
-	this.brd.update();*/
-    /*}*/
-    /*    console.log(this.brd);*/
-
+    
     /* -----------------------------------
        Création des blocs div pour les menus
        --------------------------------------
@@ -324,6 +311,11 @@ EssaimJSXGraph.prototype.creerBloc = function(dataRecup)
     var modeSelect = function(event) {
 	self.updateMode(GLOB.libre);
     };
+
+    $("<div></div>")
+	.attr({"id":"edjg_left_context_"+self.numero+""})
+	.appendTo("#lp_"+self.numero);
+    
 
     /******************************
      * A ne pas modifier
@@ -588,64 +580,49 @@ EssaimJSXGraph.prototype.menuOptions = function(element) {
 	lier: {
 	    nom: "Lier",
 	    callback: function() {
+		/*self.hideLeftContext();*/
 		var options = getUsableVar();
-		/*options.push("Defaut");*/
 		options["Defaut"] = "Default";
-		console.log(options);
-		var tmp_left = $("<div></div>")
-		    .appendTo($("#lp_"+self.numero));
+		
+		/*var tmp_left = $("<div></div>")
+		    .attr({"id":"edjg_left_context_"+self.numero+""})
+		    .appendTo("#lp_"+self.numero);*/
+		
+		$("#edjg_left_context_"+self.numero).show();
 		$("<p></p>")
 		    .html("X")
-		    .appendTo(tmp_left);
-		var tmp1 = createOption(options, tmp_left, "optx_"+self.numero);
+		    .appendTo($("#edjg_left_context_"+self.numero));
+		var tmp1 = createOption(options,
+					$("#edjg_left_context_"+self.numero),
+					"optx_"+self.numero);
 		$("<p></p>")
 		    .html("Y")
-		    .appendTo(tmp_left);
+		    .appendTo($("#edjg_left_context_"+self.numero));
 		
-		var tmp2 = createOption(options, tmp_left,"opty_"+self.numero);
+		var tmp2 = createOption(options, 
+					$("#edjg_left_context_"+self.numero),
+					"opty_"+self.numero);
 		
 		$("<input/>")
 		    .attr({"type":"button", "value":"Valider"})
-		    .appendTo(tmp_left)
+		    .appendTo($("#edjg_left_context_"+self.numero))
 		    .click(function(){
-			/*var tmp = */
 			
 			var x = $("#optx_"+self.numero).val();
 			var y = $("#opty_"+self.numero).val();
 			if (x !== "Defaut"){
-			    element
-				.addConstraint(/*JXG.COORDS_BY_SCREEN, */
-					     [function(){
-						 return getValueVar(options[x])}, element.Y()]);
+			    element.addConstraint([function(){
+				return getValueVar(options[x])}, element.Y()]);
 			}
+			
 			if (y !== "Defaut"){
-			    element
-				./*setPosition*/addConstraint(/*JXG.COORDS_BY_SCREEN, */
-					     [element.X(), 
-					      function(){
-						  return getValueVar(options[y])}]);
-					     
+			    element.addConstraint([element.X(), 
+						   function(){
+						       return getValueVar(options[y])}]);   
 			}
-			console.log(self.brd);
-			self.brd.fullUdpate();
+			self.hideLeftContext();
+			self.brd.fullUpdate();
 		    });
-		/*.setPosition(JXG.COORDS_BY_USER,self.brd.getUsrCoordsOfMouse(event));*/
-		/*$("<input/>")
-		    .attr({"type":"button", "value":"Valider"})
-		    .appendTo(tmp_left)
-		    .click(function(){
-			self.showInputBoxMenu();
-			$.when(self.inputbox("Yolo", self.inputBoxMenu, "Test"))
-			    .done(function(nom){
-			    })
-			    .fail(function(err){
-				
-			    });
-		    });*/
-			/*self.inputBoxMenu = $("<div></div>").html("Yolo je sais pas quoi mettre").show();*/
-		/*var tmp = getUsableVar();
-		  element.addConstraint([function(){ return getValueVar(tmp[0]) }, element.Y()]);
-		  self.brd.fullUpdate();*/
 	    }
 	}
     };
@@ -714,6 +691,12 @@ EssaimJSXGraph.prototype.menuOptions = function(element) {
     }
     return options;
 };
+
+EssaimJSXGraph.prototype.hideLeftContext = function(){
+    $("#edjg_left_context_"+this.numero)
+	.empty()
+	.hide();    
+}
 
 /**
  * Met à jour le mode courant 
@@ -855,7 +838,7 @@ EssaimJSXGraph.prototype.getTopUnderMouse = function() {
  * @param element, callback argument
  */
 EssaimJSXGraph.prototype.buildMenu = function(element) {
-    // Pour indiquer les options dans le menu par rapport aux types des éléments
+        // Pour indiquer les options dans le menu par rapport aux types des éléments
     var buildButton = function(option) {
 	return $("<input/>")
 	    .attr({"type":"button",
@@ -864,18 +847,20 @@ EssaimJSXGraph.prototype.buildMenu = function(element) {
     };
     var options = this.menuOptions(element);
     var self = this;
+    var $menu = $("<div></div>");
     (function(list) {
 	for (var key = 0; key < list.length; key++) {
 	    if (options[list[key]]) {
 		var option = Object.keys(options[list[key]]);
 		for (var i = 0; i < option.length; i++) {
 
-		    $("#edjg_mc_"+self.numero).append(buildButton(options[list[key]]
-								  [option[i]]));
+		    /*$("#edjg_mc_"+self.numero)*/
+		    $menu.append(buildButton(options[list[key]][option[i]]));
 		}
 	    }
 	}
     })(["common", element.getType()]);
+    return $menu;
 };
 
 /**
@@ -888,7 +873,7 @@ EssaimJSXGraph.prototype.selection = function(event) {
 	var position  = {
 	    "x": event.clientX,
 	    "y": event.clientY};
-	this.showContextMenu(position, element);
+	this.showContextMenu(position, this.buildMenu(element)/*element*/);
     }else{
 	console.error("Pas d'élément");
     };
@@ -1285,6 +1270,7 @@ EssaimJSXGraph.prototype.initEventListener = function($top_panel, $left_panel) {
     });
     var buttons;
     this.brd.on('down', function(event){
+	/*self.hideAllContext();*/
 	buttons = event.buttons;
     });
     this.brd.on('up', function(event) {
@@ -1402,11 +1388,12 @@ EssaimJSXGraph.prototype.initEventListener = function($top_panel, $left_panel) {
     });
     /*Fonction du menu contextuel*/
     this.brd.on("down", function(event) {
+	self.hideAllContext();
         if (event.buttons === 2) {
             self.selection(event);
-        } else {
-	    self.hideAllContext();
-        }
+        } /*else {
+	    /*self.hideAllContext();*/
+    /*}*/
     });
 
     this.surpage.on("show", function(){
@@ -1430,13 +1417,11 @@ EssaimJSXGraph.prototype.saveSelection = function(objects) {
     var points = {};
     var self = this;
     for (var i in objects) {
-	console.log(i);
-        if (objects[i].getType() !== "text") {
-            if (objects[i].getAttribute("visible") && type.indexOf(objects[i].getType()) !== -1) {
+	if (objects[i].getType() !== "text") {
+	    if (objects[i].getAttribute("visible") && type.indexOf(objects[i].getType()) !== -1) {
                 objets[i] = objects[i];
             } else if (objects[i].getAttribute("visible") && objects[i].getType() === "point") {
-		console.log(i);
-                points[i] = objects[i];
+		points[i] = objects[i];
             }
         }
     }
@@ -1467,8 +1452,7 @@ EssaimJSXGraph.prototype.loadSelection = function(name) {
         var points = saveState[name].point;
         var ancestor = {};
         for (var i in points) {
-	    console.log(i);
-            ancestor[i] = this.brd.create("point", [points[i].X(), 
+	    ancestor[i] = this.brd.create("point", [points[i].X(), 
 						    points[i].Y()], 
 					  {
 					      name: points[i].name,
@@ -1476,12 +1460,9 @@ EssaimJSXGraph.prototype.loadSelection = function(name) {
 					  });
         }
         var ancestorObject = [];
-	console.log(ancestor);
-        for (var i in objets) {
+	for (var i in objets) {
             ancestorObject = [];
             for (var j in objets[i].ancestors) {
-		console.log(j);
-		
                 ancestorObject.push(ancestor[j]);
             }
             if (objets[i].getType() === "angle") {
@@ -1513,6 +1494,7 @@ EssaimJSXGraph.prototype.updateDeroulant = function() {
 EssaimJSXGraph.prototype.hideAllContext = function() {
     this.hideContextMenu();
     this.hideInputBoxMenu();
+    this.hideLeftContext();
 };
 
 EssaimJSXGraph.prototype.hideInputBoxMenu = function(){
@@ -1619,7 +1601,7 @@ EssaimJSXGraph.prototype.isSelected = function(element){
     return this.stackMultiSelect.indexOf(element) > -1;
 }
 
-EssaimJSXGraph.prototype.showContextMenu = function(pos, element){
+EssaimJSXGraph.prototype.showContextMenu = function(pos,content){
     var self = this;
     this.hideContextMenu();
     var tmp = "#edjg_bc_" + this.numero;
@@ -1637,13 +1619,17 @@ EssaimJSXGraph.prototype.showContextMenu = function(pos, element){
 	})
 	.appendTo($(tmp))
 	.show();
-    this.buildMenu(element);
+    content.appendTo($("#edjg_mc_"+this.numero));
+}
+
+EssaimJSXGraph.prototype.changeContextMenu = function(newContent){
+    $("#edjg_mc_"+this.numero)
+	.empty()
+	.append(newContent);
 }
 
 EssaimJSXGraph.prototype.hideContextMenu = function(){
-    /*this.$menuContextuel*/
     $("#edjg_mc_"+this.numero).empty();
-    /*this.$menuContextuel*/
     $("#edjg_mc_"+this.numero).hide();
 }
 
@@ -1697,8 +1683,7 @@ function getUsableVar() {
     for (var i in varBase) {
         if (["real", "integer"].indexOf(varBase[i].format.nom) !== -1) {
 	    usableVar[varBase[i].nom] = varBase[i];
-	    console.log(varBase[i]);
-        }
+	}
     }
     return usableVar;
 };
@@ -1753,7 +1738,6 @@ function getLen(object) {
  * @param id - Id du select
  */
 function createOption(options, parent, id) {
-    console.log(options);
     id = id || null;
     var $select_tmp = $("<select></select>").appendTo(parent);
     if (id) {
@@ -1761,8 +1745,8 @@ function createOption(options, parent, id) {
     }
     for (var i in options) {
         $("<option></option>")
-	    .attr("value",/*options[*/i/*]*/)
-	    .html(/*options[*/i/*]*/).appendTo($select_tmp);
+	    .attr("value",i)
+	    .html(i).appendTo($select_tmp);
     }
     return parent;
 }
