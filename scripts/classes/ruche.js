@@ -1826,7 +1826,7 @@ Ruche.prototype.sauvegarde = function ()
             return;
         }
 
-        return val;
+	return val;
 
     }, 6);
     document.getElementById("Rid_Zone_Sauvegarde").value = json;
