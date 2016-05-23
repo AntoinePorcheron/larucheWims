@@ -24,12 +24,16 @@ BlocFocus = function(content, affichage){
 	content.appendTo(this.content);
     }
     var $button = $("<input />")
-	.attr({'type':'button', 'value':'Afficher', 'title':'Affiche le graphe.'})
+	.attr({'type':'button', 'value':'Afficher', 'title':'Affiche la surpage.'})
 	.click(function(){
 	    self.show();
 	})
 	.appendTo($(affichage));
 	
+    /* Pour une raison inconnu, si on cache directement le bloc, le graphe ne marche plus
+     * et si on cache avec la fonction crée pour avec pour parametre 0 le graphe ne marche plus
+     * non plus*/
+    this.hide(1);
     /*this.container.hide();*/
     
 }
@@ -98,7 +102,7 @@ BlocFocus.prototype.initBloc = function(){
 	    for (var i in self.eventListener["resize"]){
 		self.eventListener["resize"][i]();
 	    }
-	}, 5);
+	}, 100);
     });
 }
 
@@ -123,12 +127,22 @@ BlocFocus.prototype.setContent = function(newContent){
  * @param time - Temps de l'animation complete en milliseconde.
  */
 BlocFocus.prototype.show = function(time){
+    if (time === undefined){
+	time = 150;
+    }
+    /*time = time || 150;*/
+    this.container.fadeIn(time);
+    
+    this.container.css("width", $(document).width() - 20);
+    this.container.css("height", $(document).height() - 20);
+    this.content.css({"height":"100%", "width":"100%"});
     for (var i in this.eventListener["show"]){
 	this.eventListener["show"][i]();
+	this.eventListener["resize"][i]();
     }
     
-    time = time || 150;
-    this.container.fadeIn(time);
+ 
+    
 }
 
 /**
@@ -137,21 +151,16 @@ BlocFocus.prototype.show = function(time){
  * @param time - Temps de l'animation complete en milliseconde.
  */
 BlocFocus.prototype.hide = function(time){
-    time = time || 150
+    if (time === undefined){
+	time = 150;
+    }
+    /*time = time || 150*/
+    console.log(time);
     this.container.fadeOut(time);
     for (var i in this.eventListener["hide"]){
 	this.eventListener["hide"][i]();
     }
 }
-
-/**
- * resize
- * Fonction qui ajoute un ecouteurs de resize
- * @param fun - fonction à executer lors d'un redimensionnement
- */
-/*BlocFocus.prototype.resize = function(fun){
-    this.resizeListener.push(fun);
-}*/
 
 /**
  * width

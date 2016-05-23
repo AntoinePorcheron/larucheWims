@@ -1,30 +1,12 @@
 /*TODO : 
- * - Lien avec les variables
- * - Fait avec les points (un point se rapporte à deux variable, x et y)
- * - Une lignes est definie par un point et un coef dir ou 2 points
- * - Un segment est definie par deux point (4 var)
- * - un cercle par 2 point ou 1 point et le rayon (dur)
- * - un angles est definie par 2 points (axe d'origine)(non necessaire, a reflechir) 
- *   et une valeurs d'angle
- * - un axe est definie par une origine et une norme
- * - un vecteurs est definie par 2 valeur : deltax et deltay
- * - Generer code OEF correspondant (variable lié)
- * - Creer variable via dessins
  * - Faire les autre TODO
  * - trouver d'autre TODO
- * - affichage miniature graphe
  * - Regler bug drag point du cercle
- * - angle : ne pas donner de nom à tous les points, seulement à l'angle.
  * - correspondance de la taille de la fenêtre avec la taille affichée dans le bloc et avec la 
      taille de la fenêtre générée
  * -  test du code OEF généré, correspondance du dessin dans la fenêtre de fabrication et dans le 
       résultat OEF
  * - test de la sauvegarde (onglet sauvegarde) et rétablissement/chargement.
- * - lien avec les variables : on sélectionne un élément (cercle par exemple), on peut lier avec 
-     une ou plusieurs variables déjà présentes ou pas dans l'onglet préparation. Si les variables 
-     sont vides ou si on les fabrique parce qu'elles n'existent pas, les remplit avec les données 
-     de l'objet (coordonnées du centre+rayon pour un cercle par exemple)
- * - annulation d'une action ?
  */
 
 /*
@@ -87,9 +69,15 @@ EssaimJSXGraph = function(num) {
     this.hauteur_graphe = 200;
     this.largeur_graphe  = 200;
 
-    this.linkedVar = {};
+    /*this.linkedVar = {};*/
 
-    this.saveBoard;
+    /**
+     * Garde les instructions effectuer ainsi qu'un lien vers chaque element crée jusque la
+     * pour le undo, mais aussi pour le chargement via l'essaim
+     **/
+    this.saveboard = [];
+
+    this.currentUndoState = -1;
 };
 
 //------------ Déclaration comme classe dérivée de Essaim -------------//
@@ -215,7 +203,7 @@ EssaimJSXGraph.prototype.creerBloc = function(dataRecup)
 	     })
 	.appendTo($("#edjg_bc_"+this.numero));
     
-    /*Menu qui contient le graphe*/
+      /*Bloc qui contient le graphe*/
     $("<div></div>")
 	.attr({
 	    "id": "box" + this.numero,
@@ -233,21 +221,26 @@ EssaimJSXGraph.prototype.creerBloc = function(dataRecup)
 	.attr({'id':'edjg_resize_bloc_' + this.numero})
 	.appendTo(self.divBloc).hide();
 
-    var $champHauteur = $("<input/>")
+    /*var $champHauteur = */
+    $("<input/>")
 	.attr({'type':'text',
 	       'placeholder':'Hauteur', 
 	       'value':self.hauteur_graphe, 
 	       'id':'champ_hauteur_' + this.numero,
 	       'class':'edjg_resize'})
 	.appendTo($("#edjg_resize_bloc_" + this.numero));
-    var $champLargeur = $("<input />")
+    
+    /*var $champLargeur = */
+    $("<input />")
 	.attr({'type':'text',
 	       'placeholder':'Largeur', 
 	       'value':self.largeur_graphe, 
 	       'id':'champ_largeur_' + this.numero,
 	       'class':'edjg_resize'})
 	.appendTo($("#edjg_resize_bloc_" + this.numero));
-    var $button_validate = $("<input/>")
+    
+    /*var $button_validate = */
+    $("<input/>")
 	.attr({'type':'button', 
 	       'value':'Valider', 
 	       'title':'Valide la sélection',
@@ -259,7 +252,8 @@ EssaimJSXGraph.prototype.creerBloc = function(dataRecup)
 	    $("#edjg_bouton_resize_" + self.numero).show();
 	}).appendTo($("#edjg_resize_bloc_" + this.numero))
 
-    var $button_resize = $("<input />")
+    /*var $button_resize = */
+    $("<input />")
 	.attr({'type':'button',
 	       'value':'Changer taille',
 	       'id':'edjg_bouton_resize_' + this.numero, 
@@ -277,6 +271,9 @@ EssaimJSXGraph.prototype.creerBloc = function(dataRecup)
 	showCopyright: false,
 	pan:{enable:true, needShift:false}
     });
+    if (dataRecup){
+	this.loadFromSave(dataRecup);
+    }
     //TODO : Trouver une solution au probleme du DATA RECUP
     /*essayer de sauvegarder les objets a la main*/
     
@@ -329,8 +326,8 @@ EssaimJSXGraph.prototype.creerBloc = function(dataRecup)
     };
     
     $("<div></div>")
-	.attr({"id":"edjg_left_context_"+self.numero+""})
-	.appendTo("#lp_"+self.numero);
+	.attr({"id":"edjg_left_context_"+this.numero})
+	.appendTo("#edjg_lm_"+this.numero);
     
     
     /******************************
@@ -358,10 +355,8 @@ EssaimJSXGraph.prototype.creerBloc = function(dataRecup)
     bouton_composant_editJSXGraph.innerHTML = "Composants";
     bouton_composant_editJSXGraph.className = "Rcl_Editor_Button_Composant";
     bouton_composant_editJSXGraph.onclick = function() {
-	var nom = "editJSXGraph" + this.id.slice("boutonComposantFD".length,
-						 this.id.length);
-	var nomEssaim = this.id.slice("boutonComposantFD".length, this.id
-				      .length);
+	var nom = "editJSXGraph" + this.id.slice("boutonComposantFD".length, this.id.length);
+	var nomEssaim = this.id.slice("boutonComposantFD".length, this.id.length);
 	var ind = rucheSys.rechercheIndice(nomEssaim, rucheSys.listeBlocPrepa);
 	var essaim = rucheSys.listeBlocPrepa[ind];
     };
@@ -376,7 +371,6 @@ EssaimJSXGraph.prototype.creerBloc = function(dataRecup)
     EssaimJSXGraph.prototype.initEnonce.call(this);
     EssaimJSXGraph.prototype.initAnalyse.call(this);
 };
-
 
 EssaimJSXGraph.prototype.nouveauComposant = function(classeComposant) {
     rucheSys.ajoutComposantEssaim("editJSXGraph" + this.nom,
@@ -596,50 +590,25 @@ EssaimJSXGraph.prototype.menuOptions = function(element) {
 		self.removeElement(element);
 		self.point = [];
 	    }
-	}
-    };
-    options.point = {
+	},
+	
 	lier: {
 	    nom: "Lier",
-	    callback: function() {
-		var options = getUsableVar();
-		options["Defaut"] = "Default";
-		
-		$("#edjg_left_context_"+self.numero).show();
-		$("<p></p>")
-		    .html("X")
-		    .appendTo($("#edjg_left_context_"+self.numero));
-		
-		createOption(options, $("#edjg_left_context_"+self.numero), "optx_"+self.numero);
-		$("<p></p>")
-		    .html("Y")
-		    .appendTo($("#edjg_left_context_"+self.numero));
-		
-		createOption(options,  $("#edjg_left_context_"+self.numero),"opty_"+self.numero);
-		
-		$("<input/>")
-		    .attr({"type":"button", "value":"Valider"})
-		    .appendTo($("#edjg_left_context_"+self.numero))
-		    .click(function(){
-			
-			var x = $("#optx_"+self.numero).val();
-			var y = $("#opty_"+self.numero).val();
-			if (x !== "Defaut"){
-			    element.addConstraint([function(){
-				return getValueVar(options[x])}, element.Y()]);
-			}
-			
-			if (y !== "Defaut"){
-			    element.addConstraint([element.X(), 
-						   function(){
-						       return getValueVar(options[y])}]);   
-			}
-			self.hideLeftContext();
-			self.brd.fullUpdate();
-		    });
+	    callback:function(){
+		self.linkedVar(element);
 	    }
 	}
     };
+    /*options.point = {
+	lier: {
+	    nom: "Lier",
+	    callback: function() {
+		console.log(self);
+		self.linkedVar(element);
+	    }
+	}
+    };*/
+    
     options.image = {
 	resize: {
 	    nom: "Changer la taille",
@@ -671,7 +640,7 @@ EssaimJSXGraph.prototype.menuOptions = function(element) {
 	}	
     };
 
-    options.angle = {
+    /*options.angle = {
 	lier:{
 	    nom: "Lier",
 	    callback: function(){
@@ -702,7 +671,7 @@ EssaimJSXGraph.prototype.menuOptions = function(element) {
 		self.brd.fullUpdate();
 	    }
 	}
-    }
+    }*/
     return options;
 };
 
@@ -1199,6 +1168,7 @@ EssaimJSXGraph.prototype.initBoutonAction = function(parent) {
        * - save (sauvegarder des objets dans une boîte à dessins)
        * - supprimer (à mettre plus tard dans le menu contextuel)
        * - multi-selection
+       * - undo
        */
     var $button_libre = $("<input/>")
 	.attr({"type":"button",
@@ -1267,6 +1237,15 @@ EssaimJSXGraph.prototype.initBoutonAction = function(parent) {
 	.click(function(event) {
             self.saveSelection(self.brd.objects);
 	});
+
+    var $undo = $("<input/>")
+	.attr({"type":"button",
+	       "value":"Annuler",
+	       "title":"Permet de revenir à un état précédent"})
+	.appendTo($div_bouton_action)
+	.click(function(){
+	    self.undo();
+	})
     
     EssaimJSXGraph.prototype.$button_libre = $button_libre;
 };
@@ -1279,11 +1258,12 @@ EssaimJSXGraph.prototype.initBoutonAction = function(parent) {
  * @param $left_panel - panneau latéral gauche qui nécessite un redimensionnement si un
  * redimensionnement a lieu
  */
-EssaimJSXGraph.prototype.initEventListener = function(/*$top_panel, $left_panel*/) {
+EssaimJSXGraph.prototype.initEventListener = function() {
     var self = this;
     var $top_panel = $("#edjg_tm_"+this.numero);
     var $left_panel = $("#edjg_lm_"+this.numero);
     this.surpage.on("resize", function() {
+	console.log("resize");
         self.brd.resizeContainer(self.surpage.width() -
 				 GLOB_largeur, self.surpage.height() - GLOB_hauteur);
 	self.brd.zoom100();
@@ -1325,12 +1305,13 @@ EssaimJSXGraph.prototype.initEventListener = function(/*$top_panel, $left_panel*
                      * pour faire les points plus petit
                      */
                     if (mode !== GLOB.point) {
-                        point = brd.create("point", userCoord, {
+                        point = /*brd.*/self.create("point", userCoord, {
+			    name:"",
                             size: 1
                         });
                     } else {
-                        point = brd.create("point", userCoord);
-                    }
+			point = /*brd.*/self.create("point", userCoord, {size:2});
+		    }
                 }
                 objet = point;
                 self.point.push(point);
@@ -1353,19 +1334,19 @@ EssaimJSXGraph.prototype.initEventListener = function(/*$top_panel, $left_panel*
                     } else if (self.point.length === 2) {
                         brd.removeObject(self.previsualisedObject);
                         self.previsualisedObject = null;
-                        objet = brd.create(self.mode, self.point);
+                        objet = self.create(self.mode, self.point);
                         self.point = [];
                     }
                     break;
                 case GLOB.fleche:
                     if (self.point.length === 2) {
-                        objet = brd.create(self.mode, self.point);
+                        objet = self.create(self.mode, self.point);
                         self.point = [];
                     }
                     break;
                 case GLOB.segment:
                     if (self.point.length === 2) {
-                        objet = brd.create(self.mode, self.point);
+                        objet = self.create(self.mode, self.point);
                         self.point = [];
                     }
                     break;
@@ -1377,7 +1358,7 @@ EssaimJSXGraph.prototype.initEventListener = function(/*$top_panel, $left_panel*
                     break;
                 case GLOB.angle:
                     if (self.point.length === 3) {
-                        objet = brd.create(self.mode, self.point);
+			objet = self.create(self.mode, self.point);
                         self.point = [];
                     }
                     break;
@@ -1468,6 +1449,7 @@ EssaimJSXGraph.prototype.saveSelection = function(objects) {
         alert(err);
     });
 };
+
 /**
  * fonction qui charge l'élément selectionné
  * @param name - Nom de l'élément que l'on va charger
@@ -1564,13 +1546,14 @@ EssaimJSXGraph.prototype.createDraggableAxis = function(point) {
  * @param element - Element dont on souhaite supprimer tout les elements lié
  */
 EssaimJSXGraph.prototype.removeElement = function(element) {
+    this.remove(element.id);
     for (var i in element.childElements) {
-        this.brd.removeObject(this.brd.objects[i]);
+        this.remove(i);
     }
     for (var i in element.ancestors) {
-        this.brd.removeObject(this.brd.objects[i]);
+        this.remove(i);
     }
-    this.brd.removeObject(element);
+    
 };
 
 /**
@@ -1685,6 +1668,498 @@ EssaimJSXGraph.prototype.switchGrid = function(){
 }
 
 
+/**
+ * Fonction qui permet de créer un element sur la brd.
+ * Cette fonction doit necessairement etre utiliser pour que le undo et la sauvegarde dans
+ * l'essaim fonctionne, sans cela ça ne marcherais pas.
+ */
+EssaimJSXGraph.prototype.create = function(type, position, parameter){
+    console.log(position);
+    var element = this.brd.create(type, position, parameter);
+    var pos = [];
+    for (var i in position){
+	if (position[i].id){
+	    pos.push(position[i].id);
+	}else{
+	    pos.push(position[i]);
+	}
+	console.log("YOLO : ",pos[i]);
+    }
+    var newAction = {
+	"action":"create",
+	"type":type,
+	"position":pos,
+	"parameter":parameter,
+	"id":element.id
+    }
+    this.saveboard.push(newAction);
+    this.currentUndoState++;
+    /*console.log(this.saveboard);*/
+    return element;
+}
+
+/**
+ * Fonction qui permet de supprimer un element sur la brd.
+ * Cette fonction doit necessairement etre utiliser pour que le undo et la sauvegarde dans l'essaim
+ * fonctionne correctement, sans cela, ça ne marcherais pas.
+ */
+EssaimJSXGraph.prototype.remove = function(elementID){
+    console.log(elementID);
+    var element = this.brd.objects[elementID];
+    console.log(element);
+    var newAction = {
+	"action":"remove",
+	"type": element.getType(),
+	"position":[element.X(), element.Y()], /*A modifier ici, les coordonnée sont des points
+					       * pour les objet comme les lignes, segment etc.*/
+	"parameter":{name:element.name}, /*Rajouter ici d'autre parametre si besoins*/
+	"id":elementID}
+    this.currentUndoState++;
+    this.saveboard.push(newAction);
+    this.brd.removeObject(this.brd.objects[elementID]);
+    
+}
+
+/**
+ * Fonction qui revient à un état précédent du graphe.
+ */
+EssaimJSXGraph.prototype.undo = function(){
+    if (this.currentUndoState !== -1){
+	var recov = this.saveboard[this.currentUndoState];
+	if (recov.action === "create"){
+	    this.brd.removeObject(this.brd.objects[recov.id]);
+	}else if (recov.action === "remove"){
+	    console.log(recov);
+	    this.brd.create(recov.type, recov.position, recov.parameter)
+	}
+	this.currentUndoState--;
+	this.saveboard.splice(this.currentUndoState+1,1);
+    }else{
+	console.error("Etat initial");
+    }
+}
+
+EssaimJSXGraph.prototype.loadFromSave = function(dataRecup){
+    console.log("NUM : ",this.numero);
+    var recov = dataRecup.saveboard;
+    for (var i in recov){
+	console.log("Recov : ",recov[i]);
+	if (recov[i].action === "create"){
+	    var pos = [];
+	    for (var j in recov[i].position){
+		if (typeof recov[i].position[j] === "string"){
+		    /*var e = this.create(recov[i].type, recov[i].position, recov[i].parameter);*/
+		    console.log("string");
+		}else{
+		    var e = this.create(recov[i].type, recov[i].position, recov[i].parameter);
+		}
+	    }
+	    
+	    console.log("creation", e.id);
+	}else{
+	    this.remove(recov[i].id);
+	}
+    }
+}
+
+/**
+ * Fonction qui permet de lier une variable à un element jsxgraph.
+ */
+EssaimJSXGraph.prototype.linkedVar = function(element){
+    console.log(element.getType());
+    var self = this;
+    var options = getUsableVar();
+    options["Creer"] = "Default";
+    
+    $("#edjg_left_context_"+this.numero).show();
+    switch (element.getType()){
+    case "point":
+	
+	$("<p></p>")
+	    .html("X")
+	    .appendTo($("#edjg_left_context_"+this.numero));
+	
+	createOption(options, $("#edjg_left_context_"+this.numero), "optx_"+this.numero);
+	$("<p></p>")
+	    .html("Y")
+	    .appendTo($("#edjg_left_context_"+this.numero));
+	
+	createOption(options,  $("#edjg_left_context_"+this.numero),"opty_"+this.numero);
+	
+	$("<input/>")
+	    .attr({"type":"button", "value":"Valider"})
+	    .appendTo($("#edjg_left_context_"+this.numero))
+	    .click(function(){
+		
+		var x = $("#optx_"+self.numero).val();
+		var y = $("#opty_"+self.numero).val();
+		console.log(x)
+		if (x === "Creer"){
+		    
+		    x = new Variable(element.id + "_x");
+		    x.format = new Float();
+		    
+		    rucheSys.listeVariables.push(x);
+		    x.ajoutVarDansListe();
+		    x.ajoutVarDansMenuListePreparation();
+		    x.ajoutVarDansMenuListeAnalyse();
+		    x.ajoutBlocDansPreparation();
+		    rucheSys.listeBlocPrepa.push(x);
+
+		    x.setType("real");
+		    x.setDonnees("15");
+		}/*else{
+		    x = getValueVar(options[x]);
+		}*/
+
+		/*if (y === "Creer"){
+		    y = new Variable(element.id + "_y");
+		    y.ajoutVarDansListe();
+		    y.ajoutVarDansMenuListePreparation();
+		    y.ajoutVarDansMenuListeAnalyse();
+		    y.ajoutBlocDansPreparation();
+		}else{
+		    y = getValueVar(options[y]);
+		}*/
+		
+		/*if (x !== "Defaut"){
+		    element.addConstraint([function(){
+			return getValueVar(options[x])}, element.Y()]);
+		}
+		
+		if (y !== "Defaut"){
+		    element.addConstraint([element.X(), 
+					   function(){
+					       return getValueVar(options[y])}]);   
+		}*/
+		self.hideLeftContext();
+		self.brd.fullUpdate();
+	    });
+	break;
+	
+    case "line":
+	$("<p></p>")
+	    .html("X")
+	    .appendTo($("#edjg_left_context_"+this.numero));	
+	createOption(options, $("#edjg_left_context_"+this.numero), "optx_"+this.numero);
+	
+	$("<p></p>")
+	    .html("Y")
+	    .appendTo($("#edjg_left_context_"+this.numero));
+	createOption(options,  $("#edjg_left_context_"+this.numero),"opty_"+this.numero);
+
+	$("<p></p>")
+	    .html("Coefficient directeur")
+	    .appendTo($("#edjg_left_context_"+this.numero));
+	createOption(options,  $("#edjg_left_context_"+this.numero),"coefdir_"+this.numero);
+	
+
+	$("<input/>")
+	    .attr({"type":"button", "value":"Valider"})
+	    .appendTo($("#edjg_left_context_"+this.numero))
+	    .click(function(){
+		
+		var x = $("#optx_"+self.numero).val();
+		var y = $("#opty_"+self.numero).val();
+		var coef_dir = $("#coefdir_"+self.numero).val();
+		console.log(x, y, coef_dir, getValueVar(options[x]), getValueVar(options[y]));
+		if (x !== "Defaut"){
+		    element.point1.addConstraint([function(){
+			return getValueVar(options[x])}, element.point1.Y()]);
+		}
+		
+		if (y !== "Defaut"){
+		    element.point1.addConstraint([element.point1.X(), 
+					   function(){
+					       return getValueVar(options[y])}]);   
+		}
+		
+		if (coef_dir !== "Defaut"){
+		    console.log(options[coef_dir]);
+		    console.log(coef_dir);
+		    element.point2.addConstraint([element.point1.X() + 1, (element.point1.X() + 1) * 
+					      getValueVar(options[coef_dir])]);
+		}
+		console.log(element.point1.X(), element.point1.Y(), element.point2.X(), element.point2.Y());
+		self.hideLeftContext();
+		self.brd.fullUpdate();
+	    });
+	break;
+	
+    case "segment":
+	$("<p></p>")
+	    .html("X1")
+	    .appendTo($("#edjg_left_context_"+this.numero));
+	createOption(options, $("#edjg_left_context_"+this.numero), "optx1_"+this.numero);
+	
+	$("<p></p>")
+	    .html("Y1")
+	    .appendTo($("#edjg_left_context_"+this.numero));
+	createOption(options,  $("#edjg_left_context_"+this.numero),"opty1_"+this.numero);
+	
+	$("<p></p>")
+	    .html("X2")
+	    .appendTo($("#edjg_left_context_"+this.numero));
+	createOption(options,  $("#edjg_left_context_"+this.numero),"optx2_"+this.numero);
+	
+	$("<p></p>")
+	    .html("Y2")
+	    .appendTo($("#edjg_left_context_"+this.numero));
+	createOption(options,  $("#edjg_left_context_"+this.numero),"opty2_"+this.numero);
+	
+	$("<input/>")
+	    .attr({"type":"button", "value":"Valider"})
+	    .appendTo($("#edjg_left_context_"+this.numero))
+	    .click(function(){
+		
+		var x1 = $("#optx1_"+self.numero).val();
+		var y1 = $("#opty1_"+self.numero).val();
+		
+		var x2 = $("#optx2_"+self.numero).val();
+		var y2 = $("#opty2_"+self.numero).val();
+		
+		if (x1 !== "Defaut"){
+		    element.point1.addConstraint([function(){
+			return getValueVar(options[x1])}, element.point1.Y()]);
+		}
+		
+		if (y1 !== "Defaut"){
+		    element.point1.addConstraint([element.point1.X(), 
+					   function(){
+					       return getValueVar(options[y1])}]);   
+		}
+
+		if (x2 !== "Defaut"){
+		    element.point2.addConstraint([ function(){
+			return getValueVar(options[x2])},
+					  element.point2.Y()]);   
+		}
+		
+		if (y2 !== "Defaut"){
+		    element.point2.addConstraint([element.point2.X(), 
+					   function(){
+					       return getValueVar(options[y2])}]);   
+		}
+		self.hideLeftContext();
+		self.brd.fullUpdate();
+	    });
+	break;
+	
+    case "circle":
+	$("<p></p>")
+	    .html("X")
+	    .appendTo($("#edjg_left_context_"+this.numero));
+	createOption(options, $("#edjg_left_context_"+this.numero), "optx_"+this.numero);
+
+	$("<p></p>")
+	    .html("Y")
+	    .appendTo($("#edjg_left_context_"+this.numero));
+	createOption(options,  $("#edjg_left_context_"+this.numero),"opty_"+this.numero);
+	
+	$("<p></p>")
+	    .html("Rayon")
+	    .appendTo($("#edjg_left_context_"+this.numero));
+	createOption(options, $("#edjg_left_context_"+this.numero), "radius_"+this.numero);
+	
+	$("<input/>")
+	    .attr({"type":"button", "value":"Valider"})
+	    .appendTo($("#edjg_left_context_"+this.numero))
+	    .click(function(){	
+		var x = $("#optx_"+self.numero).val();
+		var y = $("#opty_"+self.numero).val();
+		var r = $("#radius_"+self.numero).val();
+		
+		if (x !== "Defaut"){
+		    element.center.addConstraint([function(){
+			return getValueVar(options[x])}, element.center.Y()]);
+		}
+		
+		if (y !== "Defaut"){
+		    element.center.addConstraint([element.center.X(), 
+					   function(){
+					       return getValueVar(options[y])}]);   
+		}
+
+		if (r !== "Defaut"){
+		    element.point2.addConstraint([function(){
+			return element.center.X() + getValueVar(options[r])},
+					      element.center.Y()]);
+		}
+		self.hideLeftContext();
+		self.brd.fullUpdate();
+	    });
+	break;
+	
+    case "arrow":
+		$("#edjg_left_context_"+this.numero).show();
+	$("<p></p>")
+	    .html("X")
+	    .appendTo($("#edjg_left_context_"+this.numero));
+	
+	createOption(options, $("#edjg_left_context_"+this.numero), "optx_"+this.numero);
+	$("<p></p>")
+	    .html("Y")
+	    .appendTo($("#edjg_left_context_"+this.numero));
+	
+	createOption(options,  $("#edjg_left_context_"+this.numero),"opty_"+this.numero);
+	console.log(element);
+	$("<input/>")
+	    .attr({"type":"button", "value":"Valider"})
+	    .appendTo($("#edjg_left_context_"+this.numero))
+	    .click(function(){
+		
+		var x = $("#optx_"+self.numero).val();
+		var y = $("#opty_"+self.numero).val();
+		
+		if (y !== "Defaut" && x !== "Defaut"){
+		    element.point2.addConstraint([
+			function(){
+			    return element.point1.X() + getValueVar(options[x])}, 
+			function(){
+			    return element.point1.Y() + getValueVar(options[y])}]);   
+		}else{
+		    console.error("Les deux champs doivent etre renseigné");
+		}
+		
+		self.hideLeftContext();
+		self.brd.fullUpdate();
+	    });
+	break;
+	
+    case "axis":
+	
+	$("<p></p>")
+	    .html("Origine X")
+	    .appendTo($("#edjg_left_context_"+this.numero));
+	createOption(options, $("#edjg_left_context_"+this.numero), "optox_"+this.numero);
+	
+	$("<p></p>")
+	    .html("Origine Y")
+	    .appendTo($("#edjg_left_context_"+this.numero));
+	createOption(options,  $("#edjg_left_context_"+this.numero),"optoy_"+this.numero);
+	
+	$("<p></p>")
+	    .html("X")
+	    .appendTo($("#edjg_left_context_"+this.numero));
+	createOption(options,  $("#edjg_left_context_"+this.numero),"optx_"+this.numero);
+
+	$("<p></p>")
+	    .html("Y")
+	    .appendTo($("#edjg_left_context_"+this.numero));
+	createOption(options,  $("#edjg_left_context_"+this.numero),"opty_"+this.numero);
+
+	
+	$("<input/>")
+	    .attr({"type":"button", "value":"Valider"})
+	    .appendTo($("#edjg_left_context_"+this.numero))
+	    .click(function(){
+
+		var ox = $("#optox_"+self.numero).val();
+		var oy = $("#optoy_"+self.numero).val();
+		
+		var x = $("#optx_"+self.numero).val();
+		var y = $("#opty_"+self.numero).val();
+		
+		if (ox !== "Defaut"){
+		    element.point1.addConstraint([function(){
+			return getValueVar(options[ox])}, element.point1.Y()]);
+		}
+		
+		if (oy !== "Defaut"){
+		    element.point1.addConstraint([element.point1.X(), 
+					   function(){
+					       return getValueVar(options[oy])}]);   
+		}
+		
+		console.log(x, y, options);
+		if (x !== "Defaut" && y !== "Defaut"){
+		    element.point2.addConstraint([
+		    function(){
+			    return element.point1.X() + getValueVar(options[x])}, 
+			function(){
+			    return element.point1.Y() + getValueVar(options[y])}]);
+		}
+		self.hideLeftContext();
+		self.brd.fullUpdate();
+	    });
+	break;
+	
+    case "angle":
+	
+	$("<p></p>")
+	    .html("X1")
+	    .appendTo($("#edjg_left_context_"+this.numero));
+	createOption(options, $("#edjg_left_context_"+this.numero), "optx1_"+this.numero);
+	
+	$("<p></p>")
+	    .html("Y1")
+	    .appendTo($("#edjg_left_context_"+this.numero));
+	createOption(options,  $("#edjg_left_context_"+this.numero),"opty1_"+this.numero);
+	
+	$("<p></p>")
+	    .html("X2")
+	    .appendTo($("#edjg_left_context_"+this.numero));
+	createOption(options,  $("#edjg_left_context_"+this.numero),"optx2_"+this.numero);
+	
+	$("<p></p>")
+	    .html("Y2")
+	    .appendTo($("#edjg_left_context_"+this.numero));
+	createOption(options,  $("#edjg_left_context_"+this.numero),"opty2_"+this.numero);
+	
+	$("<p></p>")
+	    .html("Angle")
+	    .appendTo($("#edjg_left_context_"+this.numero));
+	createOption(options,  $("#edjg_left_context_"+this.numero),"optangle_"+this.numero);
+	
+	
+	$("<input/>")
+	    .attr({"type":"button", "value":"Valider"})
+	    .appendTo($("#edjg_left_context_"+this.numero))
+	    .click(function(){
+		
+		var x1 = $("#optx1_"+self.numero).val();
+		var y1 = $("#opty1_"+self.numero).val();
+		
+		var x2 = $("#optx2_"+self.numero).val();
+		var y2 = $("#opty2_"+self.numero).val();
+		
+		var angle = $("#optangle_"+self.numero).val();
+				
+		if (x1 !== "Defaut"){
+		    element.point1.addConstraint([function(){
+			return getValueVar(options[x1])}, element.point1.Y()]);
+		}
+		
+		if (y1 !== "Defaut"){
+		    element.point1.addConstraint([element.point1.X(), 
+					   function(){
+					       return getValueVar(options[y1])}]);   
+		}
+
+		if (x2 !== "Defaut"){
+		    element.point2.addConstraint([function(){
+			return getValueVar(options[x2])}, element.point1.Y()]);
+		}
+		
+		if (y2 !== "Defaut"){
+		    element.point2.addConstraint([element.point1.X(), 
+					   function(){
+					       return getValueVar(options[y2])}]);   
+		}
+		
+		if (angle !== "Defaut"){
+		    element.setAngle(function(){ return degToRad(getValueVar(options[angle]))});
+		}
+		
+		self.hideLeftContext();
+		self.brd.fullUpdate();
+	    });
+	break;
+    default:
+	console.error("Pas de lien possible avec ce type d'élément, ou type d'élément inconnu");
+    }
+}
+	
 /**
  * Fonction qui inverse les couleurs d'un objets en fonction de si il est selectionner ou non.
  * @param element - Objet dont on souhaite changer la couleurs
