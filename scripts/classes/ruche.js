@@ -199,8 +199,48 @@ Ruche.prototype.initialisationEvent = function ()
             }
 
             var rect = target.getBoundingClientRect();
+            if (e.target.parentElement.parentElement.className.split(' ')[0] == "Rcl_Droppable") {
+                
+                
+                console.log("Troisieme if de ruche  2");
+                txt = event.target.parentElement.parentElement;
+                elem = document.getElementById(event.dataTransfer.getData("texte"));
+                
+                console.log("-1-");
+                indice = rucheSys.rechercheIndice(txt.id, rucheSys.listeEditeur);
+                console.log("-2-");
+                
+                console.log("Données txt recu = "+ event.dataTransfer.getData('texte'));
+                console.log("txt= "+ txt.nodeName);
+                console.log("id champs visé "+ rucheSys.listeEditeur[indice].nom);
+                console.log("id champs visé (precis) = "+ this.IDvar);
+                nameData = event.dataTransfer.getData('text/plain');
+                estUnBloc = nameData.indexOf("RidPrBloc"); //vaudra 0 ou plus si c'est un bloc
+                console.log("id var recu : "+nameData);
+                
+                if(estUnBloc>-1)
+                    {
+                        //blocDrop=document.getElementById(nameData);
+                        //blocDrop.integrerBlocDansBloc(rucheSys.listeEditeur[indice].nom);
+                        integrerBlocDansBloc(nameData,rucheSys.listeEditeur[indice].nom);// Cette méthode va intégrer un bloc dans un autre. Paramètre :l'id du bloc droppé, l'id de l'éditeur  
+                        
+                    }
+                else
+                    {
+                        
+                        rucheSys.listeEditeur[indice].insertVariableDansEditeur(elem.innerHTML);
+                        console.log("-3-");
+                    }
+                event.target.parentElement.parentElement.style.border = "";
+                console.log("-4-");
+                        
+               
+                
+                
+                compteurDrag = 0; // pour effacer le cadre rouge (Firefox)
+            }
             // Si l'on a bien trouvé une zone droppable, alors on effectue l'action
-            if (target.id != this.id) {
+            else if (target.id != this.id) {
                 if (e.x <= rect.left + rect.width && e.x >= rect.left && e.y <= rect.top + rect.height && e.y >= rect.top) {
                     var txt = target;
                     console.log("format id : "+txt.id);
@@ -2188,7 +2228,7 @@ idEditeur = id de l'éditeur sur lequel l'objet this a été droppé
             
             txtInfo="Est contenu dans le bloc [<b>"+idBlocRecepteur+"</b>]";
             
-            txtInfo="Code contenu : "+ BlocRecepteur.innerHTML; //on copie le code html du for dans le bloc recepteur
+            txtInfo="Code contenu : "+ BlocRecepteur.innerHTML.replace(/<button.*<\/button>/,""); //on copie le code html du for dans le bloc recepteur
             /* On va modeler le code html pour qu'il affice correctement de bloc interne */
             
             txtInfo="<div class='BlocInterieur'>"+txtInfo+"</div>";
@@ -2229,7 +2269,7 @@ idEditeur = id de l'éditeur sur lequel l'objet this a été droppé
             
             txtInfo="Est contenu dans le bloc [<b>"+idBlocRecepteur+"</b>]";
             
-            txtInfo="Code contenu : "+ BlocRecepteur.innerHTML; //on copie le code html du for dans le bloc recepteur
+            txtInfo="Code contenu : "+ BlocRecepteur.innerHTML.replace(/<button.*<\/button>/,""); //on copie le code html du for dans le bloc recepteur
             
             document.getElementById("dansBloc_"+idBlocDrop).innerHTML=txtInfo;
             
