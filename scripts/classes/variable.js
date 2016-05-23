@@ -977,7 +977,8 @@ Variable.prototype.charge = function(elem)
 		default: 
 		    console.error("Erreur d'initialisation d'une variable");
 		}
-		this.format.creerBloc(elem.nom,elem.format.valeur);
+		console.log(this.format);
+		this.format.creerBloc(elem.nom);
 	    }
 
 
@@ -999,10 +1000,20 @@ Variable.prototype.recupDonnees = function()
  * Fonction qui permet de définir les donnée d'une variable
  */
 Variable.prototype.setDonnees = function(valeur){
-    this.format.creerBloc(this.nom, valeur);
-    $("#RidPrBloc_Content_"+this.nom).html(valeur);
+    this.format.creerBloc(this.nom);
+    /*$("#RidPrBloc_Content_"+this.nom).html(valeur);*/
     $("#RidPrBloc_Content_"+this.nom).val(valeur);
-    $("#RidPrBloc_Content_"+this.nom).attr("idEditable", true);
+    /*console.log($("#RidPrBloc_Content_"+this.nom));*/
+    /*editor.insertText(this.getQuillNumber(), valeur);*/
+    this.getQuillNumber();
+}
+
+/**
+ * Fonction qui permet d'avoir le premier numero de l'éditeur quil de la variable.
+ * Si il n'y à pas d'éditeur quill dans la variable, retourne -1.
+ */
+Variable.prototype.getQuillNumber = function(){
+    console.log($("#RidPrBloc_Content_"+this.nom));
 }
 
 /**
