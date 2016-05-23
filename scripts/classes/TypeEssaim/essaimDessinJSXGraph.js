@@ -448,7 +448,7 @@ EssaimJSXGraph.prototype.toOEF = function() {
 	    case GLOB.cercle:
 		OEF += "circle " + brdElement.center.X() + "," +
 		    brdElement.center.Y() + "," + (brdElement.Radius() *
-						   this.brd.unitX) + ",black\n";
+						   this.brd.unitX)/2 + ",black\n";
 		break;
 	    case GLOB.segment:
 		p1 = brdElement.point1;
@@ -644,39 +644,6 @@ EssaimJSXGraph.prototype.menuOptions = function(element) {
 	    }
 	}	
     };
-
-    /*options.angle = {
-	lier:{
-	    nom: "Lier",
-	    callback: function(){
-		var tmp = getUsableVar();
-		element.setAngle(function(){ return degToRad(getValueVar(tmp[0]))});
-		self.brd.fullUpdate();
-	    }
-	}
-    }
-
-    options.segment = {
-	lier:{
-	    nom: "Lier",
-	    callback: function(){
-		var tmp = getUsableVar();
-		element.setAttribute("length", function(){ return getValueVar(tmp[0])});
-		self.brd.fullUpdate();
-	    }
-	}
-    }
-
-    options.circle = {
-	lier:{
-	    nom: "Lier",
-	    callback: function(){
-		var tmp = getUsableVar();
-		element.setRadius((function(){ return getValueVar(tmp[0])}));
-		self.brd.fullUpdate();
-	    }
-	}
-    }*/
     return options;
 };
 
@@ -1814,9 +1781,6 @@ EssaimJSXGraph.prototype.linkedVar = function(element){
 		    x.ajoutVarDansMenuListeAnalyse();
 		    x.ajoutBlocDansPreparation();
 		    rucheSys.listeBlocPrepa.push(x);
-
-		    /*x.setType("real");
-		    x.setDonnees(element.X());*/
 		    x.setVariable("real", element.X());
 		}else{
 		    x = options[x];
@@ -1870,6 +1834,41 @@ EssaimJSXGraph.prototype.linkedVar = function(element){
 		var x = $("#optx_"+self.numero).val();
 		var y = $("#opty_"+self.numero).val();
 		var coef_dir = $("#coefdir_"+self.numero).val();
+
+		if (x === "Creer"){
+		    
+		    x = new Variable(element.id + "_x");
+		    x.format = new Float();
+		    
+		    rucheSys.listeVariables.push(x);
+		    x.ajoutVarDansListe();
+		    x.ajoutVarDansMenuListePreparation();
+		    x.ajoutVarDansMenuListeAnalyse();
+		    x.ajoutBlocDansPreparation();
+		    rucheSys.listeBlocPrepa.push(x);
+		    x.setVariable("real", element.X());
+		}else{
+		    x = options[x];
+		}
+		
+		if (y === "Creer"){
+		    
+		    y = new Variable(element.id + "_y");
+		    y.format = new Float();
+		    
+		    rucheSys.listeVariables.push(y);
+		    y.ajoutVarDansListe();
+		    y.ajoutVarDansMenuListePreparation();
+		    y.ajoutVarDansMenuListeAnalyse();
+		    y.ajoutBlocDansPreparation();
+		    rucheSys.listeBlocPrepa.push(y);
+		    
+		    y.setType("real");
+		    y.setDonnees(element.Y());
+		}else{
+		    y = options[y];
+		}
+		
 /*		console.log(x, y, coef_dir, getValueVar(options[x]), getValueVar(options[y]));*/
 		if (x !== "Defaut"){
 		    element.point1.addConstraint([function(){

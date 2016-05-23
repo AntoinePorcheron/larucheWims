@@ -1001,20 +1001,11 @@ Variable.prototype.recupDonnees = function()
  */
 Variable.prototype.setDonnees = function(valeur){
     this.format.creerBloc(this.nom);
-    /*$("#RidPrBloc_Content_"+this.nom).html(valeur);*/
     $("#RidPrBloc_Content_"+this.nom).val(valeur);
-    /*console.log($("#RidPrBloc_Content_"+this.nom));*/
-    /*editor.insertText(this.getQuillNumber(), valeur);*/
-    this.getQuillNumber();
+    /*Ne verifie pas si le quill existe, il faudrait le faire*/
+    $("#RidPrBloc_Content_"+this.nom).children()[0].innerHTML = valeur;
 }
 
-/**
- * Fonction qui permet d'avoir le premier numero de l'éditeur quil de la variable.
- * Si il n'y à pas d'éditeur quill dans la variable, retourne -1.
- */
-Variable.prototype.getQuillNumber = function(){
-    console.log($("#RidPrBloc_Content_"+this.nom));
-}
 
 /**
  * Fonction qui permet de définir le type d'une variable
