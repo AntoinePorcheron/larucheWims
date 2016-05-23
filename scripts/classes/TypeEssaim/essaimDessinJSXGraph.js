@@ -1807,8 +1807,32 @@ EssaimJSXGraph.prototype.linkedVar = function(element){
 		    rucheSys.listeBlocPrepa.push(x);
 
 		    x.setType("real");
-		    x.setDonnees("15");
-		}/*else{
+		    x.setDonnees(element.X());
+		}else{
+		    x = options[x];
+		}
+
+		if (y === "Creer"){
+		    
+		    y = new Variable(element.id + "_y");
+		    y.format = new Float();
+		    
+		    rucheSys.listeVariables.push(y);
+		    y.ajoutVarDansListe();
+		    y.ajoutVarDansMenuListePreparation();
+		    y.ajoutVarDansMenuListeAnalyse();
+		    y.ajoutBlocDansPreparation();
+		    rucheSys.listeBlocPrepa.push(y);
+
+		    y.setType("real");
+		    y.setDonnees(element.Y());
+		}else{
+		    y = options[y];
+		}
+
+		element.addConstraint([function(){return getValueVar(x)}, function(){return getValueVar(y)}]);
+
+		/*else{
 		    x = getValueVar(options[x]);
 		}*/
 
@@ -2260,6 +2284,7 @@ function createOption(options, parent, id) {
  * @return {Number} -
  */
 function getValueVar(variable) {
+    console.log(variable);
     var err;
     switch (variable.format.nom) {
     case "integer":
@@ -2273,7 +2298,7 @@ function getValueVar(variable) {
             "Type inconnue, la variable ne peut etre traiter.");
     }
     if (isNaN(err)) {
-        console.error("Aucun éléments viable appartient à la chaine " +
+        console.error("Aucun éléments viable appartient à la chaine " ,
 		      variable);
 	return undefined;
     } else {
