@@ -306,27 +306,24 @@ EssaimJSXGraph.prototype.creerBloc = function(dataRecup)
 	    "id":"edjg_zi_"+this.numero})
 	.appendTo($("#edjg_lm_"+this.numero));
     
-    var tmp = $("<div></div>")
+    /*var tmp = */
+    $("<div></div>")
 	.attr({"id":"edjg_ms_"+this.numero})
 	.html("Multi-Select")
-	.appendTo($("#edjg_lm_"+this.numero))
-	/*.append("<div></div>");*/
-	/*.hide();*/
-
-    console.log($("#edjg_ms_"+this.numero));
-    console.log(tmp);
+	.appendTo($("#edjg_lm_"+this.numero));
+    
+    /*console.log($("#edjg_ms_"+this.numero));*/
     
     $("<div></div>")
 	.attr({"id":"edjg_s_"+this.numero})
-    	.appendTo(tmp)
-	/*.hide();*/
-
-    /*$("#edjg_ms_"+this.numero)*/
-    var l = $("<div></div>")
+    	.appendTo($("#edjg_ms_"+this.numero));
+    
+    $("<div></div>")
 	.attr({"id":"edjg_msm_"+this.numero})
-	.appendTo(tmp)
-    console.log(l);
-    /*$("#edjg_ms_"+this.numero)*/
+	.appendTo($("#edjg_lm_"+this.numero))
+	/*.html("Test");*/
+    
+    /*console.log(document.getElementById("edjg_msm_"+this.numero));*/
     var modeSelect = function(event) {
 	self.updateMode(GLOB.libre);
     };
@@ -909,10 +906,12 @@ EssaimJSXGraph.prototype.multiSelect = function() {
 	.empty()
 	.show();
     
-    $("#edjg_msm_"+this.numero)
+    /*$("#edjg_msm_"+this.numero)
 	.empty()
 	.show();
-
+*/
+    console.log(this.numero);
+    console.log(document.getElementById("edjg_msm_"+this.numero));
     var $tout = $("<input />")
 	.appendTo($("#edjg_ms_"+this.numero))
 	.attr({"type": "button",
