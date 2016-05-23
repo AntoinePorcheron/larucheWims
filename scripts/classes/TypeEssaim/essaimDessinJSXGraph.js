@@ -215,17 +215,19 @@ EssaimJSXGraph.prototype.creerBloc = function(dataRecup)
 	    "bottom": 0,
 	    "right": 0})
 	.appendTo($("#edjg_bc_"+this.numero));
-    
+
+	
     /*Facteur de grossisement du graphe en OEF TODO ici ->*/
     $("<div></div>")
 	.attr({'id':'edjg_resize_bloc_' + this.numero})
 	.appendTo(self.divBloc).hide();
 
+	
     /*var $champHauteur = */
     $("<input/>")
 	.attr({'type':'text',
 	       'placeholder':'Hauteur', 
-	       'value':self.hauteur_graphe, 
+	       'value':$("#box" + self.numero).height(), 
 	       'id':'champ_hauteur_' + this.numero,
 	       'class':'edjg_resize'})
 	.appendTo($("#edjg_resize_bloc_" + this.numero));
@@ -234,7 +236,7 @@ EssaimJSXGraph.prototype.creerBloc = function(dataRecup)
     $("<input />")
 	.attr({'type':'text',
 	       'placeholder':'Largeur', 
-	       'value':self.largeur_graphe, 
+	       'value': $("#box" + self.numero).width(), 
 	       'id':'champ_largeur_' + this.numero,
 	       'class':'edjg_resize'})
 	.appendTo($("#edjg_resize_bloc_" + this.numero));
@@ -246,8 +248,8 @@ EssaimJSXGraph.prototype.creerBloc = function(dataRecup)
 	       'title':'Valide la sélection',
 	       'class':'edjg_resize'})
 	.click(function(){
-	    self.hauteur_graphe = $("#champ_hauteur_" + self.numero).val();
-	    self.largeur_graphe = $("#champ_largeur_" + self.numero).val();
+	    self.hauteur_graphe = $($("#box" + self.numero).height()).val();
+	    self.largeur_graphe = $($("#box" + self.numero).width()).val();
 	    $("#edjg_resize_bloc_" + self.numero).hide();
 	    $("#edjg_bouton_resize_" + self.numero).show();
 	}).appendTo($("#edjg_resize_bloc_" + this.numero))
@@ -2173,7 +2175,7 @@ EssaimJSXGraph.prototype.linkedVar = function(element){
  */
 function switchSelectedElement(element, selected){
     if (selected){
-	element.setAttribute({"strokeColor":"#00ff00"});
+	element.setAttribute({"strokeColor":"#FF7C00"});
     }else{
 	if (element.getType() === "point"){
 	    element.setAttribute({"strokeColor":"#ff0000"});
