@@ -21,11 +21,14 @@ function BoucleFor(numero)
 	 * spécifique pour une instruction de type "boucle for".
 	 */
 	{
-
+        console.log("Entrée dans creerBloc (spec)");
 		// Récupération des blocs et créations des nouveaux
 		var bloc_pere = document.getElementById("Rid_Prep_Blocs"); 
 		var liste = document.createElement("LI");
 		var div_fils = document.createElement("DIV");
+        var div_blocDansBloc = document.createElement("DIV");
+        var div_appartenanceBloc = document.createElement("DIV");
+        var div_blocPossede = document.createElement("DIV");
 		liste.id = "RidPrBloc_"+this.nom;
         var posDrag = document.createAttribute("posdrag");
         posDrag.value=0;
@@ -277,6 +280,8 @@ function BoucleFor(numero)
 		txt_debut = document.createTextNode("\r\nPour");
 		txt_fin = document.createTextNode("\r\njusqu'à");
 		txt_instruction = document.createTextNode("\r\nInstructions");
+        txt_Bloc = document.createTextNode("Glisser un bloc ci-dessous pour l'insérer");
+        txt_Appartenance = document.createTextNode("");
 
 		//Ajout des éléments dans le div
 		div_fils.appendChild(button);
@@ -290,12 +295,22 @@ function BoucleFor(numero)
 		div_fils.appendChild(div_forFin);
 		
 		div_fils.appendChild(txt_instruction);
+        div_appartenanceBloc.appendChild(txt_Appartenance);
+        div_blocPossede.appendChild(txt_Appartenance);
 		div_fils.appendChild(div_forInstruction);
+       
 
 		liste.className = "Rcl_Bloc";
 		div_fils.className = "Rcl_Bloc_Interne";
-
+		div_blocDansBloc.className = "Rcl_Bloc_Interne";
+        div_appartenanceBloc.className = "Rcl_Bloc_Interne_appartenance";
+        div_appartenanceBloc.id = "indicAppartenance"+this.nom;
+        div_blocPossede.className = "Rcl_Bloc_Interne_estDansBloc";
+        div_blocPossede.id = "dansBloc_"+liste.id;
+        
 		liste.appendChild(div_fils);
+        liste.appendChild(div_blocPossede);
+        liste.appendChild(div_appartenanceBloc);
 		bloc_pere.appendChild(liste);
 
 		//Création et ajout des éditeurs dans la liste des éditeurs
@@ -360,7 +375,41 @@ function BoucleFor(numero)
 
 		return "\\for{"+rucheSys.listeEditeur[indice1].toOEF()+" to "+rucheSys.listeEditeur[indice2].toOEF()+"}\n 	{"+rucheSys.listeEditeur[indice3].toOEF()+"}\n";
 	}
+    
+    this.integrerBlocDansBloc = function(idBlocDrop,idEditeur)
+    /* Cette méthode permet d'intégrer un bloc dans ce bloc
+    INPUT : 
+    idEditeur = id de l'éditeur sur lequel l'objet this a été droppé
+    */
+    {
+        
+        alert('Dans la fonction blocDansBloc');
+        var nomBlocIntegre = this.nom;
+        
+        // On va rechercher l'objet bloc auxquel appartient l'éditeur
+        
+        // On va intégrer le nom du bloc posé sur le bloc qu'on viens de récupérer
+        
+       // blocCible.div_fils.appendChild(nomBlocIntegre);
+        
+        // On va maintenant afficher dans le bloc qu'on viens d'insérer un champs tete spécifiant qu'il a été intégré dans un autre bloc
+        
+        // Et enfin, intégrer l'encapsulation au sein même du code. 
+    }
+    
+    this.setIndicAppartenance = function(txtAMaj)
+    /* Cette fonction permet d'écrire un nouveau texte indicatif pour montrer quand un bloc for est intégré dans un autre bloc.
+    INPUT :
+    - txtAMaj : le texte qu'on veux insérer dans la fonction.
+    */
+    {
+        txtAMaj=document.getElementById("indicAppartenance"+this.nom);
+    }
+    
+    
 
 
 
 }
+
+

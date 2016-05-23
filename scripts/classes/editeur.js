@@ -13,7 +13,7 @@ function Editeur(id,ruc,bool,toolbar){
 
 	//--------- ATTRIBUTS ---------//
 
-
+    console.log("NCréeation de l'éditeur : "+id);
 	//this.zonedeTexte = editor.getHTML();
 	this.nom = id;				// id de notre éditeur (pour savoir sur lequel on est)
 	this.enonce_Txt = "";		// texte de l'éditeur
@@ -470,11 +470,12 @@ function Editeur(id,ruc,bool,toolbar){
 	 */
 
 	{
-
+        console.log("Entrée dans insertVariable dans editeur (editeur)");
         // Récupère l'objet variable à partir du nom
         var objetVar = rucheSys.varObject(sel0);
         var typeVar = objetVar.format;
         
+        console.log("Id du champs éditeur [editeur !!!] = " + this.nom)
         // Selon le type, insertion d'un span coloré ou d'un dessin ou...
         
         // Détermination du bon éditeur (énoncé ou secondaire)
@@ -508,6 +509,8 @@ function Editeur(id,ruc,bool,toolbar){
         // Cas d'un éditeur secondaire
             
             // Récupère la sélection
+            
+            console.log("Editeur secondaire");
             this.selection = local_editor.getSelection().start;
             var range1 = this.selection;
             

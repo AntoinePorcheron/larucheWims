@@ -25,6 +25,7 @@ function Condition(numero)
 		var bloc_pere = document.getElementById("Rid_Prep_Blocs");
 		var liste = document.createElement("LI");
 		var div_fils = document.createElement("DIV");
+        var div_blocDansBloc = document.createElement("DIV");
 		liste.id = "RidPrBloc_"+this.nom;
         var posDrag = document.createAttribute("posdrag");
         posDrag.value=0;
@@ -354,5 +355,7 @@ function Condition(numero)
 
 		return "\\if{"+rucheSys.listeEditeur[indice1].toOEF()+"}{"+rucheSys.listeEditeur[indice2].toOEF()+"}\n 	{"+rucheSys.listeEditeur[indice3].toOEF()+"}\n";
 	}	
+    
+    
 
 }

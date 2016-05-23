@@ -189,6 +189,7 @@ Ruche.prototype.initialisationEvent = function ()
     if (isChrome) // Si l'on est sur google chrome
     {
         list.addEventListener('drop', function (e) {
+            console.log("Ruche 1");
             e.preventDefault();
             // Si l'on est dans une element fils d'une zone droppable, alors on recupere
             // cette zone afin d'effectuer le drop dedans
@@ -202,7 +203,7 @@ Ruche.prototype.initialisationEvent = function ()
             if (target.id != this.id) {
                 if (e.x <= rect.left + rect.width && e.x >= rect.left && e.y <= rect.top + rect.height && e.y >= rect.top) {
                     var txt = target;
-                    console.log("format id : "+txt.id)
+                    console.log("format id : "+txt.id);
                     var elem = document.getElementById(e.dataTransfer.getData("texte"));
                     var indice = rucheSys.rechercheIndice(txt.id, rucheSys.listeEditeur);
                     rucheSys.listeEditeur[indice].insertVariableDansEditeur(elem.innerHTML);
@@ -213,20 +214,24 @@ Ruche.prototype.initialisationEvent = function ()
     }
     else {
         list.addEventListener('drop', function (event) {
+            console.log("Ruche 2 ");
             event.preventDefault();
             // On recupere la classe droppable
-            var txt, elem, indice;
+            var txt, elem, indice, nameData,estUnBloc; // nameData = le texte recu par les moyens du text/plain dans le cas du bloc dans bloc
+            console.log("innerHTML= "+event.target.namespaceURI);
+            
             if (event.target.className.split(' ')[0] == "Rcl_Droppable") {
 
                 txt = event.target;
                 elem = document.getElementById(event.dataTransfer.getData("texte"));
+                console.log("Premier if de ruche 2");
                 indice = rucheSys.rechercheIndice(txt.id, rucheSys.listeEditeur);
                 rucheSys.listeEditeur[indice].insertVariableDansEditeur(elem.innerHTML);
                 event.target.style.border = "";
                 compteurDrag = 0; // pour effacer le cadre rouge (Firefox)
             }
             else if (event.target.parentElement.className.split(' ')[0] == "Rcl_Droppable") {
-
+                console.log("Deuxième if de ruche 2");
                 txt = event.target.parentElement;
                 elem = document.getElementById(event.dataTransfer.getData("texte"));
                 indice = rucheSys.rechercheIndice(txt.id, rucheSys.listeEditeur);
@@ -235,12 +240,43 @@ Ruche.prototype.initialisationEvent = function ()
                 compteurDrag = 0; // pour effacer le cadre rouge (Firefox)
             }
             else if (event.target.parentElement.parentElement.className.split(' ')[0] == "Rcl_Droppable") {
-
+                
+                
+                console.log("Troisieme if de ruche  2");
                 txt = event.target.parentElement.parentElement;
                 elem = document.getElementById(event.dataTransfer.getData("texte"));
+                
+                console.log("-1-");
                 indice = rucheSys.rechercheIndice(txt.id, rucheSys.listeEditeur);
-                rucheSys.listeEditeur[indice].insertVariableDansEditeur(elem.innerHTML);
+                console.log("-2-");
+                
+                console.log("Données txt recu = "+ event.dataTransfer.getData('texte'));
+                console.log("txt= "+ txt.nodeName);
+                console.log("id champs visé "+ rucheSys.listeEditeur[indice].nom);
+                console.log("id champs visé (precis) = "+ this.IDvar);
+                nameData = event.dataTransfer.getData('text/plain');
+                estUnBloc = nameData.indexOf("RidPrBloc"); //vaudra 0 ou plus si c'est un bloc
+                console.log("id var recu : "+nameData);
+                
+                if(estUnBloc>-1)
+                    {
+                        //blocDrop=document.getElementById(nameData);
+                        //blocDrop.integrerBlocDansBloc(rucheSys.listeEditeur[indice].nom);
+                        integrerBlocDansBloc(nameData,rucheSys.listeEditeur[indice].nom);// Cette méthode va intégrer un bloc dans un autre. Paramètre :l'id du bloc droppé, l'id de l'éditeur  
+                        
+                    }
+                else
+                    {
+                        
+                        rucheSys.listeEditeur[indice].insertVariableDansEditeur(elem.innerHTML);
+                        console.log("-3-");
+                    }
                 event.target.parentElement.parentElement.style.border = "";
+                console.log("-4-");
+                        
+               
+                
+                
                 compteurDrag = 0; // pour effacer le cadre rouge (Firefox)
             }
         }, false);
@@ -334,6 +370,7 @@ Ruche.prototype.initialisationEvent = function ()
     //Quand on lache la selection, on transfere la variable selectionnee dans l'editeur
     if (isChrome) {
         l.addEventListener('drop', function (e) {
+            console.log("Ruche 3");
             e.preventDefault();
 
             var target = e.target;
@@ -355,6 +392,7 @@ Ruche.prototype.initialisationEvent = function ()
     }
     else {
         l.addEventListener('drop', function (event) {
+            console.log("Ruche 4");
             event.preventDefault();
 
             if (event.target.className.split(' ')[0] == "Rcl_Droppable") {
@@ -472,7 +510,7 @@ Ruche.prototype.initialisationEvent = function ()
     //Quand on lache la selection, on transfere la variable selectionnée dans l'editeur
     if (isChrome) {
         l1.addEventListener('drop', function (e) {
-
+            console.log("Ruche 5");
             e.preventDefault();
 
             var target = e.target;
@@ -495,6 +533,7 @@ Ruche.prototype.initialisationEvent = function ()
     }
     else {
         l1.addEventListener('drop', function (event) {
+            console.log("Ruche 6");
             event.preventDefault();
 
             if (event.target.className.split(' ')[0] == "Rcl_Droppable") {
@@ -1223,8 +1262,8 @@ Ruche.prototype.ajoutIfPreparation = function (data)
 
 Ruche.prototype.ajoutForPreparation = function (data)
     /*
-     * Fonction qui ajoute un bloc If dans la partie préparation
-     * paramètre data : vaut quelque chose si le if est créé depuis une sauvegarde
+     * Fonction qui ajoute un bloc For dans la partie préparation
+     * paramètre data : vaut quelque chose si le for est créé depuis une sauvegarde
      */ {
     this.nb_for++;
     var c = new BoucleFor(this.nb_for, data);
@@ -2077,9 +2116,121 @@ Ruche.prototype.reloadEditors = function (elem)
     }
 }
 
+
+
+
 //------------ GLOBAL -----------//
 
 
 $(document).ready(function () {
     rucheSys = new Ruche();
 });
+
+/* Fonction gérant le bloc dans les blocs */
+
+integrerBlocDansBloc = function(idBlocDrop,idEditeur)
+/* Cette méthode permet d'intégrer un bloc dans un autre bloc
+INPUT : 
+idEditeur = id de l'éditeur sur lequel l'objet this a été droppé
+*/
+{
+    
+    console.log('Dans la fonction blocDansBloc');
+    //On extrait toutes les données nécessaires à la chose
+    var BlocIntegre = document.getElementById(idBlocDrop);//On récupère l'objet à intégrer à partir de l'id
+    
+    var cibleEstUnFor = idEditeur.indexOf("for");
+    var cibleEstUnAlors = idEditeur.indexOf("condT");
+    var cibleEstUnSinon = idEditeur.indexOf("condF");
+    
+    if(cibleEstUnFor>-1) // si l'éditeur est contenu par un bloc for
+        {
+            console.log("La cible est un for");
+            var numBlocRecepteur=idEditeur.replace("forInstructionfor",""); // On garde juste le numéro du bloc si c'est un bloc for
+            console.log("Numéro de bloc :",numBlocRecepteur);
+            // On va rechercher l'objet bloc auxquel appartient l'éditeur
+            var idBlocRecepteur = "RidPrBloc_for" + numBlocRecepteur;
+            console.log("Bloc obtenu : ",idBlocRecepteur);
+            
+            
+            BlocRecepteur = document.getElementById(idBlocRecepteur); //on récupère l'objet bloc qui correspond au bon id
+            console.log("(confirmation) : " + BlocRecepteur.id);
+            var txtInfo="Contient le bloc [<b>"+ idBlocRecepteur+"</b>]";
+            
+            // On va intégrer le nom du bloc posé sur le bloc qu'on viens de récupérer
+             
+            console.log("id indic modifié : indicAppartenancefor"+numBlocRecepteur);
+            document.getElementById("indicAppartenancefor1").innerHTML=txtInfo;
+        
+            // On va maintenant afficher dans le bloc qu'on viens d'insérer un champs tete spécifiant qu'il a été intégré dans un autre bloc
+            
+            txtInfo="Est contenu dans le bloc [<b>"+idBlocRecepteur+"</b>]";
+            
+            txtInfo="Code contenu : "+ BlocRecepteur.innerHTML; //on copie le code html du for dans le bloc recepteur
+            /* On va modeler le code html pour qu'il affice correctement de bloc interne */
+            
+            txtInfo="<div class='BlocInterieur'>"+txtInfo+"</div>";
+            document.getElementById("dansBloc_"+idBlocDrop).innerHTML=txtInfo;
+            
+            //On doit maintenant détruire le bloc existant en l'enlevant de la liste des blocs.
+            liste=document.getElementById("RidPrBloc_"+BlocRecepteur.nom);
+            var n = liste.id.slice("RidPrBloc_".length,liste.id.length);
+			//rucheSys.supprInstruction(n,rucheSys.listeBlocPrepa); 
+            
+            
+        
+            // Et enfin, intégrer l'encapsulation au sein même du code. 
+            
+
+            
+        }
+    else if(cibleEstUnAlors>-1)
+        {
+            console.log("La cible est un alors");
+            var numBlocRecepteur=idEditeur.replace("forInstructionfor",""); // On garde juste le numéro du bloc si c'est un bloc for
+            console.log("Numéro de bloc :",numBlocRecepteur);
+            // On va rechercher l'objet bloc auxquel appartient l'éditeur
+            var idBlocRecepteur = "RidPrBloc_condition" + numBlocRecepteur;
+            console.log("Bloc obtenu : ",idBlocRecepteur);
+            
+            
+            BlocRecepteur = document.getElementById(idBlocRecepteur); //on récupère l'objet bloc qui correspond au bon id
+            console.log("(confirmation) : " + BlocRecepteur.id);
+            var txtInfo="Contient le bloc [<b>"+ idBlocRecepteur+"</b>]";
+            
+            // On va intégrer le nom du bloc posé sur le bloc qu'on viens de récupérer
+             
+            console.log("id indic modifié : indicAppartenancefor"+numBlocRecepteur);
+            document.getElementById("indicAppartenancefor1").innerHTML=txtInfo;
+        
+            // On va maintenant afficher dans le bloc qu'on viens d'insérer un champs tete spécifiant qu'il a été intégré dans un autre bloc
+            
+            txtInfo="Est contenu dans le bloc [<b>"+idBlocRecepteur+"</b>]";
+            
+            txtInfo="Code contenu : "+ BlocRecepteur.innerHTML; //on copie le code html du for dans le bloc recepteur
+            
+            document.getElementById("dansBloc_"+idBlocDrop).innerHTML=txtInfo;
+            
+            //On doit maintenant détruire le bloc existant en l'enlevant de la liste des blocs.
+            liste=document.getElementById("RidPrBloc_"+BlocRecepteur.nom);
+            var n = liste.id.slice("RidPrBloc_".length,liste.id.length);
+			rucheSys.supprInstruction(n,rucheSys.listeBlocPrepa); 
+        }
+    
+    idEditeur.replace("#condTCondition",""); //On garde le numéro du bloc si c'est un bloc de condition, dans l'emplacement
+    
+    
+    var nomBlocRecepteur= document.getElementById(idEditeur);
+    
+    
+        
+    // On va rechercher l'objet bloc auxquel appartient l'éditeur
+        
+    // On va intégrer le nom du bloc posé sur le bloc qu'on viens de récupérer
+        
+      // blocCible.div_fils.appendChild(nomBlocIntegre);
+        
+    // On va maintenant afficher dans le bloc qu'on viens d'insérer un champs tete spécifiant qu'il a été intégré dans un autre bloc
+        
+    // Et enfin, intégrer l'encapsulation au sein même du code. 
+}

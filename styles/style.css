@@ -476,6 +476,20 @@ input:-moz-placeholder { color:rgba(255,10,0,0.5); }
 .Rcl_Tab_Onglet_Fake {
 	cursor: auto;
 }
+
+.BlocInterieur {
+    background-color: rgb(209, 209, 209);
+    padding: 12px 15px;
+    border-radius: 10px;
+    box-shadow: 2px 1px 5px rgba(0,0,0,0.2);
+    
+    /*border-bottom: 4px solid rgba(60,60,60,1);*/
+    
+    
+    
+}
+
+
 #Rid_Tab_Onglet_Previsu {
 	background-color: rgba(60,60,60,1);
 	border-bottom: 4px solid rgba(60,60,60,1);
@@ -654,6 +668,19 @@ input:-moz-placeholder { color:rgba(255,10,0,0.5); }
 	outline: none !important;
 	line-height: 1.42;
 	font-size: 1em;
+}
+.Rcl_Bloc_Interne_appartenance {
+    padding: 12px 15px;
+    color: darkgreen;
+}
+
+.Rcl_Bloc_Interne_estDansBloc {
+    /*padding: 12px 15px;*/
+    
+    /*color: crimson;
+    background-color: rgb(169, 169, 169);
+    border-bottom: 4px solid rgba(60,60,60,1);*/
+    
 }
 .Rcl_Prep_Blocs {
 	margin: 20px auto;

@@ -1114,7 +1114,7 @@ Essaim.prototype.trouverPrecedent = function(source,cible)
     while(prev != null && !trouve)
     {
         //next = next.nextElementSibling;//l'élément suivant le bloc droppé
-        prev = prev.previousElementSibling
+        prev = prev.previousElementSibling;
         cpt++;
         if (prev==cible)
          {
