@@ -2172,6 +2172,11 @@ idEditeur = id de l'éditeur sur lequel l'objet this a été droppé
             
             BlocRecepteur = document.getElementById(idBlocRecepteur); //on récupère l'objet bloc qui correspond au bon id
             console.log("(confirmation) : " + BlocRecepteur.id);
+            
+            /* 2e tentative objet */
+            
+            
+            
             var txtInfo="Contient le bloc [<b>"+ idBlocRecepteur+"</b>]";
             
             // On va intégrer le nom du bloc posé sur le bloc qu'on viens de récupérer
@@ -2192,7 +2197,7 @@ idEditeur = id de l'éditeur sur lequel l'objet this a été droppé
             //On doit maintenant détruire le bloc existant en l'enlevant de la liste des blocs.
             liste=document.getElementById("RidPrBloc_"+BlocRecepteur.nom);
             var n = liste.id.slice("RidPrBloc_".length,liste.id.length);
-			//rucheSys.supprInstruction(n,rucheSys.listeBlocPrepa); 
+			//rucheSys.supprInstruction(n,rucheSys.listeBlocPrepa);
             
             
         
