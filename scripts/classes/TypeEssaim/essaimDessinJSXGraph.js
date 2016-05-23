@@ -248,8 +248,8 @@ EssaimJSXGraph.prototype.creerBloc = function(dataRecup)
 	       'title':'Valide la sélection',
 	       'class':'edjg_resize'})
 	.click(function(){
-	    self.hauteur_graphe = $($("#box" + self.numero).height()).val();
-	    self.largeur_graphe = $($("#box" + self.numero).width()).val();
+	    self.hauteur_graphe = /*$(*/$("#box" + self.numero).height()/*).val();*/
+	    self.largeur_graphe = /*$(*/$("#box" + self.numero).width()/*).val();*/
 	    $("#edjg_resize_bloc_" + self.numero).hide();
 	    $("#edjg_bouton_resize_" + self.numero).show();
 	}).appendTo($("#edjg_resize_bloc_" + this.numero))
