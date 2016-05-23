@@ -66,11 +66,11 @@ EssaimJSXGraph = function(num) {
     /*Page de "couverture" pour simplifier le dessin dans un graphe*/
     this.surpage;
 
-    this.hauteur_graphe = 200;
-    this.largeur_graphe  = 200;
+    this.hauteur_graphe/* = 200*/;
+    this.largeur_graphe/*  = 200*/;
 
-    /*this.linkedVar = {};*/
-
+    this.variableLier = {};
+    
     /**
      * Garde les instructions effectuer ainsi qu'un lien vers chaque element crée jusque la
      * pour le undo, mais aussi pour le chargement via l'essaim
@@ -216,7 +216,8 @@ EssaimJSXGraph.prototype.creerBloc = function(dataRecup)
 	    "right": 0})
 	.appendTo($("#edjg_bc_"+this.numero));
 
-	
+    self.hauteur_graphe = $("#box" + self.numero).height();
+    self.largeur_graphe = $("#box" + self.numero).width();
     /*Facteur de grossisement du graphe en OEF TODO ici ->*/
     $("<div></div>")
 	.attr({'id':'edjg_resize_bloc_' + this.numero})
@@ -410,6 +411,10 @@ EssaimJSXGraph.prototype.toOEF = function() {
 	"}\n";
     OEF += "\\text{" + this.nom + " = rangex \\rangex" + this.nom + "\n";
     OEF += "rangey \\rangey" + this.nom + "\n";
+
+    /*TODO la ligne suivante sert juste au test*/
+    /*OEF += "hline 0,0,black\nvline 0,0,black\n"*/
+    
     if (this.grid) {
 	var pas_x = JXG.Options.ticks.ticksDistance;
 	var pas_y = JXG.Options.ticks.ticksDistance;
@@ -429,8 +434,16 @@ EssaimJSXGraph.prototype.toOEF = function() {
 	if (brdElement.getAttribute("visible")) {
 	    switch (brdElement.getType()) {
 	    case GLOB.point:
-		OEF += "point " + brdElement.X() + "," + brdElement.Y() +
-		    ",black\n";
+		var x, y;
+		if (this.variableLier[brdElement.id]){
+		    x = "\\" + this.variableLier[brdElement.id].x;
+		    y = "\\" + this.variableLier[brdElement.id].y;
+		}else{
+		    x = brdElement.X();
+		    y = brdElement.Y();
+		}
+		OEF += "point " + x + "," + y + ",black\n";
+		
 		break;
 	    case GLOB.ligne:
 		p1 = brdElement.point1;
@@ -439,16 +452,40 @@ EssaimJSXGraph.prototype.toOEF = function() {
 		  correspondent à la ligne, car en OEF la primitive ligne ne fait qu'un segment,
 		  on translate donc les points en dehors de la zone de dessin, pour donner
 		  l'illusion d'une droite*/
+		var cd, b;
+		var x1,y1,x2,y2;
+		if (this.variableLier[brdElement.id]){
+		    cd = "\\" + this.variableLier[brdElement.id].cd;
+		    b = "\\" + this.variableLier[brdElement.id].b;
+		    x1 = bord_gauche;
+		    y1 = cd + " * " + x1 + " + " + b ;
+		    x2 = bord_droit;
+		    y2 = cd + " * " + x2 + " + " + b ;
+		}else{
+		    cd =(brdElement.point2.Y() - brdElement.point1.Y())/
+			(brdElement.point2.X() - brdElement.point1.X());
+		    b = brdElement.point1.Y() - (brdElement.point1.X() * cd);
+		    x1 = bord_gauche;
+		    y1 = cd * x1 + b ;
+		    x2 = bord_droit;
+		    y2 = cd * x2 + b ;
+		}
+		
+
+		/*var val_b = element.point1.Y() - (element.point1.X() * getValueVar(coef_dir));
+		
+		y = ax + b;
+		
 		var a = (p2.X() - p1.X()) * coef;
-		var b = (p2.Y() - p1.Y()) * coef;
-		OEF += "line " + (a + p1.X()) + "," + (b + p1.Y()) +
-		    "," + (-a + p2.X()) + "," + (-b + p2.Y()) +
+		var b = (p2.Y() - p1.Y()) * coef;*/
+		
+		OEF += "line " + x1 + "," + y1 +
+		    "," + x2 + "," + y2 +
 		    ",black\n";
 		break;
 	    case GLOB.cercle:
-		OEF += "circle " + brdElement.center.X() + "," +
-		    brdElement.center.Y() + "," + (brdElement.Radius() *
-						   this.brd.unitX)/2 + ",black\n";
+		OEF += "circle " + brdElement.center.X() + "," + brdElement.center.Y() + "," + 
+		    (brdElement.Radius() * 2 * this.brd.unitX) + ",black\n";
 		break;
 	    case GLOB.segment:
 		p1 = brdElement.point1;
@@ -508,6 +545,7 @@ EssaimJSXGraph.prototype.toOEF = function() {
 		var dist1 = distance(p2, intersect1);
 		var dist2 = distance(p2, intersect2);
 		var dist3 = distance(p2, intersect3);
+		console.log(dist1,dist2,dist3);
 		var res;
 		if ((dist1 < dist2) && (dist1 < dist3)) {
 		    res = intersect1;
@@ -545,7 +583,7 @@ EssaimJSXGraph.prototype.toOEF = function() {
 	    }
 	}
     }
-    OEF += "}\n\\text{url" + this.nom + " = draw(" + this.hauteur_graphe + "," + this.largeur_graphe + "\n\\" + this.nom + ")}"
+    OEF += "}\n\\text{url" + this.nom + " = draw(" + this.largeur_graphe + "," + this.hauteur_graphe + "\n\\" + this.nom + ")}\n"
     return OEF;
 };
 
@@ -900,7 +938,6 @@ EssaimJSXGraph.prototype.multiSelect = function() {
 	.attr({"type":"button",
 	       "value":"Ok"})
 	.appendTo($("#edjg_ms_"+this.numero))
-        .html("ok")
 	.click(function(event) {
 	    self.brd.off("up", tmp);
 	    self.$button_libre
@@ -917,12 +954,20 @@ EssaimJSXGraph.prototype.multiSelect = function() {
 	.attr({"type":"button",
 	       "value":"Effacer"})
 	.appendTo($("#edjg_ms_"+this.numero))
-	.html("Effacer").click(function() {
+	.click(function() {
 	    self.cleanMultiSelection();
 	});
-    
-    $("#edjg_s_"+this.numero)
-	.appendTo($("#edjg_ms_"+this.numero));
+
+    /*var $quitMS = $("<input/>")
+	.attr({"type":"button",
+	       "value":"Quitter"})
+	.appendTo($("#edjg_ms_"+this.numero))
+	.click(function(){
+	    $("#edjg_ms_"+self.numero)
+		.empty();
+	})
+    */
+  
     
     /*$("#edjg_msm_"+this.numero)
 	.appendTo($("#edjg_s_"+this.numero));*/
@@ -940,7 +985,15 @@ EssaimJSXGraph.prototype.buildMultiSelectMenu = function() {
     menu.grouper = {
         nom: "Grouper",
         callback: function() {
-            self.brd.create("group", self.stackMultiSelect);
+            var t = self.brd.create("group", self.stackMultiSelect);
+	    $("<input/>")
+		.attr({"type":"button",
+		      "value":"Valider"})
+		.click(function(){
+		    self.cleanMultiSelection();
+		})
+		.appendTo("#edjg_msm_"+self.numero)
+	    $("#edjg_lm_"+self.numero)
         }
     };
     menu.toutsup = {
@@ -948,6 +1001,7 @@ EssaimJSXGraph.prototype.buildMultiSelectMenu = function() {
         callback: function() {
             for (var i = 0; i < self.stackMultiSelect.length; i++) {
                 self.brd.removeObject(self.stackMultiSelect[i]);
+		self.cleanMulstiSelection();
             }
             self.brd.update();
             self.cleanMultiSelection();
@@ -960,6 +1014,9 @@ EssaimJSXGraph.prototype.buildMultiSelectMenu = function() {
             self.cleanMultiSelection();
         }
     };
+
+   
+    
     var key = Object.keys(menu);
     var buildButton = function(option) {
         return $("<input/>")
@@ -1389,6 +1446,8 @@ EssaimJSXGraph.prototype.initEventListener = function() {
     });
 
     this.surpage.on("hide", function(){
+	self.hauteur_graphe = $("#box" + self.numero).height();
+	self.largeur_graphe = $("#box" + self.numero).width();
 	self.hideAllContext();
     });
 };
@@ -1524,13 +1583,6 @@ EssaimJSXGraph.prototype.createDraggableAxis = function(point) {
  */
 EssaimJSXGraph.prototype.removeElement = function(element) {
     this.remove(element.id);
-    for (var i in element.childElements) {
-        this.remove(i);
-    }
-    for (var i in element.ancestors) {
-        this.remove(i);
-    }
-    
 };
 
 /**
@@ -1741,7 +1793,9 @@ EssaimJSXGraph.prototype.loadFromSave = function(dataRecup){
 
 /**
  * Fonction qui permet de lier une variable à un element jsxgraph.
+ * TODO : Refactor la fonction pour la rendre plus légére et lisible
  */
+
 EssaimJSXGraph.prototype.linkedVar = function(element){
 /*    console.log(element.getType());*/
     var self = this;
@@ -1798,12 +1852,15 @@ EssaimJSXGraph.prototype.linkedVar = function(element){
 		    y.ajoutBlocDansPreparation();
 		    rucheSys.listeBlocPrepa.push(y);
 
-		    y.setType("real");
-		    y.setDonnees(element.Y());
+		    y.setVariable("real", element.Y());
 		}else{
 		    y = options[y];
 		}
-		element.addConstraint([function(){return getValueVar(x)}, function(){return getValueVar(y)}]);
+		element.addConstraint([function(){return getValueVar(x)}, 
+				       function(){return getValueVar(y)}]);
+
+		self.variableLier[element.id] = {"x" : element.id + "_x", "y" : element.id + "_y"}
+		
 		self.hideLeftContext();
 		self.brd.fullUpdate();
 	    });
@@ -1824,6 +1881,11 @@ EssaimJSXGraph.prototype.linkedVar = function(element){
 	    .html("Coefficient directeur")
 	    .appendTo($("#edjg_left_context_"+this.numero));
 	createOption(options,  $("#edjg_left_context_"+this.numero),"coefdir_"+this.numero);
+
+	$("<p></p>")
+	    .html("Ordonnée à l'origine")
+	    .appendTo($("#edjg_left_context_"+this.numero));
+	createOption(options,  $("#edjg_left_context_"+this.numero),"b_"+this.numero);
 	
 
 	$("<input/>")
@@ -1834,6 +1896,7 @@ EssaimJSXGraph.prototype.linkedVar = function(element){
 		var x = $("#optx_"+self.numero).val();
 		var y = $("#opty_"+self.numero).val();
 		var coef_dir = $("#coefdir_"+self.numero).val();
+		var b = $("#b_"+self.numero).val();
 
 		if (x === "Creer"){
 		    
@@ -1846,7 +1909,7 @@ EssaimJSXGraph.prototype.linkedVar = function(element){
 		    x.ajoutVarDansMenuListeAnalyse();
 		    x.ajoutBlocDansPreparation();
 		    rucheSys.listeBlocPrepa.push(x);
-		    x.setVariable("real", element.X());
+		    x.setVariable("real", element.point1.X());
 		}else{
 		    x = options[x];
 		}
@@ -1863,31 +1926,60 @@ EssaimJSXGraph.prototype.linkedVar = function(element){
 		    y.ajoutBlocDansPreparation();
 		    rucheSys.listeBlocPrepa.push(y);
 		    
-		    y.setType("real");
-		    y.setDonnees(element.Y());
+		    y.setVariable("real", element.point1.Y());
 		}else{
 		    y = options[y];
 		}
-		
-/*		console.log(x, y, coef_dir, getValueVar(options[x]), getValueVar(options[y]));*/
-		if (x !== "Defaut"){
-		    element.point1.addConstraint([function(){
-			return getValueVar(options[x])}, element.point1.Y()]);
+
+		if (coef_dir === "Creer"){
+		    coef_dir = new Variable(element.id + "_coef_dir");
+		    coef_dir.format = new Float();
+		    rucheSys.listeVariables.push(coef_dir);
+		    coef_dir.ajoutVarDansListe();
+		    coef_dir.ajoutVarDansMenuListePreparation();
+		    coef_dir.ajoutVarDansMenuListeAnalyse();
+		    coef_dir.ajoutBlocDansPreparation();
+		    rucheSys.listeBlocPrepa.push(coef_dir);
+		    coef_dir.setType("real");
+		    var val_coef_dir = (element.point2.Y()-element.point1.Y())/(element.point2.X()-element.point1.X())
+		    if (!isNaN(val_coef_dir)){
+			coef_dir.setDonnees(val_coef_dir);
+		    }else{
+			coef_dir.setDonnees(0);
+		    }
+		}else{
+		    coef_dir = options[coef_dir];
 		}
-		
-		if (y !== "Defaut"){
-		    element.point1.addConstraint([element.point1.X(), 
-					   function(){
-					       return getValueVar(options[y])}]);   
+
+		if (b === "Creer"){
+		    b = new Variable(element.id + "_b");
+		    b.format = new Float();
+		    rucheSys.listeVariables.push(b);
+		    b.ajoutVarDansListe();
+		    b.ajoutVarDansMenuListePreparation();
+		    b.ajoutVarDansMenuListeAnalyse();
+		    b.ajoutBlocDansPreparation();
+		    rucheSys.listeBlocPrepa.push(b);
+		    
+		    var val_b = element.point1.Y() - (element.point1.X() * getValueVar(coef_dir));
+		    b.setVariable("real", val_b);
+		    
+		}else{
+		    b = options[b];
 		}
+
+		element.point1.addConstraint([function(){return getValueVar(x)}, 
+					      function(){return getValueVar(y)}]);
+		element.point2.addConstraint([function(){return getValueVar(x) + 1},
+					      function(){return ((getValueVar(x)+1)*
+								 getValueVar(coef_dir)) + 
+							 getValueVar(b)}]);
+
+		self.variableLier[element.id] = {"x" : element.id + "_x", 
+						 "y" : element.id + "_y",
+						 "cd": element.id + "_coef_dir",
+						 "b" : element.id + "_b"}
 		
-		if (coef_dir !== "Defaut"){
-/*		    console.log(options[coef_dir]);*/
-/*		    console.log(coef_dir);*/
-		    element.point2.addConstraint([element.point1.X() + 1, (element.point1.X() + 1) * 
-					      getValueVar(options[coef_dir])]);
-		}
-/*		console.log(element.point1.X(), element.point1.Y(), element.point2.X(), element.point2.Y());*/
 		self.hideLeftContext();
 		self.brd.fullUpdate();
 	    });
@@ -1925,28 +2017,81 @@ EssaimJSXGraph.prototype.linkedVar = function(element){
 		var x2 = $("#optx2_"+self.numero).val();
 		var y2 = $("#opty2_"+self.numero).val();
 		
-		if (x1 !== "Defaut"){
-		    element.point1.addConstraint([function(){
-			return getValueVar(options[x1])}, element.point1.Y()]);
-		}
-		
-		if (y1 !== "Defaut"){
-		    element.point1.addConstraint([element.point1.X(), 
-					   function(){
-					       return getValueVar(options[y1])}]);   
+		if (x1 === "Creer"){
+		    
+		    x1 = new Variable(element.id + "_x1");
+		    x1.format = new Float();
+		    
+		    rucheSys.listeVariables.push(x1);
+		    x1.ajoutVarDansListe();
+		    x1.ajoutVarDansMenuListePreparation();
+		    x1.ajoutVarDansMenuListeAnalyse();
+		    x1.ajoutBlocDansPreparation();
+		    rucheSys.listeBlocPrepa.push(x1);
+		    x1.setVariable("real", element.point1.X());
+		}else{
+		    x1 = options[x1];
 		}
 
-		if (x2 !== "Defaut"){
-		    element.point2.addConstraint([ function(){
-			return getValueVar(options[x2])},
-					  element.point2.Y()]);   
+		if (y1 === "Creer"){
+		    
+		    y1 = new Variable(element.id + "_y1");
+		    y1.format = new Float();
+		    
+		    rucheSys.listeVariables.push(y1);
+		    y1.ajoutVarDansListe();
+		    y1.ajoutVarDansMenuListePreparation();
+		    y1.ajoutVarDansMenuListeAnalyse();
+		    y1.ajoutBlocDansPreparation();
+		    rucheSys.listeBlocPrepa.push(y1);
+		    y1.setVariable("real", element.point1.Y());
+		}else{
+		    y1 = options[y1];
+		}
+
+		if (x2 === "Creer"){
+		    
+		    x2 = new Variable(element.id + "_x2");
+		    x2.format = new Float();
+		    
+		    rucheSys.listeVariables.push(x2);
+		    x2.ajoutVarDansListe();
+		    x2.ajoutVarDansMenuListePreparation();
+		    x2.ajoutVarDansMenuListeAnalyse();
+		    x2.ajoutBlocDansPreparation();
+		    rucheSys.listeBlocPrepa.push(x2);
+		    x2.setVariable("real", element.point2.X());
+		}else{
+		    x2 = options[x2];
+		}
+
+		if (y2 === "Creer"){
+		    
+		    y2 = new Variable(element.id + "_y2");
+		    y2.format = new Float();
+		    
+		    rucheSys.listeVariables.push(y2);
+		    y2.ajoutVarDansListe();
+		    y2.ajoutVarDansMenuListePreparation();
+		    y2.ajoutVarDansMenuListeAnalyse();
+		    y2.ajoutBlocDansPreparation();
+		    rucheSys.listeBlocPrepa.push(y2);
+		    y2.setVariable("real", element.point2.Y());
+		}else{
+		    y2 = options[y2];
 		}
 		
-		if (y2 !== "Defaut"){
-		    element.point2.addConstraint([element.point2.X(), 
-					   function(){
-					       return getValueVar(options[y2])}]);   
-		}
+		element.point1.addConstraint([function(){return getValueVar(x1)},
+					      function(){return getValueVar(y1)}]);
+		
+		element.point2.addConstraint([function(){return getValueVar(x2)},
+					      function(){return getValueVar(y2)}]);
+		
+		self.variableLier[element.id] = {"x1" : element.id + "_x1", 
+						 "y1" : element.id + "_y1",
+						 "x2" : element.id + "_x2",
+						 "y2" : element.id + "_y2"}
+		
 		self.hideLeftContext();
 		self.brd.fullUpdate();
 	    });
@@ -1976,22 +2121,63 @@ EssaimJSXGraph.prototype.linkedVar = function(element){
 		var y = $("#opty_"+self.numero).val();
 		var r = $("#radius_"+self.numero).val();
 		
-		if (x !== "Defaut"){
-		    element.center.addConstraint([function(){
-			return getValueVar(options[x])}, element.center.Y()]);
-		}
-		
-		if (y !== "Defaut"){
-		    element.center.addConstraint([element.center.X(), 
-					   function(){
-					       return getValueVar(options[y])}]);   
+
+		if (x === "Creer"){
+		    
+		    x = new Variable(element.id + "_x");
+		    x.format = new Float();
+		    
+		    rucheSys.listeVariables.push(x);
+		    x.ajoutVarDansListe();
+		    x.ajoutVarDansMenuListePreparation();
+		    x.ajoutVarDansMenuListeAnalyse();
+		    x.ajoutBlocDansPreparation();
+		    rucheSys.listeBlocPrepa.push(x);
+		    x.setVariable("real", element.center.X());
+		}else{
+		    x = options[x];
 		}
 
-		if (r !== "Defaut"){
-		    element.point2.addConstraint([function(){
-			return element.center.X() + getValueVar(options[r])},
-					      element.center.Y()]);
+		if (y === "Creer"){
+		    
+		    y = new Variable(element.id + "_y");
+		    y.format = new Float();
+		    
+		    rucheSys.listeVariables.push(y);
+		    y.ajoutVarDansListe();
+		    y.ajoutVarDansMenuListePreparation();
+		    y.ajoutVarDansMenuListeAnalyse();
+		    y.ajoutBlocDansPreparation();
+		    rucheSys.listeBlocPrepa.push(y);
+		    y.setVariable("real", element.center.Y());
+		}else{
+		    y = options[y];
 		}
+
+		if (r === "Creer"){
+		    
+		    r = new Variable(element.id + "_r");
+		    r.format = new Float();
+		    
+		    rucheSys.listeVariables.push(r);
+		    r.ajoutVarDansListe();
+		    r.ajoutVarDansMenuListePreparation();
+		    r.ajoutVarDansMenuListeAnalyse();
+		    r.ajoutBlocDansPreparation();
+		    rucheSys.listeBlocPrepa.push(r);
+		    r.setVariable("real", distance(element.center, element.point2));
+		}else{
+		    r = options[r];
+		}
+		element.center.addConstraint([function(){return getValueVar(x);},
+					      function(){return getValueVar(y);}]);
+		element.point2.addConstraint([function(){return element.center.X()+getValueVar(r);},
+					      function(){return element.center.Y()}]);
+
+		self.variableLier[element.id] = {"x" : element.id + "_x", 
+						 "y" : element.id + "_y",
+						 "r" : element.id + "_r"}
+		
 		self.hideLeftContext();
 		self.brd.fullUpdate();
 	    });
@@ -2009,7 +2195,6 @@ EssaimJSXGraph.prototype.linkedVar = function(element){
 	    .appendTo($("#edjg_left_context_"+this.numero));
 	
 	createOption(options,  $("#edjg_left_context_"+this.numero),"opty_"+this.numero);
-/*	console.log(element);*/
 	$("<input/>")
 	    .attr({"type":"button", "value":"Valider"})
 	    .appendTo($("#edjg_left_context_"+this.numero))
@@ -2018,15 +2203,45 @@ EssaimJSXGraph.prototype.linkedVar = function(element){
 		var x = $("#optx_"+self.numero).val();
 		var y = $("#opty_"+self.numero).val();
 		
-		if (y !== "Defaut" && x !== "Defaut"){
-		    element.point2.addConstraint([
-			function(){
-			    return element.point1.X() + getValueVar(options[x])}, 
-			function(){
-			    return element.point1.Y() + getValueVar(options[y])}]);   
+
+		if (x === "Creer"){
+		    
+		    x = new Variable(element.id + "_x");
+		    x.format = new Float();
+		    
+		    rucheSys.listeVariables.push(x);
+		    x.ajoutVarDansListe();
+		    x.ajoutVarDansMenuListePreparation();
+		    x.ajoutVarDansMenuListeAnalyse();
+		    x.ajoutBlocDansPreparation();
+		    rucheSys.listeBlocPrepa.push(x);
+		    x.setVariable("real", element.point2.X() - element.point1.X());
 		}else{
-		    console.error("Les deux champs doivent etre renseigné");
+		    x = options[x];
 		}
+
+		if (y === "Creer"){
+		    
+		    y = new Variable(element.id + "_y");
+		    y.format = new Float();
+		    
+		    rucheSys.listeVariables.push(y);
+		    y.ajoutVarDansListe();
+		    y.ajoutVarDansMenuListePreparation();
+		    y.ajoutVarDansMenuListeAnalyse();
+		    y.ajoutBlocDansPreparation();
+		    rucheSys.listeBlocPrepa.push(y);
+		    y.setVariable("real", element.point2.Y() - element.point1.Y());
+		}else{
+		    y = options[y];
+		}
+
+		element.point2.addConstraint([function(){return element.point1.X()+getValueVar(x)},
+					      function(){return element.point1.Y()+getValueVar(y)}
+					     ]);
+
+		self.variableLier[element.id] = {"x" : element.id + "_x", 
+						 "y" : element.id + "_y"}
 		
 		self.hideLeftContext();
 		self.brd.fullUpdate();
@@ -2067,25 +2282,84 @@ EssaimJSXGraph.prototype.linkedVar = function(element){
 		var x = $("#optx_"+self.numero).val();
 		var y = $("#opty_"+self.numero).val();
 		
-		if (ox !== "Defaut"){
-		    element.point1.addConstraint([function(){
-			return getValueVar(options[ox])}, element.point1.Y()]);
-		}
+
 		
-		if (oy !== "Defaut"){
-		    element.point1.addConstraint([element.point1.X(), 
-					   function(){
-					       return getValueVar(options[oy])}]);   
+		if (ox === "Creer"){
+		    
+		    ox = new Variable(element.id + "_ox");
+		    ox.format = new Float();
+		    
+		    rucheSys.listeVariables.push(ox);
+		    ox.ajoutVarDansListe();
+		    ox.ajoutVarDansMenuListePreparation();
+		    ox.ajoutVarDansMenuListeAnalyse();
+		    ox.ajoutBlocDansPreparation();
+		    rucheSys.listeBlocPrepa.push(ox);
+		    ox.setVariable("real", element.point1.X());
+		}else{
+		    ox = options[ox];
 		}
-		
-/*		console.log(x, y, options);*/
-		if (x !== "Defaut" && y !== "Defaut"){
-		    element.point2.addConstraint([
-		    function(){
-			    return element.point1.X() + getValueVar(options[x])}, 
-			function(){
-			    return element.point1.Y() + getValueVar(options[y])}]);
+
+		if (oy === "Creer"){
+		    
+		    oy = new Variable(element.id + "_oy");
+		    oy.format = new Float();
+		    
+		    rucheSys.listeVariables.push(oy);
+		    oy.ajoutVarDansListe();
+		    oy.ajoutVarDansMenuListePreparation();
+		    oy.ajoutVarDansMenuListeAnalyse();
+		    oy.ajoutBlocDansPreparation();
+		    rucheSys.listeBlocPrepa.push(oy);
+		    oy.setVariable("real", element.point1.Y());
+		}else{
+		    oy = options[oy];
 		}
+
+		if (x === "Creer"){
+		    
+		    x = new Variable(element.id + "_x");
+		    x.format = new Float();
+		    
+		    rucheSys.listeVariables.push(x);
+		    x.ajoutVarDansListe();
+		    x.ajoutVarDansMenuListePreparation();
+		    x.ajoutVarDansMenuListeAnalyse();
+		    x.ajoutBlocDansPreparation();
+		    rucheSys.listeBlocPrepa.push(x);
+		    x.setVariable("real", element.point2.X() - element.point1.X());
+		}else{
+		    x = options[x];
+		}
+
+		if (y === "Creer"){
+		    
+		    y = new Variable(element.id + "_y");
+		    y.format = new Float();
+		    
+		    rucheSys.listeVariables.push(y);
+		    y.ajoutVarDansListe();
+		    y.ajoutVarDansMenuListePreparation();
+		    y.ajoutVarDansMenuListeAnalyse();
+		    y.ajoutBlocDansPreparation();
+		    rucheSys.listeBlocPrepa.push(y);
+		    y.setVariable("real", element.point2.Y() - element.point1.Y());
+		}else{
+		    y = options[y];
+		}
+
+		element.point1.addConstraint([function(){return getValueVar(ox)},
+					      function(){return getValueVar(oy)}]);
+
+		element.point2.addConstraint([function(){return element.point1.X()+getValueVar(x)},
+					      function(){return element.point1.Y()+getValueVar(y)}]
+					    );
+
+		self.variableLier[element.id] = {"ox" : element.id + "_ox", 
+						 "oy" : element.id + "_oy",
+						 "x"  : element.id + "_x",
+						 "y"  : element.id + "_y"}
+
 		self.hideLeftContext();
 		self.brd.fullUpdate();
 	    });
@@ -2131,32 +2405,99 @@ EssaimJSXGraph.prototype.linkedVar = function(element){
 		var y2 = $("#opty2_"+self.numero).val();
 		
 		var angle = $("#optangle_"+self.numero).val();
-				
-		if (x1 !== "Defaut"){
-		    element.point1.addConstraint([function(){
-			return getValueVar(options[x1])}, element.point1.Y()]);
-		}
-		
-		if (y1 !== "Defaut"){
-		    element.point1.addConstraint([element.point1.X(), 
-					   function(){
-					       return getValueVar(options[y1])}]);   
+
+		if (x1 === "Creer"){
+		    
+		    x1 = new Variable(element.id + "_x1");
+		    x1.format = new Float();
+		    
+		    rucheSys.listeVariables.push(x1);
+		    x1.ajoutVarDansListe();
+		    x1.ajoutVarDansMenuListePreparation();
+		    x1.ajoutVarDansMenuListeAnalyse();
+		    x1.ajoutBlocDansPreparation();
+		    rucheSys.listeBlocPrepa.push(x1);
+		    x1.setVariable("real", element.point1.X());
+		}else{
+		    x1 = options[x1];
 		}
 
-		if (x2 !== "Defaut"){
-		    element.point2.addConstraint([function(){
-			return getValueVar(options[x2])}, element.point1.Y()]);
+		if (y1 === "Creer"){
+		    
+		    y1 = new Variable(element.id + "_y1");
+		    y1.format = new Float();
+		    
+		    rucheSys.listeVariables.push(y1);
+		    y1.ajoutVarDansListe();
+		    y1.ajoutVarDansMenuListePreparation();
+		    y1.ajoutVarDansMenuListeAnalyse();
+		    y1.ajoutBlocDansPreparation();
+		    rucheSys.listeBlocPrepa.push(y1);
+		    y1.setVariable("real", element.point1.Y());
+		}else{
+		    y1 = options[y1];
+		}
+
+		if (x2 === "Creer"){
+		    
+		    x2 = new Variable(element.id + "_x2");
+		    x2.format = new Float();
+		    
+		    rucheSys.listeVariables.push(x2);
+		    x2.ajoutVarDansListe();
+		    x2.ajoutVarDansMenuListePreparation();
+		    x2.ajoutVarDansMenuListeAnalyse();
+		    x2.ajoutBlocDansPreparation();
+		    rucheSys.listeBlocPrepa.push(x2);
+		    x2.setVariable("real", element.point2.X());
+		}else{
+		    x2 = options[x2];
+		}
+
+		if (y2 === "Creer"){
+		    
+		    y2 = new Variable(element.id + "_y2");
+		    y2.format = new Float();
+		    
+		    rucheSys.listeVariables.push(y2);
+		    y2.ajoutVarDansListe();
+		    y2.ajoutVarDansMenuListePreparation();
+		    y2.ajoutVarDansMenuListeAnalyse();
+		    y2.ajoutBlocDansPreparation();
+		    rucheSys.listeBlocPrepa.push(y2);
+		    y2.setVariable("real", element.point2.Y());
+		}else{
+		    y2 = options[y2];
 		}
 		
-		if (y2 !== "Defaut"){
-		    element.point2.addConstraint([element.point1.X(), 
-					   function(){
-					       return getValueVar(options[y2])}]);   
+		if (angle === "Creer"){
+		    angle = new Variable(element.id + "_angle");
+		    angle.format = new Float();
+		    
+		    rucheSys.listeVariables.push(angle);
+		    angle.ajoutVarDansListe();
+		    angle.ajoutVarDansMenuListePreparation();
+		    angle.ajoutVarDansMenuListeAnalyse();
+		    angle.ajoutBlocDansPreparation();
+		    rucheSys.listeBlocPrepa.push(angle);
+		    angle.setVariable("real", radToDeg(element.Value()));
+		}else{
+		    angle = options[angle];
 		}
+		element.point1.addConstraint([function(){return getValueVar(x1)}, 
+					      function(){return getValueVar(y1)}]);
+
+		element.point2.addConstraint([function(){return getValueVar(x2)}, 
+					      function(){return getValueVar(y2)}]);
+
+		element.setAngle(function(){return degToRad(getValueVar(angle))});
+
+		self.variableLier[element.id] = {"x1" : element.id + "_x1", 
+						 "y1" : element.id + "_y1",
+						 "x2" : element.id + "_x2",
+						 "y2" : element.id + "_y2",
+						 "a"  : element.id + "_angle"}
 		
-		if (angle !== "Defaut"){
-		    element.setAngle(function(){ return degToRad(getValueVar(options[angle]))});
-		}
 		
 		self.hideLeftContext();
 		self.brd.fullUpdate();
