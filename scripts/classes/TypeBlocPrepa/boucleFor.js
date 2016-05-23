@@ -51,9 +51,7 @@ function BoucleFor(numero)
     
         liste.addEventListener('dragleave', function(e) {
              //Lorsqu'on sort d'une zone de drop.
-           this.style.marginBottom = ""; 
-            this.style.borderBottom="";      
-            this.style.marginTop = "";
+            this.style.borderBottom="";     
             this.style.borderTop="";
             console.log('Sortie de zone');
          });
@@ -67,12 +65,10 @@ function BoucleFor(numero)
                     console.log("over : "+e.clientY);
                     if(bloc_pere.getAttribute("posdrag")<e.clientY)
                     {
-                        this.style.marginBottom = "30px"; //Marge ajoutée
                         this.style.borderBottom="2px dotted red";
                     }
                     else
                     {
-                        this.style.marginTop = "0px";
                         this.style.borderTop="2px dotted red";
                     }
             }
@@ -81,9 +77,7 @@ function BoucleFor(numero)
    		liste.addEventListener('drop', function(e) {
         /*Cette fonction sert à décrire ce qui se passera pour le bloc ciblé ce qui se passera lorsqu'on lachera un objet droppable sur lui */
         
-        this.style.marginBottom = ""; 
             this.style.borderBottom="";      
-            this.style.marginTop = "";
             this.style.borderTop="";
             if(bloc_pere.getAttribute("posdrag")!=""+0){
             bloc_pere.setAttribute("posdrag",0);
@@ -339,8 +333,18 @@ function BoucleFor(numero)
             document.getElementById("forInstruction" + this.nom).className += " Rcl_Mini_Editor_hidden";
         }
     }
-
-	
+    
+    this.agrandirBloc = function()
+    {
+        if(document.getElementById("Rid_Button_MiniMaxi_"+this.nom).className=="Rcl_Button_Maximize")
+        {
+            document.getElementById("Rid_Button_MiniMaxi_"+this.nom).className= "Rcl_Button_Minimize";
+            document.getElementById("RidPrBloc_"+this.nom).className = "Rcl_Bloc";
+            document.getElementById("forDebut" + this.nom).className=document.getElementById("forDebut" + this.nom).className.replace(" Rcl_Mini_Editor_hidden","");
+            document.getElementById("forFin" + this.nom).className=document.getElementById("forFin" + this.nom).className.replace(" Rcl_Mini_Editor_hidden","");
+            document.getElementById("forInstruction" + this.nom).className=document.getElementById("forInstruction" + this.nom).className.replace(" Rcl_Mini_Editor_hidden","");
+        }
+    }
 
 	//---------------------------------//
 
