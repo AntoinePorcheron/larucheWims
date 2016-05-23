@@ -215,12 +215,14 @@ EssaimJSXGraph.prototype.creerBloc = function(dataRecup)
 	    "bottom": 0,
 	    "right": 0})
 	.appendTo($("#edjg_bc_"+this.numero));
-    
+
+	
     /*Facteur de grossisement du graphe en OEF TODO ici ->*/
     $("<div></div>")
 	.attr({'id':'edjg_resize_bloc_' + this.numero})
 	.appendTo(self.divBloc).hide();
 
+	
     /*var $champHauteur = */
     $("<input/>")
 	.attr({'type':'text',
@@ -2173,7 +2175,7 @@ EssaimJSXGraph.prototype.linkedVar = function(element){
  */
 function switchSelectedElement(element, selected){
     if (selected){
-	element.setAttribute({"strokeColor":"#00ff00"});
+	element.setAttribute({"strokeColor":"#FF7C00"});
     }else{
 	if (element.getType() === "point"){
 	    element.setAttribute({"strokeColor":"#ff0000"});
