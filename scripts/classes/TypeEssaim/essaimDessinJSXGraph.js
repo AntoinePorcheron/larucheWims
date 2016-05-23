@@ -906,12 +906,12 @@ EssaimJSXGraph.prototype.multiSelect = function() {
 	.empty()
 	.show();
     
-    /*$("#edjg_msm_"+this.numero)
+    $("#edjg_msm_"+this.numero)
 	.empty()
 	.show();
-*/
-    console.log(this.numero);
-    console.log(document.getElementById("edjg_msm_"+this.numero));
+    
+    /*console.log(this.numero);
+    console.log(document.getElementById("edjg_msm_"+this.numero));*/
     var $tout = $("<input />")
 	.appendTo($("#edjg_ms_"+this.numero))
 	.attr({"type": "button",
@@ -955,8 +955,8 @@ EssaimJSXGraph.prototype.multiSelect = function() {
     $("#edjg_s_"+this.numero)
 	.appendTo($("#edjg_ms_"+this.numero));
     
-    $("#edjg_msm_"+this.numero)
-	.appendTo($("#edjg_s_"+this.numero));
+    /*$("#edjg_msm_"+this.numero)
+	.appendTo($("#edjg_s_"+this.numero));*/
     
     this.brd.on("up", tmp);
 };
@@ -1000,12 +1000,12 @@ EssaimJSXGraph.prototype.buildMultiSelectMenu = function() {
             .html(option.nom)
 	    .click(option.callback);
     };
-    console.log($("#edjg_msm_"+this.numero));
+    /*console.log($("#edjg_msm_"+this.numero));*/
     for (var i = 0; i < key.length; i++) {
 	$("#edjg_msm_"+this.numero).append(buildButton(menu[key[i]]));
     }
-    $("#edjg_msm_"+this.numero)
-	.appendTo($("#edjg_ms_"+this.numero));
+    /*$("#edjg_msm_"+this.numero)
+	.appendTo($("#edjg_ms_"+this.numero));*/
 };
 
 
@@ -1017,7 +1017,7 @@ EssaimJSXGraph.prototype.cleanMultiSelection = function() {
 	switchSelectedElement(this.stackMultiSelect[i], false)
     }
     this.stackMultiSelect = [];
-    $("#edjg_s_"+this.numero).empty();
+    /*$("#edjg_s_"+this.numero).empty();*/
     $("#edjg_msm_"+this.numero).empty();
 };
 
