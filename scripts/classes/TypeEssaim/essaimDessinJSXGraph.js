@@ -306,21 +306,27 @@ EssaimJSXGraph.prototype.creerBloc = function(dataRecup)
 	    "id":"edjg_zi_"+this.numero})
 	.appendTo($("#edjg_lm_"+this.numero));
     
-    $("<div></div>")
+    var tmp = $("<div></div>")
 	.attr({"id":"edjg_ms_"+this.numero})
 	.html("Multi-Select")
 	.appendTo($("#edjg_lm_"+this.numero))
-	.hide();
+	/*.append("<div></div>");*/
+	/*.hide();*/
+
+    console.log($("#edjg_ms_"+this.numero));
+    console.log(tmp);
     
     $("<div></div>")
 	.attr({"id":"edjg_s_"+this.numero})
-    	.appendTo($("#edjg_ms_"+this.numero))
+    	.appendTo(tmp)
+	/*.hide();*/
 
-    $("<div></div>")
+    /*$("#edjg_ms_"+this.numero)*/
+    var l = $("<div></div>")
 	.attr({"id":"edjg_msm_"+this.numero})
-	.appendTo($("#edjg_ms_"+this.numero))
-	.hide();
-    
+	.appendTo(tmp)
+    console.log(l);
+    /*$("#edjg_ms_"+this.numero)*/
     var modeSelect = function(event) {
 	self.updateMode(GLOB.libre);
     };
@@ -898,7 +904,7 @@ EssaimJSXGraph.prototype.multiSelect = function() {
     $("#edjg_ms_"+this.numero)
 	.html("Multi-Select")
 	.show()
-	.appendTo($("#edjg_lm__"+this.numero));
+	.appendTo($("#edjg_lm_"+this.numero));
     $("#edjg_s_"+this.numero)
 	.empty()
 	.show();
@@ -995,12 +1001,15 @@ EssaimJSXGraph.prototype.buildMultiSelectMenu = function() {
             .html(option.nom)
 	    .click(option.callback);
     };
+    console.log($("#edjg_msm_"+this.numero));
     for (var i = 0; i < key.length; i++) {
-	$("#edjg_msm_"+self.numero).append(buildButton(menu[key[i]]));
+	$("#edjg_msm_"+this.numero).append(buildButton(menu[key[i]]));
     }
     $("#edjg_msm_"+this.numero)
 	.appendTo($("#edjg_ms_"+this.numero));
 };
+
+
 /**
  * effacer les selections multiples
  */
@@ -1263,7 +1272,7 @@ EssaimJSXGraph.prototype.initEventListener = function() {
     var $top_panel = $("#edjg_tm_"+this.numero);
     var $left_panel = $("#edjg_lm_"+this.numero);
     this.surpage.on("resize", function() {
-	console.log("resize");
+	/*console.log("resize");*/
         self.brd.resizeContainer(self.surpage.width() -
 				 GLOB_largeur, self.surpage.height() - GLOB_hauteur);
 	self.brd.zoom100();
@@ -1674,7 +1683,7 @@ EssaimJSXGraph.prototype.switchGrid = function(){
  * l'essaim fonctionne, sans cela ça ne marcherais pas.
  */
 EssaimJSXGraph.prototype.create = function(type, position, parameter){
-    console.log(position);
+    /*console.log(position);*/
     var element = this.brd.create(type, position, parameter);
     var pos = [];
     for (var i in position){
@@ -1683,7 +1692,7 @@ EssaimJSXGraph.prototype.create = function(type, position, parameter){
 	}else{
 	    pos.push(position[i]);
 	}
-	console.log("YOLO : ",pos[i]);
+	/*console.log("YOLO : ",pos[i]);*/
     }
     var newAction = {
 	"action":"create",
@@ -1704,9 +1713,9 @@ EssaimJSXGraph.prototype.create = function(type, position, parameter){
  * fonctionne correctement, sans cela, ça ne marcherais pas.
  */
 EssaimJSXGraph.prototype.remove = function(elementID){
-    console.log(elementID);
+/*    console.log(elementID);*/
     var element = this.brd.objects[elementID];
-    console.log(element);
+/*    console.log(element);*/
     var newAction = {
 	"action":"remove",
 	"type": element.getType(),
@@ -1729,7 +1738,7 @@ EssaimJSXGraph.prototype.undo = function(){
 	if (recov.action === "create"){
 	    this.brd.removeObject(this.brd.objects[recov.id]);
 	}else if (recov.action === "remove"){
-	    console.log(recov);
+/*	    console.log(recov);*/
 	    this.brd.create(recov.type, recov.position, recov.parameter)
 	}
 	this.currentUndoState--;
@@ -1740,22 +1749,22 @@ EssaimJSXGraph.prototype.undo = function(){
 }
 
 EssaimJSXGraph.prototype.loadFromSave = function(dataRecup){
-    console.log("NUM : ",this.numero);
+    /*console.log("NUM : ",this.numero);*/
     var recov = dataRecup.saveboard;
     for (var i in recov){
-	console.log("Recov : ",recov[i]);
+/*	console.log("Recov : ",recov[i]);*/
 	if (recov[i].action === "create"){
 	    var pos = [];
 	    for (var j in recov[i].position){
 		if (typeof recov[i].position[j] === "string"){
 		    /*var e = this.create(recov[i].type, recov[i].position, recov[i].parameter);*/
-		    console.log("string");
+/*		    console.log("string");*/
 		}else{
 		    var e = this.create(recov[i].type, recov[i].position, recov[i].parameter);
 		}
 	    }
 	    
-	    console.log("creation", e.id);
+/*	    console.log("creation", e.id);*/
 	}else{
 	    this.remove(recov[i].id);
 	}
@@ -1766,7 +1775,7 @@ EssaimJSXGraph.prototype.loadFromSave = function(dataRecup){
  * Fonction qui permet de lier une variable à un element jsxgraph.
  */
 EssaimJSXGraph.prototype.linkedVar = function(element){
-    console.log(element.getType());
+/*    console.log(element.getType());*/
     var self = this;
     var options = getUsableVar();
     options["Creer"] = "Default";
@@ -1793,7 +1802,6 @@ EssaimJSXGraph.prototype.linkedVar = function(element){
 		
 		var x = $("#optx_"+self.numero).val();
 		var y = $("#opty_"+self.numero).val();
-		console.log(x)
 		if (x === "Creer"){
 		    
 		    x = new Variable(element.id + "_x");
@@ -1806,8 +1814,9 @@ EssaimJSXGraph.prototype.linkedVar = function(element){
 		    x.ajoutBlocDansPreparation();
 		    rucheSys.listeBlocPrepa.push(x);
 
-		    x.setType("real");
-		    x.setDonnees(element.X());
+		    /*x.setType("real");
+		    x.setDonnees(element.X());*/
+		    x.setVariable("real", element.X());
 		}else{
 		    x = options[x];
 		}
@@ -1829,33 +1838,7 @@ EssaimJSXGraph.prototype.linkedVar = function(element){
 		}else{
 		    y = options[y];
 		}
-
 		element.addConstraint([function(){return getValueVar(x)}, function(){return getValueVar(y)}]);
-
-		/*else{
-		    x = getValueVar(options[x]);
-		}*/
-
-		/*if (y === "Creer"){
-		    y = new Variable(element.id + "_y");
-		    y.ajoutVarDansListe();
-		    y.ajoutVarDansMenuListePreparation();
-		    y.ajoutVarDansMenuListeAnalyse();
-		    y.ajoutBlocDansPreparation();
-		}else{
-		    y = getValueVar(options[y]);
-		}*/
-		
-		/*if (x !== "Defaut"){
-		    element.addConstraint([function(){
-			return getValueVar(options[x])}, element.Y()]);
-		}
-		
-		if (y !== "Defaut"){
-		    element.addConstraint([element.X(), 
-					   function(){
-					       return getValueVar(options[y])}]);   
-		}*/
 		self.hideLeftContext();
 		self.brd.fullUpdate();
 	    });
@@ -1886,7 +1869,7 @@ EssaimJSXGraph.prototype.linkedVar = function(element){
 		var x = $("#optx_"+self.numero).val();
 		var y = $("#opty_"+self.numero).val();
 		var coef_dir = $("#coefdir_"+self.numero).val();
-		console.log(x, y, coef_dir, getValueVar(options[x]), getValueVar(options[y]));
+/*		console.log(x, y, coef_dir, getValueVar(options[x]), getValueVar(options[y]));*/
 		if (x !== "Defaut"){
 		    element.point1.addConstraint([function(){
 			return getValueVar(options[x])}, element.point1.Y()]);
@@ -1899,12 +1882,12 @@ EssaimJSXGraph.prototype.linkedVar = function(element){
 		}
 		
 		if (coef_dir !== "Defaut"){
-		    console.log(options[coef_dir]);
-		    console.log(coef_dir);
+/*		    console.log(options[coef_dir]);*/
+/*		    console.log(coef_dir);*/
 		    element.point2.addConstraint([element.point1.X() + 1, (element.point1.X() + 1) * 
 					      getValueVar(options[coef_dir])]);
 		}
-		console.log(element.point1.X(), element.point1.Y(), element.point2.X(), element.point2.Y());
+/*		console.log(element.point1.X(), element.point1.Y(), element.point2.X(), element.point2.Y());*/
 		self.hideLeftContext();
 		self.brd.fullUpdate();
 	    });
@@ -2026,7 +2009,7 @@ EssaimJSXGraph.prototype.linkedVar = function(element){
 	    .appendTo($("#edjg_left_context_"+this.numero));
 	
 	createOption(options,  $("#edjg_left_context_"+this.numero),"opty_"+this.numero);
-	console.log(element);
+/*	console.log(element);*/
 	$("<input/>")
 	    .attr({"type":"button", "value":"Valider"})
 	    .appendTo($("#edjg_left_context_"+this.numero))
@@ -2095,7 +2078,7 @@ EssaimJSXGraph.prototype.linkedVar = function(element){
 					       return getValueVar(options[oy])}]);   
 		}
 		
-		console.log(x, y, options);
+/*		console.log(x, y, options);*/
 		if (x !== "Defaut" && y !== "Defaut"){
 		    element.point2.addConstraint([
 		    function(){
@@ -2284,13 +2267,14 @@ function createOption(options, parent, id) {
  * @return {Number} -
  */
 function getValueVar(variable) {
-    console.log(variable);
+/*    console.log(variable);*/
     var err;
     switch (variable.format.nom) {
     case "integer":
         err = parseInt(variable.recupDonnees(), 10);
         break;
     case "real":
+/*	console.log(variable.recupDonnees());*/
         err = parseFloat(variable.recupDonnees());
         break;
     default:

@@ -1001,8 +1001,13 @@ Variable.prototype.recupDonnees = function()
 Variable.prototype.setDonnees = function(valeur){
     this.format.creerBloc(this.nom, valeur);
     $("#RidPrBloc_Content_"+this.nom).html(valeur);
+    $("#RidPrBloc_Content_"+this.nom).val(valeur);
+    $("#RidPrBloc_Content_"+this.nom).attr("idEditable", true);
 }
 
+/**
+ * Fonction qui permet de définir le type d'une variable
+ */
 Variable.prototype.setType = function(type){
     /*var indice = rucheSys.rechercheIndice(elem.nom, rucheSys.listeVariables);*/
     var element_select = $("#RidPrBloc_Nom_Type_Variable_"+this.nom);
@@ -1045,6 +1050,14 @@ Variable.prototype.setType = function(type){
     default: 
 	console.error("Erreur d'initialisation d'une variable");
     }
+}
+
+/**
+ * Fonction qui permet de définir le type et la valeur d'une variable
+ */
+Variable.prototype.setVariable = function(type, valeur){
+    this.setType(type);
+    this.setDonnees(valeur);
 }
 
 
