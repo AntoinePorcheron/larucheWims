@@ -941,52 +941,53 @@ Variable.prototype.charge = function(elem)
 	 * Paramètre : - elem : objet JSON contenant l'objet Variable à charger.
 	 */
 	{
-		var indice = rucheSys.rechercheIndice(elem.nom, rucheSys.listeVariables);
-		var element_select = $("#RidPrBloc_Nom_Type_Variable_"+this.nom);
-		if (elem.format != null) {
-			switch(elem.format.nom){
+	    var indice = rucheSys.rechercheIndice(elem.nom, rucheSys.listeVariables);
+	    var element_select = $("#RidPrBloc_Nom_Type_Variable_"+this.nom);
+	    if (elem.format != null) {
+		switch(elem.format.nom){
+		    
+		case "integer":
+		    rucheSys.listeVariables[indice].format = new Integer();
+		    element_select.html("Entier");
+		    break;
 
-				case "integer":
-					rucheSys.listeVariables[indice].format = new Integer();
-					element_select.html("Entier");
-					break;
+		case "real":
+		    rucheSys.listeVariables[indice].format = new Float();
+		    element_select.html("Réel");
+		    break;
 
-				case "real":
-					rucheSys.listeVariables[indice].format = new Float();
-					element_select.html("Réel");
-					break;
+		case "matrix":
+		    rucheSys.listeVariables[indice].format = new  Matrix();
+		    element_select.html("Matrice");
+		    break;
 
-				case "matrix":
-					rucheSys.listeVariables[indice].format = new  Matrix();
-					element_select.html("Matrice");
-					break;
+		case "complex":
+		    rucheSys.listeVariables[indice].format = new Complex();
+		    element_select.html("Complexe");
+		    break;
 
-				case "complex":
-					rucheSys.listeVariables[indice].format = new Complex();
-					element_select.html("Complexe");
-					break;
+		case "text":
+		    rucheSys.listeVariables[indice].format = new Text();
+		    element_select.html("Texte");
+		    break;
 
-				case "text":
-					rucheSys.listeVariables[indice].format = new Text();
-					element_select.html("Texte");
-					break;
+		case "function":
+		    rucheSys.listeVariables[indice].format = new Function();
+		    element_select.html("Fonction");
+		    break;
 
-				case "function":
-					rucheSys.listeVariables[indice].format = new Function();
-					element_select.html("Fonction");
-					break;
+		case "autre":
+		    rucheSys.listeVariables[indice].format = new Autre(elem.nom);
+		    element_select.html("Autre");
 
-				case "autre":
-					rucheSys.listeVariables[indice].format = new Autre(elem.nom);
-					element_select.html("Autre");
+		    break;
 
-					break;
-
-				default: 
-					console.log("Erreur d'initialisation d'une variable");
-				}
-			this.format.creerBloc(elem.nom,elem.format.valeur);
+		default: 
+		    console.error("Erreur d'initialisation d'une variable");
 		}
+		console.log(this.format);
+		this.format.creerBloc(elem.nom);
+	    }
 
 
 	}
@@ -1002,6 +1003,72 @@ Variable.prototype.recupDonnees = function()
 	    this.valeur = document.getElementById("RidPrBloc_Content_"+this.nom).value;
 	    return this.valeur;
 	}
+
+/**
+ * Fonction qui permet de définir les donnée d'une variable
+ */
+Variable.prototype.setDonnees = function(valeur){
+    this.format.creerBloc(this.nom);
+    $("#RidPrBloc_Content_"+this.nom).val(valeur);
+    /*Ne verifie pas si le quill existe, il faudrait le faire*/
+    $("#RidPrBloc_Content_"+this.nom).children()[0].innerHTML = valeur;
+}
+
+
+/**
+ * Fonction qui permet de définir le type d'une variable
+ */
+Variable.prototype.setType = function(type){
+    /*var indice = rucheSys.rechercheIndice(elem.nom, rucheSys.listeVariables);*/
+    var element_select = $("#RidPrBloc_Nom_Type_Variable_"+this.nom);
+    switch(type){	
+    case "integer":
+	this.format = new Integer();
+	element_select.html("Entier");
+	break;
+	
+    case "real":
+	this.format = new Float();
+	element_select.html("Réel");
+	break;
+	
+    case "matrix":
+	this.format = new  Matrix();
+	element_select.html("Matrice");
+	break;
+	
+    case "complex":
+	this.format = new Complex();
+	element_select.html("Complexe");
+	break;
+	
+    case "text":
+	this.format = new Text();
+	element_select.html("Texte");
+	break;
+	
+    case "function":
+	this.format = new Function();
+	element_select.html("Fonction");
+	break;
+	
+    case "autre":
+	this.format = new Autre(elem.nom);
+	element_select.html("Autre");
+	break;
+	
+    default: 
+	console.error("Erreur d'initialisation d'une variable");
+    }
+}
+
+/**
+ * Fonction qui permet de définir le type et la valeur d'une variable
+ */
+Variable.prototype.setVariable = function(type, valeur){
+    this.setType(type);
+    this.setDonnees(valeur);
+}
 
 
 	//---------------------------------//
