@@ -1283,14 +1283,14 @@ EssaimJSXGraph.prototype.initBoutonAction = function(parent) {
             self.saveSelection(self.brd.objects);
 	});
 
-    var $undo = $("<input/>")
+    /*var $undo = $("<input/>")
 	.attr({"type":"button",
 	       "value":"Annuler",
 	       "title":"Permet de revenir à un état précédent"})
 	.appendTo($div_bouton_action)
 	.click(function(){
 	    self.undo();
-	})
+	})*/
     
     EssaimJSXGraph.prototype.$button_libre = $button_libre;
 };
