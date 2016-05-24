@@ -457,10 +457,10 @@ EssaimJSXGraph.prototype.toOEF = function() {
 		if (this.variableLier[brdElement.id]){
 		    cd = "\\" + this.variableLier[brdElement.id].cd;
 		    b = "\\" + this.variableLier[brdElement.id].b;
-		    x1 = bord_gauche;
-		    y1 = cd + " * " + x1 + " + " + b ;
-		    x2 = bord_droit;
-		    y2 = cd + " * " + x2 + " + " + b ;
+		    x1 = bord_gauche + "";
+		    y1 = x1 + "*" + cd + "+" + b;
+		    x2 = bord_droit + "";
+		    y2 = x2 + "*" + cd + "+" + b ;
 		}else{
 		    cd =(brdElement.point2.Y() - brdElement.point1.Y())/
 			(brdElement.point2.X() - brdElement.point1.X());
@@ -478,14 +478,25 @@ EssaimJSXGraph.prototype.toOEF = function() {
 		
 		var a = (p2.X() - p1.X()) * coef;
 		var b = (p2.Y() - p1.Y()) * coef;*/
+		console.log(x1,"\n",y1,"\n",x2,"\n",y2);
 		
 		OEF += "line " + x1 + "," + y1 +
 		    "," + x2 + "," + y2 +
 		    ",black\n";
 		break;
 	    case GLOB.cercle:
-		OEF += "circle " + brdElement.center.X() + "," + brdElement.center.Y() + "," + 
-		    (brdElement.Radius() * 2 * this.brd.unitX) + ",black\n";
+		var r;
+		if (this.variableLier[brdElement.id]){
+		    x = "\\" + this.variableLier[brdElement.id].x;
+		    y = "\\" + this.variableLier[brdElement.id].y;
+		    r = "2 * " + this.brd.unitX + " * \\" + this.variableLier[brdElement.id].r;
+		}else{
+		    x = brdElement.center.X();
+		    y = brdElement.center.Y();
+		    r = (brdElement.Radius() * 2 * this.brd.unitX);
+		}
+		
+		OEF += "circle " + x + "," + y + "," + r + ",black\n";
 		break;
 	    case GLOB.segment:
 		p1 = brdElement.point1;
