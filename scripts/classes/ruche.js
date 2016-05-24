@@ -34,6 +34,7 @@ function Ruche() {
     this.listeClasseEssaim = [];    // liste des classes/types d'essaims disponibles
     this.listeComposantEssaim = []; // liste de tous les composants d'essaim créés par l'utilisateur
     this.compteComposantEssaim = []; // compteur des objets composants d'essaim créés par l'utilisateur. Doit être géré EN MEME TEMPS QUE this.listeComposantEssaim
+    /*this.correspondanceBloc [][]; // Tableau en deux dimension. Sert pour mettre en place le bloc dans les blocs. Indice colonne = Indice du bloc. Ligne 1: Si il contient un bloc, son indice y est écrit. Si ==-1 alors non suivi. Ligne 2 : sert à savoir si le bloc doit être visible ou non. Si la valeur est à 1, il est visible. Sinon caché. */
 
     this.nb_reponse = 0;
     this.nb_typeVariable = 0;
@@ -79,7 +80,7 @@ Ruche.prototype.initialisationEvent = function ()
     var isOpera = !!window.opera || navigator.userAgent.indexOf(' OPR/') >= 0;
     var isChrome = !!window.chrome && !isOpera;
     var isFirefox = typeof InstallTrigger !== 'undefined';
-
+    
     /**************************************************************/
 
     // On recupère l'emplacement ou sont stockés les blocs
@@ -2192,6 +2193,7 @@ idEditeur = id de l'éditeur sur lequel l'objet this a été droppé
 */
 {
     
+    
     console.log('Dans la fonction blocDansBloc');
     //On extrait toutes les données nécessaires à la chose
     var BlocIntegre = document.getElementById(idBlocDrop);//On récupère l'objet à intégrer à partir de l'id
@@ -2214,6 +2216,7 @@ idEditeur = id de l'éditeur sur lequel l'objet this a été droppé
             console.log("(confirmation) : " + BlocRecepteur.id);
             
             /* 2e tentative objet */
+            //BlocRecepteur.integrerBlocDansBloc(idBlocDrop,idEditeur);
             
             
             
@@ -2222,7 +2225,7 @@ idEditeur = id de l'éditeur sur lequel l'objet this a été droppé
             // On va intégrer le nom du bloc posé sur le bloc qu'on viens de récupérer
              
             console.log("id indic modifié : indicAppartenancefor"+numBlocRecepteur);
-            document.getElementById("indicAppartenancefor1").innerHTML=txtInfo;
+            /*document.getElementById("indicAppartenancefor1").innerHTML=txtInfo;
         
             // On va maintenant afficher dans le bloc qu'on viens d'insérer un champs tete spécifiant qu'il a été intégré dans un autre bloc
             
@@ -2231,13 +2234,48 @@ idEditeur = id de l'éditeur sur lequel l'objet this a été droppé
             txtInfo="Code contenu : "+ BlocRecepteur.innerHTML.replace(/<button.*<\/button>/,""); //on copie le code html du for dans le bloc recepteur
             /* On va modeler le code html pour qu'il affice correctement de bloc interne */
             
-            txtInfo="<div class='BlocInterieur'>"+txtInfo+"</div>";
+            /*txtInfo="<div class='BlocInterieur'>"+txtInfo+"</div>";
             document.getElementById("dansBloc_"+idBlocDrop).innerHTML=txtInfo;
             
             //On doit maintenant détruire le bloc existant en l'enlevant de la liste des blocs.
             liste=document.getElementById("RidPrBloc_"+BlocRecepteur.nom);
-            var n = liste.id.slice("RidPrBloc_".length,liste.id.length);
+            var n = liste.id.slice("RidPrBloc_".length,liste.id.length);*/
 			//rucheSys.supprInstruction(n,rucheSys.listeBlocPrepa);
+            
+            
+            /*======================================================================
+            Autre stratégie : on utilise un emplacement spécialement prévu à cet effet dans l'objet
+            ========================================================================*/
+            var nomBlocIntegre = BlocRecepteur.nom;
+            
+            console.log("Bloc Intégré = "+BlocIntegre);
+            
+            var codeVisuel; //le code que l'on va intégrer dans le code pour le visuel
+            
+            console.log("Bloc Recepteur : "+BlocRecepteur);
+            console.log("Numéro de bloc :",numBlocRecepteur);
+        
+        
+            BlocIntegre.hidden = true; // on rend le blocIntegre invisible.
+            /*ETAPE COURANTE*/
+            
+            
+            
+            
+            BlocRecepteur.BDB_Instruction =BlocIntegre;
+            //BlocRecepteur.setBDB_instruction(BlocIntegre);
+            console.log("Bloc contenu dans "+BlocRecepteur+" : "+BlocRecepteur.BDB_Instruction.id);
+            codeVisuel = BlocRecepteur.BDB_Instruction.innerHTML.replace(/<button.*<\/button>/,"");
+            codeVisuel = "<div class='BlocInterieur'>"+codeVisuel+"</div>";
+            
+            console.log("Code visuel = "+codeVisuel);
+            document.getElementById("indicAppartenancefor"+numBlocRecepteur).innerHTML=codeVisuel;
+            
+        
+            document.getElementById("dansBloc_"+numBlocRecepteur).innerHTML=txtInfo;
+            //BlocIntegre.innerHTML.replace(/<div.*<\/div>,"");
+            BlocIntegre.innerHTML=" ";
+            
             
             
         

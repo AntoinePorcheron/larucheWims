@@ -7,10 +7,15 @@ function BoucleFor(numero)
 {	
 	//--------- ATTRIBUTS ---------//
 
-
+    
 	this.nom = "for" + numero; // nom de l'élément
 	this.proto = "BoucleFor"; // nature de la classe
-
+    
+    /* On prépare pour le bloc dans bloc */
+        
+    this.blocContenu = []; // liste des blocs contenus
+    this.hidden = false; // dit si le bloc doit être caché ou non
+    this.BDB_instructions;//Si il y a un bloc dans le bloc inséré dans le champs instructions
 	
 	//--------- METHODES ----------//
 
@@ -22,7 +27,13 @@ function BoucleFor(numero)
 	 */
 	{
         console.log("Entrée dans creerBloc (spec)");
+        
+        
+        
+        
+        
 		// Récupération des blocs et créations des nouveaux
+        
 		var bloc_pere = document.getElementById("Rid_Prep_Blocs"); 
 		var liste = document.createElement("LI");
 		var div_fils = document.createElement("DIV");
@@ -31,6 +42,8 @@ function BoucleFor(numero)
         var div_blocPossede = document.createElement("DIV");
 		liste.id = "RidPrBloc_"+this.nom;
         var posDrag = document.createAttribute("posdrag");
+        
+        
         posDrag.value=0;
         bloc_pere.setAttributeNode(posDrag);
 		
@@ -321,6 +334,49 @@ function BoucleFor(numero)
 
 	//---------------------------------//
     
+    this.integrerBlocDansBloc = function(idBlocDrop,idEditeur)
+    /* Cette méthode permet d'intégrer un bloc dans ce bloc
+    INPUT : 
+    idEditeur = id de l'éditeur sur lequel l'objet this a été droppé
+    */
+    {
+        
+        alert('Dans la fonction blocDansBloc de FOR');
+        var nomBlocIntegre = this.nom;
+        var BlocIntegre = getElementById("idBlocDrop");
+        var codeVisuel; //le code que l'on va intégrer dans le code pour le visuel
+        var numBlocRecepteur=idEditeur.replace("forInstructionfor",""); // On garde juste le numéro du bloc si c'est un bloc for
+        console.log("Numéro de bloc :",numBlocRecepteur);
+        
+       // this.blocContenu.push(BlocIntegre);// on ajoute le bloc récupéré au tableau
+        
+        BlocIntegre.hidden = true; // on rend le blocIntegre invisible.
+        
+        /*for(var i=0; i< this.blocContenu.length; i++)
+            {
+                var blocTmp=this.blocContenu[i];
+                codeVisuel= codeVisuel+blocTmp.innerHTML.replace(/<button.*<\/button>/,"");
+                    
+                
+            }*/
+        
+        this.BDB_Instruction =BlocIntegre;
+        codeVisuel = this.BDB_Instruction.innerHTML.replace(/<button.*<\/button>/,"");
+        
+        document.getElementById("indicAppartenancefor"+list.id).innerHTML=codeVisuel;
+        
+        
+        document.getElementById("dansBloc_"+numBlocRecepteur).innerHTML=txtInfo;
+        //BlocIntegre.innerHTML.replace(/<div.*<\/div>,"");
+        BlocIntegre.innerHTML=" ";
+        
+    }
+    
+    this.setBDB_instruction = function(blocAbsorbe)
+    {
+        this.BDB_Instruction = blocAbsorbe; 
+    }
+    
     this.reduireBloc = function()
     {
         console.log(this.nom);
@@ -376,19 +432,24 @@ function BoucleFor(numero)
 		if (br.test(rucheSys.listeEditeur[indice3].enonce_Html) == false) {
 			rucheSys.listeEditeur[indice3].enonce_Html = rucheSys.listeEditeur[indice3].enonce_Html.slice(0, rucheSys.listeEditeur[indice3].enonce_Html.length-6);
 		};
-
-		return "\\for{"+rucheSys.listeEditeur[indice1].toOEF()+" to "+rucheSys.listeEditeur[indice2].toOEF()+"}\n 	{"+rucheSys.listeEditeur[indice3].toOEF()+"}\n";
+        if(this.BDB_instruction != null){ // si il y a un bloc inclus on ajoute son toOEF au tout.
+            console.log("1er if de OEF");
+            return "\\for{"+rucheSys.listeEditeur[indice1].toOEF()+" to "+rucheSys.listeEditeur[indice2].toOEF()+"}\n 	{ 1erif "+this.BDB_instruction.toOEF()+"}\n";
+        }
+        else {
+                console.log("1er if de OEF");
+		          return "\\for{"+rucheSys.listeEditeur[indice1].toOEF()+" to "+rucheSys.listeEditeur[indice2].toOEF()+"2eme if}\n 	{"+rucheSys.listeEditeur[indice3].toOEF()+"}\n";
+        }
 	}
     
-    this.integrerBlocDansBloc = function(idBlocDrop,idEditeur)
-    /* Cette méthode permet d'intégrer un bloc dans ce bloc
-    INPUT : 
-    idEditeur = id de l'éditeur sur lequel l'objet this a été droppé
-    */
-    {
+    
         
-        alert('Dans la fonction blocDansBloc');
-        var nomBlocIntegre = this.nom;
+        
+        
+        
+        
+        
+        
         
         // On va rechercher l'objet bloc auxquel appartient l'éditeur
         
@@ -399,7 +460,7 @@ function BoucleFor(numero)
         // On va maintenant afficher dans le bloc qu'on viens d'insérer un champs tete spécifiant qu'il a été intégré dans un autre bloc
         
         // Et enfin, intégrer l'encapsulation au sein même du code. 
-    }
+        
     
     this.setIndicAppartenance = function(txtAMaj)
     /* Cette fonction permet d'écrire un nouveau texte indicatif pour montrer quand un bloc for est intégré dans un autre bloc.
