@@ -1,12 +1,7 @@
-/*TODO : 
- * - Faire les autre TODO
- * - trouver d'autre TODO
- * - Regler bug drag point du cercle
- * - correspondance de la taille de la fenêtre avec la taille affichée dans le bloc et avec la 
-     taille de la fenêtre générée
- * -  test du code OEF généré, correspondance du dessin dans la fenêtre de fabrication et dans le 
-      résultat OEF
- * - test de la sauvegarde (onglet sauvegarde) et rétablissement/chargement.
+/**
+ * TODO : afficher un cadre dans le graphe qui permet de visualiser la taille de l'image générer
+ * TODO : Revoir la génération des axes en OEF
+ * TODO : Corriger bug redimensionnement fenetre
  */
 
 /*
@@ -65,10 +60,18 @@ EssaimJSXGraph = function(num) {
 
     /*Page de "couverture" pour simplifier le dessin dans un graphe*/
     this.surpage;
+    
+    /*Variable qui contiennent la hauteur et la largeurs du graphe pour generer une image de la
+      * taille souhaiter en OEF
+      */
+    this.hauteur_graphe;
+    this.largeur_graphe;
 
-    this.hauteur_graphe/* = 200*/;
-    this.largeur_graphe/*  = 200*/;
 
+    /* Contient les objets qui permette de faire la correspondance entre un element 
+    * JSXGraph et une variable en OEF
+    *
+    */
     this.variableLier = {};
     
     /**
@@ -76,7 +79,8 @@ EssaimJSXGraph = function(num) {
      * pour le undo, mais aussi pour le chargement via l'essaim
      **/
     this.saveboard = [];
-
+    
+    /* Contient l'état courant du tableau, pour savoir dans quel état on est dans le "Anuler"*/
     this.currentUndoState = -1;
 };
 
@@ -218,7 +222,7 @@ EssaimJSXGraph.prototype.creerBloc = function(dataRecup)
 
     self.hauteur_graphe = $("#box" + self.numero).height();
     self.largeur_graphe = $("#box" + self.numero).width();
-    /*Facteur de grossisement du graphe en OEF TODO ici ->*/
+    
     $("<div></div>")
 	.attr({'id':'edjg_resize_bloc_' + this.numero})
 	.appendTo(self.divBloc).hide();
@@ -309,13 +313,11 @@ EssaimJSXGraph.prototype.creerBloc = function(dataRecup)
 	    "id":"edjg_zi_"+this.numero})
 	.appendTo($("#edjg_lm_"+this.numero));
     
-    /*var tmp = */
     $("<div></div>")
 	.attr({"id":"edjg_ms_"+this.numero})
 	.html("Multi-Select")
 	.appendTo($("#edjg_lm_"+this.numero));
     
-    /*console.log($("#edjg_ms_"+this.numero));*/
     
     $("<div></div>")
 	.attr({"id":"edjg_s_"+this.numero})
@@ -324,9 +326,7 @@ EssaimJSXGraph.prototype.creerBloc = function(dataRecup)
     $("<div></div>")
 	.attr({"id":"edjg_msm_"+this.numero})
 	.appendTo($("#edjg_lm_"+this.numero))
-	/*.html("Test");*/
-    
-    /*console.log(document.getElementById("edjg_msm_"+this.numero));*/
+
     var modeSelect = function(event) {
 	self.updateMode(GLOB.libre);
     };
@@ -393,18 +393,27 @@ EssaimJSXGraph.prototype.detruitBloc = function() {
  * @return {string} Code oef généré dans cette fonction
  */
 EssaimJSXGraph.prototype.toOEF = function() {
+
+    /*TODO : Generer les variable necessaire en OEF par rapport au variable lié. En effet,
+    * pour pouvoir faire des objet via des calculs il est necessaire de passer par une variable
+    * intermediaire qui contient la valeur du calcul.*/
+    
     var bord_gauche = this.brd.getBoundingBox()[0];
     var bord_haut = this.brd.getBoundingBox()[1];
     var bord_droit = this.brd.getBoundingBox()[2];
     var bord_bas = this.brd.getBoundingBox()[3];
+
     /*On recupère la hauteur et la largeur de la zone de dessin, en terme de 
       coordonnées du dessin*/
     var largeur = bord_droit - bord_gauche;
     var hauteur = bord_haut - bord_bas;
+    
     /*Taille de la diagonale de la zone de dessin*/
     var coef = Math.sqrt(largeur * largeur + hauteur * hauteur);
+    
     var coef_dir_diagonal = (bord_haut - bord_bas) / (bord_droit -
 						      bord_gauche);
+    
     var OEF = "\\text{rangex" + this.nom + " = " + bord_gauche + "," +
 	bord_droit + "}\n";
     OEF += "\\text{rangey" + this.nom + " = " + bord_bas + "," + bord_haut +
@@ -412,9 +421,6 @@ EssaimJSXGraph.prototype.toOEF = function() {
     OEF += "\\text{" + this.nom + " = rangex \\rangex" + this.nom + "\n";
     OEF += "rangey \\rangey" + this.nom + "\n";
 
-    /*TODO la ligne suivante sert juste au test*/
-    /*OEF += "hline 0,0,black\nvline 0,0,black\n"*/
-    
     if (this.grid) {
 	var pas_x = JXG.Options.ticks.ticksDistance;
 	var pas_y = JXG.Options.ticks.ticksDistance;
@@ -470,15 +476,6 @@ EssaimJSXGraph.prototype.toOEF = function() {
 		    x2 = bord_droit;
 		    y2 = cd * x2 + b ;
 		}
-		
-
-		/*var val_b = element.point1.Y() - (element.point1.X() * getValueVar(coef_dir));
-		
-		y = ax + b;
-		
-		var a = (p2.X() - p1.X()) * coef;
-		var b = (p2.Y() - p1.Y()) * coef;*/
-		console.log(x1,"\n",y1,"\n",x2,"\n",y2);
 		
 		OEF += "line " + x1 + "," + y1 +
 		    "," + x2 + "," + y2 +
@@ -556,7 +553,7 @@ EssaimJSXGraph.prototype.toOEF = function() {
 		var dist1 = distance(p2, intersect1);
 		var dist2 = distance(p2, intersect2);
 		var dist3 = distance(p2, intersect3);
-		console.log(dist1,dist2,dist3);
+		
 		var res;
 		if ((dist1 < dist2) && (dist1 < dist3)) {
 		    res = intersect1;
@@ -653,15 +650,6 @@ EssaimJSXGraph.prototype.menuOptions = function(element) {
 	    }
 	}
     };
-    /*options.point = {
-	lier: {
-	    nom: "Lier",
-	    callback: function() {
-		console.log(self);
-		self.linkedVar(element);
-	    }
-	}
-    };*/
     
     options.image = {
 	resize: {
@@ -889,7 +877,6 @@ EssaimJSXGraph.prototype.selection = function(event) {
  * le bouton ok stop la multi-selection puis fait apparaitre un menu
  * le bouton effacer efface la multi-selection
  */
-/*TODO : REFACTOR ICI*/
 EssaimJSXGraph.prototype.multiSelect = function() {
     var self = this;
     var tmp = function() {
@@ -928,8 +915,6 @@ EssaimJSXGraph.prototype.multiSelect = function() {
 	.empty()
 	.show();
     
-    /*console.log(this.numero);
-    console.log(document.getElementById("edjg_msm_"+this.numero));*/
     var $tout = $("<input />")
 	.appendTo($("#edjg_ms_"+this.numero))
 	.attr({"type": "button",
@@ -1037,12 +1022,9 @@ EssaimJSXGraph.prototype.buildMultiSelectMenu = function() {
             .html(option.nom)
 	    .click(option.callback);
     };
-    /*console.log($("#edjg_msm_"+this.numero));*/
     for (var i = 0; i < key.length; i++) {
 	$("#edjg_msm_"+this.numero).append(buildButton(menu[key[i]]));
     }
-    /*$("#edjg_msm_"+this.numero)
-	.appendTo($("#edjg_ms_"+this.numero));*/
 };
 
 
@@ -1308,8 +1290,7 @@ EssaimJSXGraph.prototype.initEventListener = function() {
     var $top_panel = $("#edjg_tm_"+this.numero);
     var $left_panel = $("#edjg_lm_"+this.numero);
     this.surpage.on("resize", function() {
-	/*console.log("resize");*/
-        self.brd.resizeContainer(self.surpage.width() -
+	self.brd.resizeContainer(self.surpage.width() -
 				 GLOB_largeur, self.surpage.height() - GLOB_hauteur);
 	self.brd.zoom100();
         $top_panel.css({
@@ -1445,9 +1426,7 @@ EssaimJSXGraph.prototype.initEventListener = function() {
 	self.hideAllContext();
         if (event.buttons === 2) {
             self.selection(event);
-        } /*else {
-	    /*self.hideAllContext();*/
-    /*}*/
+        } 
     });
 
     this.surpage.on("show", function(){
@@ -1457,6 +1436,9 @@ EssaimJSXGraph.prototype.initEventListener = function() {
     });
 
     this.surpage.on("hide", function(){
+	/*TODO : Modifier, car en faisant comme ça on supprime une valeur si l'utilisateur l'a
+	 * changer à la main
+	 */
 	self.hauteur_graphe = $("#box" + self.numero).height();
 	self.largeur_graphe = $("#box" + self.numero).width();
 	self.hideAllContext();
@@ -1647,11 +1629,17 @@ EssaimJSXGraph.prototype.selectElement = function(element){
 
 /**
  * Fonction qui indique si un element est selectionner dans le multiSelect
+ * @param : TODO
  */
 EssaimJSXGraph.prototype.isSelected = function(element){
     return this.stackMultiSelect.indexOf(element) > -1;
 }
 
+/**
+ * Fonction qui affiche le menu contextuel sur le graphe.
+ * @param : TODO
+ * @param : TODO
+ */
 EssaimJSXGraph.prototype.showContextMenu = function(pos,content){
     var self = this;
     this.hideContextMenu();
@@ -1673,17 +1661,18 @@ EssaimJSXGraph.prototype.showContextMenu = function(pos,content){
     content.appendTo($("#edjg_mc_"+this.numero));
 }
 
-EssaimJSXGraph.prototype.changeContextMenu = function(newContent){
-    $("#edjg_mc_"+this.numero)
-	.empty()
-	.append(newContent);
-}
-
+/**
+ * Fonction qui permet de masquer le menu contextuel
+ */
 EssaimJSXGraph.prototype.hideContextMenu = function(){
     $("#edjg_mc_"+this.numero).empty();
     $("#edjg_mc_"+this.numero).hide();
 }
 
+/**
+ * Fonction qui permet d'afficher le menu qui permet d'obtenir un nom de variable.
+ * @param : TODO
+ */
 EssaimJSXGraph.prototype.showInputBoxMenu = function(pos){
     $("#edjg_ibm_"+this.numero)
 	.css({
@@ -1712,9 +1701,12 @@ EssaimJSXGraph.prototype.switchGrid = function(){
  * Fonction qui permet de créer un element sur la brd.
  * Cette fonction doit necessairement etre utiliser pour que le undo et la sauvegarde dans
  * l'essaim fonctionne, sans cela ça ne marcherais pas.
+ * @param : TODO
+ * @param : TODO
+ * @param : TODO
+ * @return : TODO
  */
 EssaimJSXGraph.prototype.create = function(type, position, parameter){
-    /*console.log(position);*/
     var element = this.brd.create(type, position, parameter);
     var pos = [];
     for (var i in position){
@@ -1723,7 +1715,6 @@ EssaimJSXGraph.prototype.create = function(type, position, parameter){
 	}else{
 	    pos.push(position[i]);
 	}
-	/*console.log("YOLO : ",pos[i]);*/
     }
     var newAction = {
 	"action":"create",
@@ -1734,7 +1725,6 @@ EssaimJSXGraph.prototype.create = function(type, position, parameter){
     }
     this.saveboard.push(newAction);
     this.currentUndoState++;
-    /*console.log(this.saveboard);*/
     return element;
 }
 
@@ -1742,15 +1732,14 @@ EssaimJSXGraph.prototype.create = function(type, position, parameter){
  * Fonction qui permet de supprimer un element sur la brd.
  * Cette fonction doit necessairement etre utiliser pour que le undo et la sauvegarde dans l'essaim
  * fonctionne correctement, sans cela, ça ne marcherais pas.
+ * @param : TODO
  */
 EssaimJSXGraph.prototype.remove = function(elementID){
-/*    console.log(elementID);*/
     var element = this.brd.objects[elementID];
-/*    console.log(element);*/
     var newAction = {
 	"action":"remove",
 	"type": element.getType(),
-	"position":[element.X(), element.Y()], /*A modifier ici, les coordonnée sont des points
+	"position":[element.X(), element.Y()], /* TODO A modifier ici, les coordonnée sont des points
 					       * pour les objet comme les lignes, segment etc.*/
 	"parameter":{name:element.name}, /*Rajouter ici d'autre parametre si besoins*/
 	"id":elementID}
@@ -1769,7 +1758,6 @@ EssaimJSXGraph.prototype.undo = function(){
 	if (recov.action === "create"){
 	    this.brd.removeObject(this.brd.objects[recov.id]);
 	}else if (recov.action === "remove"){
-/*	    console.log(recov);*/
 	    this.brd.create(recov.type, recov.position, recov.parameter)
 	}
 	this.currentUndoState--;
@@ -1779,23 +1767,24 @@ EssaimJSXGraph.prototype.undo = function(){
     }
 }
 
+
+/**
+ * Fonction qui permet d'effectuer le chargement à partir d'element existant
+ * @param : TODO
+ */
 EssaimJSXGraph.prototype.loadFromSave = function(dataRecup){
-    /*console.log("NUM : ",this.numero);*/
     var recov = dataRecup.saveboard;
     for (var i in recov){
-/*	console.log("Recov : ",recov[i]);*/
 	if (recov[i].action === "create"){
 	    var pos = [];
 	    for (var j in recov[i].position){
 		if (typeof recov[i].position[j] === "string"){
+		    /*TODO*/
 		    /*var e = this.create(recov[i].type, recov[i].position, recov[i].parameter);*/
-/*		    console.log("string");*/
 		}else{
 		    var e = this.create(recov[i].type, recov[i].position, recov[i].parameter);
 		}
 	    }
-	    
-/*	    console.log("creation", e.id);*/
 	}else{
 	    this.remove(recov[i].id);
 	}
@@ -1804,11 +1793,11 @@ EssaimJSXGraph.prototype.loadFromSave = function(dataRecup){
 
 /**
  * Fonction qui permet de lier une variable à un element jsxgraph.
+ * @param : TODO
  * TODO : Refactor la fonction pour la rendre plus légére et lisible
  */
 
 EssaimJSXGraph.prototype.linkedVar = function(element){
-/*    console.log(element.getType());*/
     var self = this;
     var options = getUsableVar();
     options["Creer"] = "Default";
@@ -2554,7 +2543,7 @@ function getUsableVar() {
  * Fonction qui permet de recuperer les coordonnées d'un clic sur le graphe
  * @param event
  * @param brd
- * @return
+ * @return TODO
  */
 function getMouseCoords(event, brd) {
     var cPos = brd.getCoordsTopLeftCorner(event, 0),
@@ -2616,17 +2605,15 @@ function createOption(options, parent, id) {
 /**
  * Fonction qui permet de recuperer la valeurs entiere ou flottante en fonction de sont type
  * @param {string} variable - Contient la valeur de l'élément
- * @return {Number} -
+ * @return {Number} - TODO
  */
 function getValueVar(variable) {
-/*    console.log(variable);*/
     var err;
     switch (variable.format.nom) {
     case "integer":
         err = parseInt(variable.recupDonnees(), 10);
         break;
     case "real":
-/*	console.log(variable.recupDonnees());*/
         err = parseFloat(variable.recupDonnees());
         break;
     default:
