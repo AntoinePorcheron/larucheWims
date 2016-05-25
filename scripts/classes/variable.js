@@ -985,7 +985,6 @@ Variable.prototype.charge = function(elem)
 		default: 
 		    console.error("Erreur d'initialisation d'une variable");
 		}
-		console.log(this.format);
 		this.format.creerBloc(elem.nom);
 	    }
 

@@ -1272,7 +1272,8 @@ Ruche.prototype.ajoutBlocEssaim = function (ClasseDeriveeEssaim, elemRecup)
      * paramètres :     - ClasseDeriveeEssaim = classe dérivée de la classe Essaim (sic!)
      *                  - elemRecup = objet Essaim récupéré dans une sauvegarde
      */ {
-    if (typeof elemRecup != 'undefined') {
+
+	 if (typeof elemRecup != 'undefined') {
         // Création d'une classe essaim à partir d'une sauvegarde
         if (elemRecup.numero > this.nb_essaim) {
             this.nb_essaim = elemRecup.numero;
@@ -1801,8 +1802,8 @@ Ruche.prototype.sauvegarde = function ()
     /*
      * Fonction qui effectue la sauvegarde de l'objet ruche
      */ {
-    this.genereCode();
-    this.prepareSauvegarde(); // Prépare certains objets pour la sauvegarde
+	 this.genereCode();
+	 this.prepareSauvegarde(); // Prépare certains objets pour la sauvegarde
     var seen = [];
     var objetRuche = this;
 	 
@@ -1840,7 +1841,10 @@ Ruche.prototype.sauvegarde = function ()
 
     }, 6);
     document.getElementById("Rid_Zone_Sauvegarde").value = json;
-    this.charge();
+	 /*this.charge(); 
+	   /*De ce que j'ai vu, cette ligne plante le graphe lors d'une sauvegarde,
+	   * Et elle ne semble pas necessaire au bon fonctionnement de la 
+	   * sauvegarde*/
     $(".Rcl_OK_Light_SaveLoad").css("visibility", "visible");
     setTimeout(function () {
         $(".Rcl_OK_Light_SaveLoad").css("visibility", "hidden")
@@ -1991,7 +1995,8 @@ Ruche.prototype.chargerInstructionVar = function (elem)
      * Fonction qui charge toutes les instructions ( variables/if/for/codelibre )
      * parametre : elem : objet JSON contenant l'objet ruche
      */ {
-    for (var i = 0; i < elem.listeBlocPrepa.length; i++) {
+
+	     for (var i = 0; i < elem.listeBlocPrepa.length; i++) {
 
         // Teste si l'élément chargé de la liste ordonnée est un essaim de type connu
         var essaimTrouve = false;
