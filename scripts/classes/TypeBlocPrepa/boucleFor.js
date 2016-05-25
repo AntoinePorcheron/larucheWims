@@ -13,9 +13,9 @@ function BoucleFor(numero)
     
     /* On prépare pour le bloc dans bloc */
         
-    this.blocContenu = []; // liste des blocs contenus
+    //this.blocContenu = []; // liste des blocs contenus
     this.hidden = false; // dit si le bloc doit être caché ou non
-    this.BDB_instructions;//Si il y a un bloc dans le bloc inséré dans le champs instructions
+    this.blocLie=null; //Si il y a un bloc dans le bloc inséré dans le champs instructions
 	
 	//--------- METHODES ----------//
 
@@ -360,8 +360,8 @@ function BoucleFor(numero)
                 
             }*/
         
-        this.BDB_Instruction =BlocIntegre;
-        codeVisuel = this.BDB_Instruction.innerHTML.replace(/<button.*<\/button>/,"");
+        this.blocLie =BlocIntegre;
+        codeVisuel = this.blocLie.innerHTML.replace(/<button.*<\/button>/,"");
         
         document.getElementById("indicAppartenancefor"+list.id).innerHTML=codeVisuel;
         
@@ -372,9 +372,9 @@ function BoucleFor(numero)
         
     }
     
-    this.setBDB_instruction = function(blocAbsorbe)
+    this.setblocLie = function(blocAbsorbe)
     {
-        this.BDB_Instruction = blocAbsorbe; 
+        this.blocLie = blocAbsorbe; 
     }
     
     this.reduireBloc = function()
@@ -432,12 +432,14 @@ function BoucleFor(numero)
 		if (br.test(rucheSys.listeEditeur[indice3].enonce_Html) == false) {
 			rucheSys.listeEditeur[indice3].enonce_Html = rucheSys.listeEditeur[indice3].enonce_Html.slice(0, rucheSys.listeEditeur[indice3].enonce_Html.length-6);
 		};
-        if(this.BDB_instruction != null){ // si il y a un bloc inclus on ajoute son toOEF au tout.
+        
+        console.log("FONCTION TO OEF : VALEUR DE BDB = "+this.blocLie);
+        if(this.blocLie != null){ // si il y a un bloc inclus on ajoute son toOEF au tout.
             console.log("1er if de OEF");
-            return "\\for{"+rucheSys.listeEditeur[indice1].toOEF()+" to "+rucheSys.listeEditeur[indice2].toOEF()+"}\n 	{ 1erif "+this.BDB_instruction.toOEF()+"}\n";
+            return "\\for{"+rucheSys.listeEditeur[indice1].toOEF()+" to "+rucheSys.listeEditeur[indice2].toOEF()+"}\n 	{ 1erif "+this.blocLie.toOEF()+"}\n";
         }
         else {
-                console.log("1er if de OEF");
+                console.log("2er if de OEF");
 		          return "\\for{"+rucheSys.listeEditeur[indice1].toOEF()+" to "+rucheSys.listeEditeur[indice2].toOEF()+"2eme if}\n 	{"+rucheSys.listeEditeur[indice3].toOEF()+"}\n";
         }
 	}

@@ -1757,6 +1757,7 @@ Ruche.prototype.genereCode = function ()
 
     for (var i = 0; i < this.listeBlocPrepa.length; i++) {
         elements += this.listeBlocPrepa[i].toOEF();
+        console.log("Liste "+i+" : "+this.listeBlocPrepa[i].hidden);
     }
 
 
@@ -2257,15 +2258,16 @@ idEditeur = id de l'éditeur sur lequel l'objet this a été droppé
         
         
             BlocIntegre.hidden = true; // on rend le blocIntegre invisible.
+            console.log("BLOC INTEGRE DOIT ETRE TRUE : "+BlocIntegre.hidden);
             /*ETAPE COURANTE*/
             
             
             
             
-            BlocRecepteur.BDB_Instruction =BlocIntegre;
-            //BlocRecepteur.setBDB_instruction(BlocIntegre);
-            console.log("Bloc contenu dans "+BlocRecepteur+" : "+BlocRecepteur.BDB_Instruction.id);
-            codeVisuel = BlocRecepteur.BDB_Instruction.innerHTML.replace(/<button.*<\/button>/,"");
+            BlocRecepteur.blocLie =BlocIntegre;
+            //BlocRecepteur.setblocLie(BlocIntegre);
+            console.log("Bloc contenu dans "+BlocRecepteur+" : "+BlocRecepteur.blocLie.id);
+            codeVisuel = BlocRecepteur.blocLie.innerHTML.replace(/<button.*<\/button>/,"");
             codeVisuel = "<div class='BlocInterieur'>"+codeVisuel+"</div>";
             
             console.log("Code visuel = "+codeVisuel);
