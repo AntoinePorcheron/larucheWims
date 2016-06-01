@@ -6,7 +6,7 @@
  * @param affichage - element qui contiendra le bouton qui permet le réaffichage du bloc
  */
 BlocFocus = function(content, affichage){
-    this.proto = "BlocFocus"
+    this.proto = "BlocFocus";
     this.container;
     this.content;
     this.background;
@@ -15,7 +15,7 @@ BlocFocus = function(content, affichage){
     this.headerHeight = 20;
     
     /*Contient un ensemble de fonction à effectuer lors du resize du bloc*/
-    this.resizeListener = [];
+    this.eventListener = {};
     
     /*Initialisation du bloc*/
     var self = this;
@@ -23,11 +23,17 @@ BlocFocus = function(content, affichage){
     if (content !== undefined){
 	content.appendTo(this.content);
     }
-    var $button = $("<input type='button' value='Afficher'/>")
+    var $button = $("<input />")
+	.attr({'type':'button', 'value':'Afficher', 'title':'Affiche la surpage.'})
 	.click(function(){
 	    self.show();
 	})
 	.appendTo($(affichage));
+	
+    /* Pour une raison inconnu, si on cache directement le bloc, le graphe ne marche plus
+     * et si on cache avec la fonction crée pour avec pour parametre 0 le graphe ne marche plus
+     * non plus*/
+    this.hide(1);
     /*this.container.hide();*/
     
 }
@@ -93,10 +99,10 @@ BlocFocus.prototype.initBloc = function(){
 	    
 	    /*Ici, on fait appelle à toute les fonctions contenu dans le tableau pour effectuer
 	     * le comportement attendu lors du redimensionnement de cet element.*/
-	    for (var i = 0; i < self.resizeListener.length; i++){
-		self.resizeListener[i]();
+	    for (var i in self.eventListener["resize"]){
+		self.eventListener["resize"][i]();
 	    }
-	}, 5);
+	}, 100);
     });
 }
 
@@ -121,8 +127,22 @@ BlocFocus.prototype.setContent = function(newContent){
  * @param time - Temps de l'animation complete en milliseconde.
  */
 BlocFocus.prototype.show = function(time){
-	time = time || 150;
+    if (time === undefined){
+	time = 150;
+    }
+    /*time = time || 150;*/
     this.container.fadeIn(time);
+    
+    this.container.css("width", $(document).width() - 20);
+    this.container.css("height", $(document).height() - 20);
+    this.content.css({"height":"100%", "width":"100%"});
+    for (var i in this.eventListener["show"]){
+	this.eventListener["show"][i]();
+	this.eventListener["resize"][i]();
+    }
+    
+ 
+    
 }
 
 /**
@@ -131,17 +151,15 @@ BlocFocus.prototype.show = function(time){
  * @param time - Temps de l'animation complete en milliseconde.
  */
 BlocFocus.prototype.hide = function(time){
-	time = time || 150
+    if (time === undefined){
+	time = 150;
+    }
+    /*time = time || 150*/
+    console.log(time);
     this.container.fadeOut(time);
-}
-
-/**
- * resize
- * Fonction qui ajoute un ecouteurs de resize
- * @param fun - fonction à executer lors d'un redimensionnement
- */
-BlocFocus.prototype.resize = function(fun){
-    this.resizeListener.push(fun);
+    for (var i in this.eventListener["hide"]){
+	this.eventListener["hide"][i]();
+    }
 }
 
 /**
@@ -167,6 +185,20 @@ BlocFocus.prototype.height = function(){
 	console.error("Un comportement anormal à eu lieu, le bloc de contenu est vide.");
     }else{
 	return this.content.height();
+    }
+}
+
+/**
+ * Fonction qui permet d'ajouter un listener d'event.
+ * @param eventName - Nom de l'evenement sur lequel on veut rajouter un listener, les valeurs
+ * viable actuellement sont "show", "hide", et "resize".
+ * @param func - Fonction à executer lors d'un evenement du type eventName effectuer.
+ */
+BlocFocus.prototype.on = function(eventName, func){
+    if (this.eventListener[eventName]){
+	this.eventListener[eventName].append(func)
+    }else{
+	this.eventListener[eventName] = [func];
     }
 }
 

@@ -1743,7 +1743,7 @@ Ruche.prototype.reset = function (elem)
 
     this.listeBlocPrepa.splice(0, this.listeBlocPrepa.length);
     this.listeReponse.splice(0, this.listeReponse.length);
-    this.listeVariables.splice(0, this.listeVariables.length); 	// liste de toutes les variables de l'utilisateur.
+    this.listeVariables.splice(0, this.listeVariables.length);  // liste de toutes les variables de l'utilisateur.
     this.listeEditeur.splice(0, this.listeEditeur.length);			// liste de tous les éditeurs du site.
     //		this.listeCondition.splice(0,this.listeCondition.length);		// liste de toutes les conditions.
     //		this.listeBoucleFor.splice(0,this.listeBoucleFor.length);		// liste de toutes les boucles for.
@@ -1805,7 +1805,7 @@ Ruche.prototype.sauvegarde = function ()
     this.prepareSauvegarde(); // Prépare certains objets pour la sauvegarde
     var seen = [];
     var objetRuche = this;
-
+	 
     var json = JSON.stringify(objetRuche, function (key, val) {
         if (val != null && typeof val == "object") {
             if (seen.indexOf(val) >= 0) {
@@ -1836,7 +1836,7 @@ Ruche.prototype.sauvegarde = function ()
             return;
         }
 
-        return val;
+	return val;
 
     }, 6);
     document.getElementById("Rid_Zone_Sauvegarde").value = json;

@@ -779,11 +779,19 @@ input:-moz-placeholder { color:rgba(255,10,0,0.5); }
 #blocFocus .leftMenu {
 	background-color:rgb(255,200,170);
 }
+#blocFocus .leftMenu .zoneInput{
+	padding-top:15%;
+	width:87%;
+}
+
+#blocFocus .leftMenu .zoneInput .bouton_valider{
+	width:115%;
+}
 
 #blocFocus .leftMenu input{
 	width: 100%;
 	text-align: left;
-	border: 1px black solid;
+	border: 2px white outset;
 	border-radius: 3px;
 	background-color: rgb(216,191,216);
 }
@@ -795,7 +803,7 @@ input:-moz-placeholder { color:rgba(255,10,0,0.5); }
 #blocFocus .leftMenu select{
 	width:100%;
 	background-color: rgb(216,191,216);
-	border: 2px black solid;
+	border: 2px white outset;
 }
 
 #blocFocus .leftMenu select:hover{
@@ -804,7 +812,6 @@ input:-moz-placeholder { color:rgba(255,10,0,0.5); }
 
 #blocFocus .menu_contextuel input[type="button"]{
 	width:100%;
-	display:block;
 }
 
 #blocFocus .topMenu {
@@ -817,7 +824,7 @@ input:-moz-placeholder { color:rgba(255,10,0,0.5); }
 #blocFocus .topMenu input {
 	width: 9%;
 	height:100%;
-	border: 1px black solid;
+	border: 2px white outset;
 	border-radius: 2px;
 	background-color: rgb(216,191,216);
 	padding-left:3px;
@@ -825,6 +832,11 @@ input:-moz-placeholder { color:rgba(255,10,0,0.5); }
 
 #blocFocus .topMenu input:hover{
 	background-color: rgb(255,160,15);
+}
+
+#blocFocus .topMenu input:active{
+	border:2px gray inset;
+	background: rgb(255,160,15);
 }
 
 /******************************************************************************************
