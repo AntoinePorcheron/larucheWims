@@ -18,7 +18,7 @@ function CodeLibrePrepa(numero)
 	this.creerBloc = function()
 	/*
 	 * Fonction qui permet de crŽr un bloc dans l'onglet prŽparation
-	 * spŽcifique pour un ŽlŽment de type code libre.
+	 * spécifique pour un ŽlŽment de type code libre.
 	 */
 	{
 		var bloc_pere = document.getElementById("Rid_Prep_Blocs");

@@ -13,7 +13,8 @@ function BoucleFor(numero)
     
     /* On prépare pour le bloc dans bloc */
         
-    //this.blocContenu = []; // liste des blocs contenus
+    //th
+    this.blocContenu = []; // liste des blocs contenus
     this.hidden = false; // dit si le bloc doit être caché ou non
     this.blocLie=null; //Si il y a un bloc dans le bloc inséré dans le champs instructions
 	
@@ -334,24 +335,25 @@ function BoucleFor(numero)
 
 	//---------------------------------//
     
-    this.integrerBlocDansBloc = function(idBlocDrop,idEditeur)
+    this.integrerBlocDansBloc = function(BlocIntegre,idBlocIntegre)
     /* Cette méthode permet d'intégrer un bloc dans ce bloc
     INPUT : 
-    idEditeur = id de l'éditeur sur lequel l'objet this a été droppé
+    BlocIntegre : objet bloc intégré à this
+    idBlocIntegré : L'id de la div contenant le bloc intégré
     */
     {
         
         alert('Dans la fonction blocDansBloc de FOR');
         var nomBlocIntegre = this.nom;
-        var BlocIntegre = getElementById("idBlocDrop");
+        console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
         var codeVisuel; //le code que l'on va intégrer dans le code pour le visuel
-        var numBlocRecepteur=idEditeur.replace("forInstructionfor",""); // On garde juste le numéro du bloc si c'est un bloc for
-        console.log("Numéro de bloc :",numBlocRecepteur);
+        //var numBlocRecepteur=idEditeur.replace("forInstructionfor",""); // On garde juste le numéro du bloc si c'est un bloc for
+        //console.log("Numéro de bloc :",numBlocRecepteur);
         
        // this.blocContenu.push(BlocIntegre);// on ajoute le bloc récupéré au tableau
         
         BlocIntegre.hidden = true; // on rend le blocIntegre invisible.
-        
+        console.log("###########################");
         /*for(var i=0; i< this.blocContenu.length; i++)
             {
                 var blocTmp=this.blocContenu[i];
@@ -361,14 +363,25 @@ function BoucleFor(numero)
             }*/
         
         this.blocLie =BlocIntegre;
-        codeVisuel = this.blocLie.innerHTML.replace(/<button.*<\/button>/,"");
+        console.log(BlocIntegre.nom);
+        var DIVBlocIntegre= document.getElementById(idBlocIntegre); //la division dans le code HTML correspondant au bloc
+        codeVisuel = DIVBlocIntegre.innerHTML.replace(/<button.*<\/button>/,"");
+        console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!?????????????!");
+        console.log("Code HTML intégré = ",codeVisuel);
+        console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        //document.getElementById("indicAppartenancefor"+list.id).innerHTML=codeVisuel;
+        console.log("BLOC INTEGRE DOIT ETRE TRUE : "+BlocIntegre.hidden);
         
-        document.getElementById("indicAppartenancefor"+list.id).innerHTML=codeVisuel;
+        codeVisuel = "<div class='BlocInterieur'>"+codeVisuel+"</div>";
+        var numBlocRecepteur = this.nom.replace("for","");
+        console.log(codeVisuel);
+        document.getElementById("indicAppartenancefor"+numBlocRecepteur).innerHTML=codeVisuel;
+            
         
-        
-        document.getElementById("dansBloc_"+numBlocRecepteur).innerHTML=txtInfo;
-        //BlocIntegre.innerHTML.replace(/<div.*<\/div>,"");
-        BlocIntegre.innerHTML=" ";
+            //document.getElementById("dansBloc_"+numBlocRecepteur).innerHTML=txtInfo;
+            
+            //BlocIntegre.innerHTML.replace(/<div.*<\/div>,"");
+            DIVBlocIntegre.innerHTML=" ";
         
     }
     
@@ -409,6 +422,7 @@ function BoucleFor(numero)
 	/*
 	 * Fonction qui permet de générer le code OEF de l'instruction "for"
 	 * retourne une chaine de caractère contenant le code OEF.
+     * 
 	 */
 	{
 

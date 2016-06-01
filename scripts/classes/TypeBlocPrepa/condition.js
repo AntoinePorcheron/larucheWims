@@ -10,6 +10,7 @@ function Condition(numero)
 
 	this.nom = "condition" + numero; // nom de l'élément
 	this.proto = "Condition";	// nature de l'élément
+    
 
 
 	//--------- METHODES ---------//

@@ -1756,7 +1756,10 @@ Ruche.prototype.genereCode = function ()
     var elements = "";
 
     for (var i = 0; i < this.listeBlocPrepa.length; i++) {
-        elements += this.listeBlocPrepa[i].toOEF();
+        if(!this.listeBlocPrepa[i].hidden)
+        {   
+            elements += this.listeBlocPrepa[i].toOEF();
+        }
         console.log("Liste "+i+" : "+this.listeBlocPrepa[i].hidden);
     }
 
@@ -2175,6 +2178,24 @@ Ruche.prototype.reloadEditors = function (elem)
     }
 }
 
+//-------------------Gestion des fonctions concernant la liste de bloc Prepa -----------------------//
+
+//Ruche.prototype.recherche
+Ruche.prototype.rechercheIndBlocPrepa = function (id)
+    /*
+     * Retourne l'indice de la variable dans le tableau.
+     * Paramètre(s) : 	- id : variable à rechercher.
+     */ {
+    var ind = -1;
+    var tab=rucheSys.listeBlocPrepa;
+    for (var i = 0; i < tab.length; i++) {
+        if (tab[i].nom == id) {
+            ind = i;
+        }
+    }
+    return ind;
+}
+
 
 
 
@@ -2213,11 +2234,25 @@ idEditeur = id de l'éditeur sur lequel l'objet this a été droppé
             console.log("Bloc obtenu : ",idBlocRecepteur);
             
             
+            
+            
+            
             BlocRecepteur = document.getElementById(idBlocRecepteur); //on récupère l'objet bloc qui correspond au bon id
             console.log("(confirmation) : " + BlocRecepteur.id);
+            var numIndRec=rucheSys.rechercheIndBlocPrepa("for"+numBlocRecepteur);
+            alert(BlocRecepteur.id+numIndRec);
+            var numIndDrop=idBlocDrop.replace("RidPrBloc_","");
+            numIndDrop=numIndDrop.replace("condTcondition","");
+            numIndDrop = rucheSys.rechercheIndBlocPrepa(numIndDrop);
+            /* 6ème approche : par tableauBlocPrepa */
+            console.log("Num bloc droppé : "+numIndDrop);
+            
+            rucheSys.listeBlocPrepa[numIndRec].integrerBlocDansBloc(rucheSys.listeBlocPrepa[numIndDrop],idBlocDrop);
+            
+            
             
             /* 2e tentative objet */
-            //BlocRecepteur.integrerBlocDansBloc(idBlocDrop,idEditeur);
+           // BlocRecepteur.integrerBlocDansBloc(idBlocDrop,idEditeur);
             
             
             
@@ -2247,7 +2282,7 @@ idEditeur = id de l'éditeur sur lequel l'objet this a été droppé
             /*======================================================================
             Autre stratégie : on utilise un emplacement spécialement prévu à cet effet dans l'objet
             ========================================================================*/
-            var nomBlocIntegre = BlocRecepteur.nom;
+            /*var nomBlocIntegre = BlocRecepteur.nom;
             
             console.log("Bloc Intégré = "+BlocIntegre);
             
@@ -2258,13 +2293,14 @@ idEditeur = id de l'éditeur sur lequel l'objet this a été droppé
         
         
             BlocIntegre.hidden = true; // on rend le blocIntegre invisible.
+            //BlocIntegre.setAttribute(hidden,true);
             console.log("BLOC INTEGRE DOIT ETRE TRUE : "+BlocIntegre.hidden);
             /*ETAPE COURANTE*/
             
             
             
             
-            BlocRecepteur.blocLie =BlocIntegre;
+            /*BlocRecepteur.blocLie =BlocIntegre;
             //BlocRecepteur.setblocLie(BlocIntegre);
             console.log("Bloc contenu dans "+BlocRecepteur+" : "+BlocRecepteur.blocLie.id);
             codeVisuel = BlocRecepteur.blocLie.innerHTML.replace(/<button.*<\/button>/,"");
@@ -2275,6 +2311,7 @@ idEditeur = id de l'éditeur sur lequel l'objet this a été droppé
             
         
             document.getElementById("dansBloc_"+numBlocRecepteur).innerHTML=txtInfo;
+            
             //BlocIntegre.innerHTML.replace(/<div.*<\/div>,"");
             BlocIntegre.innerHTML=" ";
             
@@ -2282,7 +2319,7 @@ idEditeur = id de l'éditeur sur lequel l'objet this a été droppé
             
         
             // Et enfin, intégrer l'encapsulation au sein même du code. 
-            
+            */
 
             
         }
