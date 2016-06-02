@@ -28,14 +28,47 @@ function Reponse(numero,nomEssaimGerant){
 	 *
 	 */
 	{
+        var divVar = document.getElementById('Rid_Prep_Vars');
         var divName = "RidPrVa_"+this.nom;
-        var nomRep = "reply"+($("#RidAnBlocRep_"+this.nom).index()+1);
-        var divJ = $("<div>", {
-                     id: divName,
-                     text: nomRep
-                     }).appendTo("#Rid_Prep_Vars");
-        divJ[0].draggable = "true";
-		divJ[0].addEventListener('dragstart', this.debutDeplacement, false);
+        var nomRep = "reponse"+($("#RidAnBlocRep_"+this.nom).index()+1);
+        var div = document.createElement('div');
+        div.id=divName;
+        var button = document.createElement('button');
+        button.id = "Rid_Button_Delete_Prep_" + this.nom;
+        button.className = "Rcl_Button_Delete";
+        var txt = document.createTextNode( this.nom );
+        var spantxt = document.createElement('span');
+        spantxt.className = "Rcl_Surligne_Variable";
+        spantxt.id="RidPrVa_sp_"+this.nom;
+        spantxt.style.cursor = "default";
+        spantxt.appendChild(txt);
+    
+        spantxt.draggable = "true";
+        spantxt.addEventListener('dragstart', this.debutDeplacement, false);
+        // bouton de suppression de variable depuis la liste des variables
+        button.onclick = function(){
+            var variable = div.id.slice("RidPrVa_".length,div.id.length); // On supprime le "RidAnVa_" devant le nom de la variable
+            rucheSys.supprReponse("RidAnBlocRep_"+variable);
+            var ind = rucheSys.rechercheIndice(variable,rucheSys.listeBlocPrepa);
+            rucheSys.listeBlocPrepa.splice(ind,1);
+        }
+    
+        // double click sur le span -> insertion dans l'éditeur principal
+        spantxt.ondblclick = function(){
+            var nomVar = div.id.slice("RidPrVa_".length,div.id.length); // On supprime le "RidAnVa_" devant le nom de la variable
+            var txtcurr = document.getElementById(divVar.getAttribute("focusedit"));
+            console.log(txtcurr.id);
+            var indiceE = rucheSys.rechercheIndice(txtcurr.id,rucheSys.listeEditeur);
+            console.log(indiceE);
+            rucheSys.listeEditeur[indiceE].insertVariableDansEditeur(nomVar);
+        }
+
+        div.id = "RidPrVa_"+this.nom;
+        div.appendChild(spantxt);
+        div.appendChild(button);
+        divVar.appendChild(div);
+
+    
 	}
 	
 
@@ -49,15 +82,47 @@ function Reponse(numero,nomEssaimGerant){
 	 *
 	 */
 	{
+        var divVar = document.getElementById('Rid_Analyse_Vars');
         var divName = "RidAnVa_"+this.nom;
-        var nomRep = "reply"+($("#RidAnBlocRep_"+this.nom).index()+1);
-        var divJ = $("<div>", {
-                     id: divName,
-                     text: nomRep
-                     }).appendTo("#Rid_Analyse_Vars");
-        divJ[0].draggable = "true";
-        divJ[0].addEventListener('dragstart', this.debutDeplacement, false);
-	}
+        var nomRep = "reponse"+($("#RidAnBlocRep_"+this.nom).index()+1);
+        var div = document.createElement('div');
+        div.id=divName;
+        var button = document.createElement('button');
+        button.id = "Rid_Button_Delete_Ana_" + this.nom;
+        button.className = "Rcl_Button_Delete";
+        var txt = document.createTextNode( this.nom );
+        var spantxt = document.createElement('span');
+        spantxt.className = "Rcl_Surligne_Variable";
+        spantxt.id="RidAnVa_sp_"+this.nom;
+        spantxt.style.cursor = "default";
+        spantxt.appendChild(txt);
+    
+        spantxt.draggable = "true";
+        spantxt.addEventListener('dragstart', this.debutDeplacement, false);
+        // bouton de suppression de variable depuis la liste des variables
+        button.onclick = function(){
+            var variable = div.id.slice("RidAnVa_".length,div.id.length); // On supprime le "RidAnVa_" devant le nom de la variable
+            rucheSys.supprReponse("RidAnBlocRep_"+variable);
+            var ind = rucheSys.rechercheIndice(variable,rucheSys.listeBlocPrepa);
+            rucheSys.listeBlocPrepa.splice(ind,1);
+        }
+    
+        // double click sur le span -> insertion dans l'éditeur principal
+        spantxt.ondblclick = function(){
+            var nomVar = div.id.slice("RidAnVa_".length,div.id.length); // On supprime le "RidAnVa_" devant le nom de la variable
+            var txtcurr = document.getElementById(divVar.getAttribute("focusedit"));
+            console.log(txtcurr.id);
+            var indiceE = rucheSys.rechercheIndice(txtcurr.id,rucheSys.listeEditeur);
+            console.log(indiceE);
+            rucheSys.listeEditeur[indiceE].insertVariableDansEditeur(nomVar);
+        }
+
+        div.id = "RidAnVa_"+this.nom;
+        div.appendChild(spantxt);
+        div.appendChild(button);
+        divVar.appendChild(div);
+
+    }
 	
 
 	//---------------------------------//
