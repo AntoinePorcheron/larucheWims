@@ -945,6 +945,9 @@
             location = "group:entete.js">
          </FileRef>
          <FileRef
+            location = "group:blocProgramme.js">
+         </FileRef>
+         <FileRef
             location = "group:essaim.js">
          </FileRef>
          <FileRef
@@ -986,6 +989,9 @@
                location = "group:typeReponse.js">
             </FileRef>
          </Group>
+         <FileRef
+            location = "group:variable.js">
+         </FileRef>
          <Group
             location = "group:TypeVariable"
             name = "TypeVariable">
@@ -1019,9 +1025,6 @@
          </Group>
          <FileRef
             location = "group:typeVariable.js">
-         </FileRef>
-         <FileRef
-            location = "group:variable.js">
          </FileRef>
       </Group>
       <FileRef
