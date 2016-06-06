@@ -1,8 +1,10 @@
 /*
- * Classe Variable :
- * Déclare et gère les variables. 
+ * Classe bloc Variable :
+ * Bloc programme de définition d'une variable.
+ * Ce bloc est un conteneur de variable, ce qui permet de changer
+ * le type de variable dynamiquement / à la volée
  *
-*/
+ */
 
 function Variable(nom) {
 
@@ -16,6 +18,12 @@ function Variable(nom) {
 	this.proto = "Variable"; // type de la variable
     
 }
+
+// Hérite (classe dérivée) de BlocProgramme
+Variable.prototype = Object.create(BlocProgramme.prototype);
+Variable.prototype.constructor = Variable;
+Variable.prototype.proto = "Variable"; // nature de la classe
+                                       // ATTENTION : DOIT ETRE LE MEME QUE this.proto CI—DESSUS
 
 Variable.prototype.zNodesAide = [];         // titres des noeuds de l'arbre d'aide (zTree)
 Variable.prototype.elementsAide = [];       // contenu des aides
@@ -126,44 +134,44 @@ Variable.prototype.ajoutVarDansMenuListePreparation = function()
 	//---------------------------------//
 
     
-    Variable.prototype.reduireBloc = function()
+Variable.prototype.reduireBloc = function()
+{
+    console.log(this.nom);
+    if(document.getElementById("Rid_Button_MiniMaxi_"+this.nom).className=="Rcl_Button_Minimize")
     {
-        console.log(this.nom);
-        if(document.getElementById("Rid_Button_MiniMaxi_"+this.nom).className=="Rcl_Button_Minimize")
-        {
-            document.getElementById("RidPrBloc_"+this.nom).className="Rcl_Closed";
-            document.getElementById("Rid_Button_MiniMaxi_"+this.nom).className="Rcl_Button_Maximize";
-            if(document.getElementById("RidPrBloc_Content_"+this.nom)!=null){
-                if(document.getElementById("RidPrBloc_Content_"+this.nom).value!=undefined){
-                    if(" "+document.getElementById("RidPrBloc_Content_"+this.nom).value.length < 11)
-                        {
-                            document.getElementById("RidPrBloc_ValVar_"+this.nom).innerHTML=" "+document.getElementById("RidPrBloc_Content_"+this.nom).value;
-                        }
-                    else{
-                            document.getElementById("RidPrBloc_ValVar_"+this.nom).innerHTML=" "+document.getElementById("RidPrBloc_Content_"+this.nom).value.substr(0,10)+"...";
-                        }
-                }
-            
-               document.getElementById("RidPrBloc_Content_"+this.nom).className = "Rcl_Droppable Rcl_Mini_Editor_hidden";
+        document.getElementById("RidPrBloc_"+this.nom).className="Rcl_Closed";
+        document.getElementById("Rid_Button_MiniMaxi_"+this.nom).className="Rcl_Button_Maximize";
+        if(document.getElementById("RidPrBloc_Content_"+this.nom)!=null){
+            if(document.getElementById("RidPrBloc_Content_"+this.nom).value!=undefined){
+                if(" "+document.getElementById("RidPrBloc_Content_"+this.nom).value.length < 11)
+                    {
+                        document.getElementById("RidPrBloc_ValVar_"+this.nom).innerHTML=" "+document.getElementById("RidPrBloc_Content_"+this.nom).value;
+                    }
+                else{
+                        document.getElementById("RidPrBloc_ValVar_"+this.nom).innerHTML=" "+document.getElementById("RidPrBloc_Content_"+this.nom).value.substr(0,10)+"...";
+                    }
             }
-            
+        
+           document.getElementById("RidPrBloc_Content_"+this.nom).className = "Rcl_Droppable Rcl_Mini_Editor_hidden";
+        }
+        
+    }
+}
+
+Variable.prototype.agrandirBloc = function()
+{
+    console.log(this.nom);
+    if(document.getElementById("Rid_Button_MiniMaxi_"+this.nom).className=="Rcl_Button_Maximize")
+    {
+        document.getElementById("Rid_Button_MiniMaxi_"+this.nom).className = "Rcl_Button_Minimize";
+        document.getElementById("RidPrBloc_"+this.nom).className = "Rcl_Bloc";
+        if(document.getElementById("RidPrBloc_Content_"+this.nom)!=null)
+        {
+            document.getElementById("RidPrBloc_ValVar_"+this.nom).innerHTML=" ";
+            document.getElementById("RidPrBloc_Content_"+this.nom).className = "Rcl_Droppable";
         }
     }
-    
-    Variable.prototype.agrandirBloc = function()
-    {
-        console.log(this.nom);
-        if(document.getElementById("Rid_Button_MiniMaxi_"+this.nom).className=="Rcl_Button_Maximize")
-        {
-            document.getElementById("Rid_Button_MiniMaxi_"+this.nom).className = "Rcl_Button_Minimize";
-            document.getElementById("RidPrBloc_"+this.nom).className = "Rcl_Bloc";
-            if(document.getElementById("RidPrBloc_Content_"+this.nom)!=null)
-            {
-                document.getElementById("RidPrBloc_ValVar_"+this.nom).innerHTML=" ";
-                document.getElementById("RidPrBloc_Content_"+this.nom).className = "Rcl_Droppable";
-            }
-        }
-    }
+}
 	
 
 	//---------------------------------//
@@ -234,31 +242,14 @@ Variable.prototype.debutDeplacement = function(event)
 	//---------------------------------//
 
 
-Variable.prototype.ajoutBlocDansPreparation = function()
+Variable.prototype.initBloc = function()
 /* 
  * Fonction qui permet d'ajouter le bloc correspondant au type de la variable
  * dans l'onglet préparation.
- *
  */
 {
-    // Création de la ligne dans la liste des blocs
-    var li = $("<li>",{
-               id:"RidPrBloc_"+this.nom,
-               class:"Rcl_Bloc",
-               draggable:"true", //on rajoute ceci pour le drag and drop
-               });
-    
-    // Création du bloc
-    var bloc = $("<div>",{
-                id:"RidPrBloc_Interne_"+this.nom,
-                class:"Rcl_Bloc_Interne",
-                });
-    
-    var divEnTeteVar = $("<div>",{
-                         id:"RidPrBloc_Entete_"+this.nom,
-                         class:"RidPrBloc_Entete_",
-                         });
-    bloc.append(divEnTeteVar);
+    // Initialisation du bloc vide + entete
+    BlocProgramme.prototype.initBloc.call(this);
     
     // Création du bouton de choix du type de variable
     var boutonChoixType = $("<button>", {
@@ -288,10 +279,6 @@ Variable.prototype.ajoutBlocDansPreparation = function()
                        });
     affNomType.append("non défini");
 
-    // Création du bouton de suppression de cette variable
-    var button = document.createElement('button');
-    var txt = document.createTextNode( this.nom );
-    
     //Valeur de la variable affichee quand reduite
     var valvar = $("<span>", {
                        id: "RidPrBloc_ValVar_"+this.nom,
@@ -302,110 +289,130 @@ Variable.prototype.ajoutBlocDansPreparation = function()
     var contvalue=document.getElementById("RidPrBloc_Content_"+this.nom);
     contvalue="defaut";
     
+    var txt = document.createTextNode( this.nom );
     
-    button.id = "Rid_Button_Delete_" + this.nom;
-    button.className = "Rcl_Button_Delete";
-    // bouton de suppression des variable depuis les blocs
-    button.onclick = function(){
-        variable = li[0].id.slice("RidPrBloc_".length,li[0].id.length);// On supprime le "RidPrBloc_" devant le nom de la variable
-        rucheSys.supprVariable(variable);
-        var ind = rucheSys.rechercheIndice(variable,rucheSys.listeBlocPrepa);
-        rucheSys.listeBlocPrepa.splice(ind,1);
-    }
-
-    /* Bouton pour diminuer / agrandir la fenêtre */
-    var buttonWindow = document.createElement('button');
-    buttonWindow.id = "Rid_Button_MiniMaxi_"+this.nom;
-    buttonWindow.className = "Rcl_Button_Minimize";
-    buttonWindow.addEventListener(	
-        'click', 
-        function (event) 
-        { 
-            IDvar = buttonWindow.id.slice("Rid_Button_MiniMaxi_".length,buttonWindow.id.length);
-            if (buttonWindow.className == "Rcl_Button_Minimize")
-            {
-                buttonWindow.className = "";
-                buttonWindow.className = "Rcl_Button_Maximize";
-                buttonWindow.parentNode.parentNode.parentNode.className = "";
-                buttonWindow.parentNode.parentNode.parentNode.className = "Rcl_Closed";
-                if(" "+document.getElementById("RidPrBloc_Content_"+IDvar).value.length < 11)
-                    {
-                    document.getElementById("RidPrBloc_ValVar_"+IDvar).innerHTML=" "+document.getElementById("RidPrBloc_Content_"+IDvar).value;
-                    }
-                else{
-                    document.getElementById("RidPrBloc_ValVar_"+IDvar).innerHTML=" "+document.getElementById("RidPrBloc_Content_"+IDvar).value.substr(0,10)+"...";
-                }
-               document.getElementById("RidPrBloc_Content_"+IDvar).className = "Rcl_Droppable Rcl_Mini_Editor_hidden";
-                
-            }
-            else 
-            {
-                buttonWindow.className = "";
-                buttonWindow.className = "Rcl_Button_Minimize";
-                buttonWindow.parentNode.parentNode.parentNode.className = "";
-                buttonWindow.parentNode.parentNode.parentNode.className = "Rcl_Bloc";
-                document.getElementById("RidPrBloc_ValVar_"+IDvar).innerHTML=" ";
-                document.getElementById("RidPrBloc_Content_"+IDvar).className = "Rcl_Droppable";
-            };
-        }, 
-        true
-    );
-
-
-    /*Button de deplacement vers le haut*/
-    var buttonHaut = document.createElement('button');
-    buttonHaut.id = "Rid_Button_Up_"+this.nom;
-    buttonHaut.className = "Rcl_Move_Up_Arrow";
-    buttonHaut.addEventListener('click', function (event)
-    {
-        var li = buttonHaut.parentNode.parentNode.parentNode;
-        var previous = li.previousElementSibling;
-        if (previous) {
-            li.parentNode.insertBefore(li, previous);
-            var nom = li.id.slice("RidPrBloc_".length,li.id.length);
-            var ind = rucheSys.rechercheIndice(nom,rucheSys.listeBlocPrepa);
-            var temp = rucheSys.listeBlocPrepa[ind];
-            rucheSys.listeBlocPrepa[ind] = rucheSys.listeBlocPrepa[ind-1];
-            rucheSys.listeBlocPrepa[ind-1] = temp;
-        }
-    },true);
-
-    
-    
-    /*button de deplacement vers le bas*/
-    var buttonBas = document.createElement('button');
-    buttonBas.id = "Rid_Button_Down_"+this.nom;
-    buttonBas.className = "Rcl_Move_Down_Arrow";
-    buttonBas.addEventListener('click', function (event) { 
-        var li = buttonBas.parentNode.parentNode.parentNode;
-        var next = li.nextElementSibling;
-        if (next) {
-            next = next.nextElementSibling;
-            var nom = li.id.slice("RidPrBloc_".length,li.id.length);
-            var ind = rucheSys.rechercheIndice(nom,rucheSys.listeBlocPrepa);
-            var temp = rucheSys.listeBlocPrepa[ind];
-            rucheSys.listeBlocPrepa[ind] = rucheSys.listeBlocPrepa[ind+1];
-            rucheSys.listeBlocPrepa[ind+1] = temp;
-        }
-        li.parentNode.insertBefore(li, next);
-    },
-    true);
-
-    divEnTeteVar.append(button);
-    divEnTeteVar.append(buttonWindow);
-    divEnTeteVar.append(buttonHaut);
-    divEnTeteVar.append(buttonBas);
     divEnTeteVar.append(txt);
     divEnTeteVar.append(boutonChoixType);
     divEnTeteVar.append(affNomType);
     divEnTeteVar.append(valvar);
-//		bloc.appendChild(select);
-    li.append(bloc);
-    
-    $("#Rid_Prep_Blocs").append(li);
+
     drag();
 }
-function drag(){ 
+
+Variable.prototype.supprime = function(event)
+/*
+ * Méthode de suppresion du bloc programme variable
+ * appelée par un click sur le bouton de suppression
+ * doit être surchargée dans les objets dérivés
+ * appelée avec le contexte de BlocProgramme.prototype.initBloc
+ * donc éléments disponibles :
+ *     - this.liBloc = element <li> qui contient le bouton
+ *     - this.divBloc = element <div> qui contient le bouton
+ */
+{
+     var nomVar = this.liBloc.id.slice("RidPrBloc_".length,this.liBloc.id.length);// On supprime le "RidPrBloc_" devant le nom de la variable
+     rucheSys.supprVariable(nomVar);
+     var ind = rucheSys.rechercheIndice(nomVar,rucheSys.listeBlocPrepa);
+     rucheSys.listeBlocPrepa.splice(ind,1);
+}
+
+Variable.prototype.minimise = function(event)
+/*
+ * Minimisation du bloc programme variable
+ * appelée par un click sur le bouton "minimisation"
+ * doit être surchargée dans les objets dérivés
+ * appelée avec le contexte de BlocProgramme.prototype.initBloc
+ * donc éléments disponibles :
+ *     - this.liBloc = element <li> qui contient le bouton
+ *     - this.divBloc = element <div> qui contient le bouton
+ */
+{
+    IDvar = buttonWindow.id.slice("Rid_Button_MiniMaxi_".length,buttonWindow.id.length);
+    if (buttonWindow.className == "Rcl_Button_Minimize")
+    {
+        buttonWindow.className = "";
+        buttonWindow.className = "Rcl_Button_Maximize";
+        buttonWindow.parentNode.parentNode.parentNode.className = "";
+        buttonWindow.parentNode.parentNode.parentNode.className = "Rcl_Closed";
+        if(" "+document.getElementById("RidPrBloc_Content_"+IDvar).value.length < 11)
+        {
+            document.getElementById("RidPrBloc_ValVar_"+IDvar).innerHTML=" "+document.getElementById("RidPrBloc_Content_"+IDvar).value;
+        }
+        else{
+            document.getElementById("RidPrBloc_ValVar_"+IDvar).innerHTML=" "+document.getElementById("RidPrBloc_Content_"+IDvar).value.substr(0,10)+"...";
+        }
+        document.getElementById("RidPrBloc_Content_"+IDvar).className = "Rcl_Droppable Rcl_Mini_Editor_hidden";
+        
+    }
+    else
+    {
+        buttonWindow.className = "";
+        buttonWindow.className = "Rcl_Button_Minimize";
+        buttonWindow.parentNode.parentNode.parentNode.className = "";
+        buttonWindow.parentNode.parentNode.parentNode.className = "Rcl_Bloc";
+        document.getElementById("RidPrBloc_ValVar_"+IDvar).innerHTML=" ";
+        document.getElementById("RidPrBloc_Content_"+IDvar).className = "Rcl_Droppable";
+    };
+}
+
+
+Variable.prototype.deplaceHaut = function(event)
+/*
+ * Déplacement du bloc programme variable vers le haut
+ * appelée par un click sur le bouton "haut"
+ * doit être surchargée dans les objets dérivés
+ * appelée avec le contexte de BlocProgramme.prototype.initBloc
+ * donc éléments disponibles :
+ *     - this.liBloc = element <li> qui contient le bouton
+ *     - this.divBloc = element <div> qui contient le bouton
+ *     - buttonHaut, pointe sur le bouton
+ */
+{
+    var li = buttonHaut.parentNode.parentNode.parentNode;
+    var previous = li.previousElementSibling;
+    if (previous) {
+        li.parentNode.insertBefore(li, previous);
+        var nom = li.id.slice("RidPrBloc_".length,li.id.length);
+        var ind = rucheSys.rechercheIndice(nom,rucheSys.listeBlocPrepa);
+        var temp = rucheSys.listeBlocPrepa[ind];
+        rucheSys.listeBlocPrepa[ind] = rucheSys.listeBlocPrepa[ind-1];
+        rucheSys.listeBlocPrepa[ind-1] = temp;
+    }
+    // Mise à jour du pointeur vers le LI
+    // TODO : En vérifier la nécessité
+    this.liBloc = li;
+}
+
+Variable.prototype.deplaceBas = function(event)
+/*
+ * Déplacement du bloc programme variable vers le bas
+ * appelée par un click sur le bouton "bas"
+ * doit être surchargée dans les objets dérivés
+ * appelée avec le contexte de BlocProgramme.prototype.initBloc
+ * donc éléments disponibles :
+ *     - this.liBloc = element <li> qui contient le bouton
+ *     - this.divBloc = element <div> qui contient le bouton
+ *     - buttonBas, pointe sur le bouton
+ */
+{
+    var li = buttonBas.parentNode.parentNode.parentNode;
+    var next = li.nextElementSibling;
+    if (next) {
+        next = next.nextElementSibling;
+        var nom = li.id.slice("RidPrBloc_".length,li.id.length);
+        var ind = rucheSys.rechercheIndice(nom,rucheSys.listeBlocPrepa);
+        var temp = rucheSys.listeBlocPrepa[ind];
+        rucheSys.listeBlocPrepa[ind] = rucheSys.listeBlocPrepa[ind+1];
+        rucheSys.listeBlocPrepa[ind+1] = temp;
+    }
+    li.parentNode.insertBefore(li, next);
+    // Mise à jour du pointeur vers le LI
+    // TODO : En vérifier la nécessité
+    this.liBloc = li;
+}
+
+
+function drag(){
     /* Gestion du drag and drop xcvb*/
     /* Cette fonction fait en sorte que les blocs de variable soient droppables */
     var cpt =0;

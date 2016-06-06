@@ -29,10 +29,6 @@ function BoucleFor(numero)
 	{
         console.log("Entrée dans creerBloc (spec)");
         
-        
-        
-        
-        
 		// Récupération des blocs et créations des nouveaux
         
 		var bloc_pere = document.getElementById("Rid_Prep_Blocs"); 

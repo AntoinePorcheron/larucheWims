@@ -997,7 +997,7 @@ Ruche.prototype.ajoutVariable = function (edit)
             var0.ajoutVarDansListe();
             var0.ajoutVarDansMenuListePreparation();
             var0.ajoutVarDansMenuListeAnalyse();
-            var0.ajoutBlocDansPreparation();
+            var0.initBloc();
 
             this.listeBlocPrepa.push(var0);
         }
@@ -1020,7 +1020,7 @@ Ruche.prototype.ajoutVariableJSON = function (elem, tab)
     var0.ajoutVarDansListe();
     var0.ajoutVarDansMenuListePreparation();
     var0.ajoutVarDansMenuListeAnalyse();
-    var0.ajoutBlocDansPreparation();
+    var0.initBloc();
     var0.charge(elem);
 
 
@@ -1053,7 +1053,7 @@ Ruche.prototype.ajoutVariablePreparation = function ()
             var0.ajoutVarDansListe();
             var0.ajoutVarDansMenuListePreparation();
             var0.ajoutVarDansMenuListeAnalyse();
-            var0.ajoutBlocDansPreparation();
+            var0.initBloc();
         }
         else {
             document.getElementById("Rid_Warning_Variable_Exists").style.display = 'block';

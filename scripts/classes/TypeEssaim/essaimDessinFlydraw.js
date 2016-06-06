@@ -26,7 +26,7 @@ EssaimFlydraw.prototype.constructor = EssaimFlydraw;
     // Définit les nouveaux attributs
 
 EssaimFlydraw.prototype.nomAffiche = "Essaim : Dessin Flydraw";   // nom affiché dans le menu
-EssaimFlydraw.prototype.proto = "EssaimFlydraw" // nature de la classe
+EssaimFlydraw.prototype.proto = "EssaimFlydraw"; // nature de la classe
                                         // ATTENTION : DOIT ETRE LE MEME QUE this.proto CI—DESSUS
 EssaimFlydraw.prototype.imageEnonce = "images_essaims/essaimFlydraw.png"; // image à insérer dans l'énoncé
 EssaimFlydraw.prototype.gereReponse = false; // drapeau, si "true", gère une réponse dans l'analyse

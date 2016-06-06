@@ -1844,7 +1844,7 @@ EssaimJSXGraph.prototype.linkedVar = function(element){
 		    x.ajoutVarDansListe();
 		    x.ajoutVarDansMenuListePreparation();
 		    x.ajoutVarDansMenuListeAnalyse();
-		    x.ajoutBlocDansPreparation();
+		    x.initBloc();
 		    rucheSys.listeBlocPrepa.push(x);
 		    x.setVariable("real", element.X());
 		}else{
@@ -1860,7 +1860,7 @@ EssaimJSXGraph.prototype.linkedVar = function(element){
 		    y.ajoutVarDansListe();
 		    y.ajoutVarDansMenuListePreparation();
 		    y.ajoutVarDansMenuListeAnalyse();
-		    y.ajoutBlocDansPreparation();
+		    y.initBloc();
 		    rucheSys.listeBlocPrepa.push(y);
 
 		    y.setVariable("real", element.Y());
@@ -1918,7 +1918,7 @@ EssaimJSXGraph.prototype.linkedVar = function(element){
 		    x.ajoutVarDansListe();
 		    x.ajoutVarDansMenuListePreparation();
 		    x.ajoutVarDansMenuListeAnalyse();
-		    x.ajoutBlocDansPreparation();
+		    x.initBloc();
 		    rucheSys.listeBlocPrepa.push(x);
 		    x.setVariable("real", element.point1.X());
 		}else{
@@ -1934,7 +1934,7 @@ EssaimJSXGraph.prototype.linkedVar = function(element){
 		    y.ajoutVarDansListe();
 		    y.ajoutVarDansMenuListePreparation();
 		    y.ajoutVarDansMenuListeAnalyse();
-		    y.ajoutBlocDansPreparation();
+		    y.initBloc();
 		    rucheSys.listeBlocPrepa.push(y);
 		    
 		    y.setVariable("real", element.point1.Y());
@@ -1949,7 +1949,7 @@ EssaimJSXGraph.prototype.linkedVar = function(element){
 		    coef_dir.ajoutVarDansListe();
 		    coef_dir.ajoutVarDansMenuListePreparation();
 		    coef_dir.ajoutVarDansMenuListeAnalyse();
-		    coef_dir.ajoutBlocDansPreparation();
+		    coef_dir.initBloc();
 		    rucheSys.listeBlocPrepa.push(coef_dir);
 		    coef_dir.setType("real");
 		    var val_coef_dir = (element.point2.Y()-element.point1.Y())/(element.point2.X()-element.point1.X())
@@ -1969,7 +1969,7 @@ EssaimJSXGraph.prototype.linkedVar = function(element){
 		    b.ajoutVarDansListe();
 		    b.ajoutVarDansMenuListePreparation();
 		    b.ajoutVarDansMenuListeAnalyse();
-		    b.ajoutBlocDansPreparation();
+		    b.initBloc();
 		    rucheSys.listeBlocPrepa.push(b);
 		    
 		    var val_b = element.point1.Y() - (element.point1.X() * getValueVar(coef_dir));
@@ -2037,7 +2037,7 @@ EssaimJSXGraph.prototype.linkedVar = function(element){
 		    x1.ajoutVarDansListe();
 		    x1.ajoutVarDansMenuListePreparation();
 		    x1.ajoutVarDansMenuListeAnalyse();
-		    x1.ajoutBlocDansPreparation();
+		    x1.initBloc();
 		    rucheSys.listeBlocPrepa.push(x1);
 		    x1.setVariable("real", element.point1.X());
 		}else{
@@ -2053,7 +2053,7 @@ EssaimJSXGraph.prototype.linkedVar = function(element){
 		    y1.ajoutVarDansListe();
 		    y1.ajoutVarDansMenuListePreparation();
 		    y1.ajoutVarDansMenuListeAnalyse();
-		    y1.ajoutBlocDansPreparation();
+		    y1.initBloc();
 		    rucheSys.listeBlocPrepa.push(y1);
 		    y1.setVariable("real", element.point1.Y());
 		}else{
@@ -2069,7 +2069,7 @@ EssaimJSXGraph.prototype.linkedVar = function(element){
 		    x2.ajoutVarDansListe();
 		    x2.ajoutVarDansMenuListePreparation();
 		    x2.ajoutVarDansMenuListeAnalyse();
-		    x2.ajoutBlocDansPreparation();
+		    x2.initBloc();
 		    rucheSys.listeBlocPrepa.push(x2);
 		    x2.setVariable("real", element.point2.X());
 		}else{
@@ -2085,7 +2085,7 @@ EssaimJSXGraph.prototype.linkedVar = function(element){
 		    y2.ajoutVarDansListe();
 		    y2.ajoutVarDansMenuListePreparation();
 		    y2.ajoutVarDansMenuListeAnalyse();
-		    y2.ajoutBlocDansPreparation();
+		    y2.initBloc();
 		    rucheSys.listeBlocPrepa.push(y2);
 		    y2.setVariable("real", element.point2.Y());
 		}else{
@@ -2142,7 +2142,7 @@ EssaimJSXGraph.prototype.linkedVar = function(element){
 		    x.ajoutVarDansListe();
 		    x.ajoutVarDansMenuListePreparation();
 		    x.ajoutVarDansMenuListeAnalyse();
-		    x.ajoutBlocDansPreparation();
+		    x.initBloc();
 		    rucheSys.listeBlocPrepa.push(x);
 		    x.setVariable("real", element.center.X());
 		}else{
@@ -2158,7 +2158,7 @@ EssaimJSXGraph.prototype.linkedVar = function(element){
 		    y.ajoutVarDansListe();
 		    y.ajoutVarDansMenuListePreparation();
 		    y.ajoutVarDansMenuListeAnalyse();
-		    y.ajoutBlocDansPreparation();
+		    y.initBloc();
 		    rucheSys.listeBlocPrepa.push(y);
 		    y.setVariable("real", element.center.Y());
 		}else{
@@ -2174,7 +2174,7 @@ EssaimJSXGraph.prototype.linkedVar = function(element){
 		    r.ajoutVarDansListe();
 		    r.ajoutVarDansMenuListePreparation();
 		    r.ajoutVarDansMenuListeAnalyse();
-		    r.ajoutBlocDansPreparation();
+		    r.initBloc();
 		    rucheSys.listeBlocPrepa.push(r);
 		    r.setVariable("real", distance(element.center, element.point2));
 		}else{
@@ -2224,7 +2224,7 @@ EssaimJSXGraph.prototype.linkedVar = function(element){
 		    x.ajoutVarDansListe();
 		    x.ajoutVarDansMenuListePreparation();
 		    x.ajoutVarDansMenuListeAnalyse();
-		    x.ajoutBlocDansPreparation();
+		    x.initBloc();
 		    rucheSys.listeBlocPrepa.push(x);
 		    x.setVariable("real", element.point2.X() - element.point1.X());
 		}else{
@@ -2240,7 +2240,7 @@ EssaimJSXGraph.prototype.linkedVar = function(element){
 		    y.ajoutVarDansListe();
 		    y.ajoutVarDansMenuListePreparation();
 		    y.ajoutVarDansMenuListeAnalyse();
-		    y.ajoutBlocDansPreparation();
+		    y.initBloc();
 		    rucheSys.listeBlocPrepa.push(y);
 		    y.setVariable("real", element.point2.Y() - element.point1.Y());
 		}else{
@@ -2304,7 +2304,7 @@ EssaimJSXGraph.prototype.linkedVar = function(element){
 		    ox.ajoutVarDansListe();
 		    ox.ajoutVarDansMenuListePreparation();
 		    ox.ajoutVarDansMenuListeAnalyse();
-		    ox.ajoutBlocDansPreparation();
+		    ox.initBloc();
 		    rucheSys.listeBlocPrepa.push(ox);
 		    ox.setVariable("real", element.point1.X());
 		}else{
@@ -2320,7 +2320,7 @@ EssaimJSXGraph.prototype.linkedVar = function(element){
 		    oy.ajoutVarDansListe();
 		    oy.ajoutVarDansMenuListePreparation();
 		    oy.ajoutVarDansMenuListeAnalyse();
-		    oy.ajoutBlocDansPreparation();
+		    oy.initBloc();
 		    rucheSys.listeBlocPrepa.push(oy);
 		    oy.setVariable("real", element.point1.Y());
 		}else{
@@ -2336,7 +2336,7 @@ EssaimJSXGraph.prototype.linkedVar = function(element){
 		    x.ajoutVarDansListe();
 		    x.ajoutVarDansMenuListePreparation();
 		    x.ajoutVarDansMenuListeAnalyse();
-		    x.ajoutBlocDansPreparation();
+		    x.initBloc();
 		    rucheSys.listeBlocPrepa.push(x);
 		    x.setVariable("real", element.point2.X() - element.point1.X());
 		}else{
@@ -2352,7 +2352,7 @@ EssaimJSXGraph.prototype.linkedVar = function(element){
 		    y.ajoutVarDansListe();
 		    y.ajoutVarDansMenuListePreparation();
 		    y.ajoutVarDansMenuListeAnalyse();
-		    y.ajoutBlocDansPreparation();
+		    y.initBloc();
 		    rucheSys.listeBlocPrepa.push(y);
 		    y.setVariable("real", element.point2.Y() - element.point1.Y());
 		}else{
@@ -2426,7 +2426,7 @@ EssaimJSXGraph.prototype.linkedVar = function(element){
 		    x1.ajoutVarDansListe();
 		    x1.ajoutVarDansMenuListePreparation();
 		    x1.ajoutVarDansMenuListeAnalyse();
-		    x1.ajoutBlocDansPreparation();
+		    x1.initBloc();
 		    rucheSys.listeBlocPrepa.push(x1);
 		    x1.setVariable("real", element.point1.X());
 		}else{
@@ -2442,7 +2442,7 @@ EssaimJSXGraph.prototype.linkedVar = function(element){
 		    y1.ajoutVarDansListe();
 		    y1.ajoutVarDansMenuListePreparation();
 		    y1.ajoutVarDansMenuListeAnalyse();
-		    y1.ajoutBlocDansPreparation();
+		    y1.initBloc();
 		    rucheSys.listeBlocPrepa.push(y1);
 		    y1.setVariable("real", element.point1.Y());
 		}else{
@@ -2458,7 +2458,7 @@ EssaimJSXGraph.prototype.linkedVar = function(element){
 		    x2.ajoutVarDansListe();
 		    x2.ajoutVarDansMenuListePreparation();
 		    x2.ajoutVarDansMenuListeAnalyse();
-		    x2.ajoutBlocDansPreparation();
+		    x2.initBloc();
 		    rucheSys.listeBlocPrepa.push(x2);
 		    x2.setVariable("real", element.point2.X());
 		}else{
@@ -2474,7 +2474,7 @@ EssaimJSXGraph.prototype.linkedVar = function(element){
 		    y2.ajoutVarDansListe();
 		    y2.ajoutVarDansMenuListePreparation();
 		    y2.ajoutVarDansMenuListeAnalyse();
-		    y2.ajoutBlocDansPreparation();
+		    y2.initBloc();
 		    rucheSys.listeBlocPrepa.push(y2);
 		    y2.setVariable("real", element.point2.Y());
 		}else{
@@ -2489,7 +2489,7 @@ EssaimJSXGraph.prototype.linkedVar = function(element){
 		    angle.ajoutVarDansListe();
 		    angle.ajoutVarDansMenuListePreparation();
 		    angle.ajoutVarDansMenuListeAnalyse();
-		    angle.ajoutBlocDansPreparation();
+		    angle.initBloc();
 		    rucheSys.listeBlocPrepa.push(angle);
 		    angle.setVariable("real", radToDeg(element.Value()));
 		}else{
