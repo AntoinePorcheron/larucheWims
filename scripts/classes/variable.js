@@ -12,7 +12,7 @@ function Variable(nom) {
 
 
 	this.nom = nom;			// nom de la variable.
-	this.format = "base_var";		// type de la variable, contient les données
+	this.format = null;		// type de la variable, contient les données
                             // à modifier en relation de classe parente-dérivée
 	this.valeur = "";		// valeur de la variable
 	this.proto = "Variable"; // type de la variable
