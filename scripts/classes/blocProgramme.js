@@ -42,25 +42,30 @@ BlocProgramme.prototype.initBloc = function()
     var bloc_pere = document.getElementById(this.idParent);
     
     // Création de la ligne dans la liste des blocs
-    this.liBloc = $("<li>",{
+    var li_bloc = $("<li>",{
                id:this.idLIPrefixe+this.nom,
                class:"Rcl_Bloc",
                draggable:"true", //on rajoute ceci pour le drag and drop
                });
+    this.liBloc = li_bloc[0];
     
     // Création du bloc
-    this.divBloc = $("<div>",{
+    var div_bloc = $("<div>",{
                  id:this.idDIVPrefixe+this.nom,
                  class:"Rcl_Bloc_Interne",
                  });
+    this.divBloc = div_bloc[0];
     
-    this.divEntete = $("<div>",{
+    var div_entete = $("<div>",{
                          id:this.idEntetePrefixe+this.nom,
                          class:"RidPrBloc_Entete_",
                          });
+    this.divEntete = div_entete[0];
     
-    this.divBloc.append(this.divEntete);
+    this.divBloc.appendChild(this.divEntete);
     
+    /* garde l'objet appelant dans le contexte pour les callbacks des boutons */
+    var objet_appelant = this;
     
     /* Bouton de suppression */
     var buttonSuppr = document.createElement('button');
@@ -68,8 +73,9 @@ BlocProgramme.prototype.initBloc = function()
     buttonSuppr.className = "Rcl_Button_Delete";
     buttonSuppr.addEventListener('click', function (event)
     {
-        BlocProgramme.supprime.call(this,event); // garde le contexte de la "closure"
-    }
+        objet_appelant.supprime.call(this,event); // garde le contexte de la "closure"
+    },
+    true);
 
     // Bouton pour diminuer / agrandir la fenêtre
     var buttonWindow = document.createElement('button');
@@ -77,7 +83,7 @@ BlocProgramme.prototype.initBloc = function()
     buttonWindow.className = "Rcl_Button_Minimize";
     buttonWindow.addEventListener('click', function (event)
     {
-        BlocProgramme.minimise.call(this,event); // garde le contexte de la "closure"
+        objet_appelant.minimise.call(this,event); // garde le contexte de la "closure"
     },
     true);
     
@@ -87,7 +93,7 @@ BlocProgramme.prototype.initBloc = function()
     buttonHaut.className = "Rcl_Move_Up_Arrow";
     buttonHaut.addEventListener('click', function (event)
     {
-        BlocProgramme.deplaceHaut.call(this,event); // garde le contexte de la "closure"
+        objet_appelant.deplaceHaut.call(this,event); // garde le contexte de la "closure"
     },
     true);
     
@@ -97,7 +103,7 @@ BlocProgramme.prototype.initBloc = function()
     buttonBas.className = "Rcl_Move_Down_Arrow";
     buttonBas.addEventListener('click', function (event)
     {
-        BlocProgramme.deplaceBas.call(this,event); // garde le contexte de la "closure"
+        objet_appelant.deplaceBas.call(this,event); // garde le contexte de la "closure"
     },
     true);
         
@@ -117,10 +123,6 @@ BlocProgramme.prototype.supprime = function(event)
  * Méthode de suppresion du bloc programme
  * appelée par un click sur le bouton de suppression
  * doit être surchargée dans les objets dérivés
- * appelée avec le contexte de BlocProgramme.prototype.initBloc
- * donc éléments disponibles :
- *     - this.liBloc = element <li> qui contient le bouton
- *     - this.divBloc = element <div> qui contient le bouton
  */
 {
     /* Exemple (dans la classe dérivée "Variable") :
@@ -136,10 +138,6 @@ BlocProgramme.prototype.minimise = function(event)
  * Minimisation du bloc programme
  * appelée par un click sur le bouton "minimisation"
  * doit être surchargée dans les objets dérivés
- * appelée avec le contexte de BlocProgramme.prototype.initBloc
- * donc éléments disponibles :
- *     - this.liBloc = element <li> qui contient le bouton
- *     - this.divBloc = element <div> qui contient le bouton
  */
 {
    /* Exemple (dans la classe dérivée "Variable") :
@@ -152,10 +150,6 @@ BlocProgramme.prototype.deplaceHaut = function(event)
  * Déplacement du bloc programme vers le haut
  * appelée par un click sur le bouton "haut"
  * doit être surchargée dans les objets dérivés
- * appelée avec le contexte de BlocProgramme.prototype.initBloc
- * donc éléments disponibles :
- *     - this.liBloc = element <li> qui contient le bouton
- *     - this.divBloc = element <div> qui contient le bouton
  */
 {
     /* Exemple (dans la classe dérivée "Variable") :
@@ -167,10 +161,6 @@ BlocProgramme.prototype.deplaceBas = function(event)
  * Déplacement du bloc programme vers le bas
  * appelée par un click sur le bouton "bas"
  * doit être surchargée dans les objets dérivés
- * appelée avec le contexte de BlocProgramme.prototype.initBloc
- * donc éléments disponibles :
- *     - this.liBloc = element <li> qui contient le bouton
- *     - this.divBloc = element <div> qui contient le bouton
  */
 {
     /* Exemple (dans la classe dérivée "Variable") :

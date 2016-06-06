@@ -291,10 +291,10 @@ Variable.prototype.initBloc = function()
     
     var txt = document.createTextNode( this.nom );
     
-    divEnTeteVar.append(txt);
-    divEnTeteVar.append(boutonChoixType);
-    divEnTeteVar.append(affNomType);
-    divEnTeteVar.append(valvar);
+    this.divEntete.appendChild(txt);
+    this.divEntete.appendChild(boutonChoixType[0]);
+    this.divEntete.appendChild(affNomType[0]);
+    this.divEntete.appendChild(valvar[0]);
 
     drag();
 }
@@ -304,16 +304,13 @@ Variable.prototype.supprime = function(event)
  * Méthode de suppresion du bloc programme variable
  * appelée par un click sur le bouton de suppression
  * doit être surchargée dans les objets dérivés
- * appelée avec le contexte de BlocProgramme.prototype.initBloc
- * donc éléments disponibles :
- *     - this.liBloc = element <li> qui contient le bouton
- *     - this.divBloc = element <div> qui contient le bouton
  */
 {
-     var nomVar = this.liBloc.id.slice("RidPrBloc_".length,this.liBloc.id.length);// On supprime le "RidPrBloc_" devant le nom de la variable
-     rucheSys.supprVariable(nomVar);
-     var ind = rucheSys.rechercheIndice(nomVar,rucheSys.listeBlocPrepa);
-     rucheSys.listeBlocPrepa.splice(ind,1);
+    var liBloc = event.target.parentNode.parentNode.parentNode; //
+    var nomVar = liBloc.id.slice("RidPrBloc_".length,liBloc.id.length);// On supprime le "RidPrBloc_" devant le nom de la variable
+    rucheSys.supprVariable(nomVar);
+    var ind = rucheSys.rechercheIndice(nomVar,rucheSys.listeBlocPrepa);
+    rucheSys.listeBlocPrepa.splice(ind,1);
 }
 
 Variable.prototype.minimise = function(event)
@@ -321,12 +318,9 @@ Variable.prototype.minimise = function(event)
  * Minimisation du bloc programme variable
  * appelée par un click sur le bouton "minimisation"
  * doit être surchargée dans les objets dérivés
- * appelée avec le contexte de BlocProgramme.prototype.initBloc
- * donc éléments disponibles :
- *     - this.liBloc = element <li> qui contient le bouton
- *     - this.divBloc = element <div> qui contient le bouton
  */
 {
+    var buttonWindow = event.target;
     IDvar = buttonWindow.id.slice("Rid_Button_MiniMaxi_".length,buttonWindow.id.length);
     if (buttonWindow.className == "Rcl_Button_Minimize")
     {
@@ -361,13 +355,9 @@ Variable.prototype.deplaceHaut = function(event)
  * Déplacement du bloc programme variable vers le haut
  * appelée par un click sur le bouton "haut"
  * doit être surchargée dans les objets dérivés
- * appelée avec le contexte de BlocProgramme.prototype.initBloc
- * donc éléments disponibles :
- *     - this.liBloc = element <li> qui contient le bouton
- *     - this.divBloc = element <div> qui contient le bouton
- *     - buttonHaut, pointe sur le bouton
  */
 {
+    var buttonHaut = event.target;
     var li = buttonHaut.parentNode.parentNode.parentNode;
     var previous = li.previousElementSibling;
     if (previous) {
@@ -388,13 +378,9 @@ Variable.prototype.deplaceBas = function(event)
  * Déplacement du bloc programme variable vers le bas
  * appelée par un click sur le bouton "bas"
  * doit être surchargée dans les objets dérivés
- * appelée avec le contexte de BlocProgramme.prototype.initBloc
- * donc éléments disponibles :
- *     - this.liBloc = element <li> qui contient le bouton
- *     - this.divBloc = element <div> qui contient le bouton
- *     - buttonBas, pointe sur le bouton
  */
 {
+    var buttonBas = event.target;
     var li = buttonBas.parentNode.parentNode.parentNode;
     var next = li.nextElementSibling;
     if (next) {
