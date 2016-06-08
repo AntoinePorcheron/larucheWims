@@ -2247,7 +2247,7 @@ idEditeur = id de l'éditeur sur lequel l'objet this a été droppé
             /* 6ème approche : par tableauBlocPrepa */
             console.log("Num bloc droppé : "+numIndDrop);
             
-            rucheSys.listeBlocPrepa[numIndRec].integrerBlocDansBloc(rucheSys.listeBlocPrepa[numIndDrop],idBlocDrop);
+            rucheSys.listeBlocPrepa[numIndRec].integrerBlocDansBloc(rucheSys.listeBlocPrepa[numIndDrop],idBlocDrop,numIndDrop);
             
             
             

@@ -785,6 +785,13 @@ input:-moz-placeholder { color:rgba(255,10,0,0.5); }
     vertical-align:top;
 }
 
+.zoneDrop{
+    background: #adadad;
+}
+.zoneDrop_survol {
+    background: rgb(196, 255, 174);
+}
+
 /* Style des blocs d'essaim */
 
 .Rcl_Bloc_Essaim {

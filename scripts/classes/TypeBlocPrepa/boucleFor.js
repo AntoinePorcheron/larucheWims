@@ -15,8 +15,10 @@ function BoucleFor(numero)
         
     //th
     this.blocContenu = []; // liste des blocs contenus
+    this.HTMLblocContenu = []; //le code HTML des blocs contenus
     this.hidden = false; // dit si le bloc doit être caché ou non
     this.blocLie=null; //Si il y a un bloc dans le bloc inséré dans le champs instructions
+    this.numBlocLie=-1;
 	
 	//--------- METHODES ----------//
 
@@ -40,9 +42,11 @@ function BoucleFor(numero)
 		var div_fils = document.createElement("DIV");
         var div_blocDansBloc = document.createElement("DIV");
         var div_appartenanceBloc = document.createElement("DIV");
+        var div_zoneDropBdb = document.createElement("DIV");
         var div_blocPossede = document.createElement("DIV");
 		liste.id = "RidPrBloc_"+this.nom;
         var posDrag = document.createAttribute("posdrag");
+        
         
         
         posDrag.value=0;
@@ -280,7 +284,7 @@ function BoucleFor(numero)
 		true);
 
 
-		// Buouton d'ajout d'instruction , si l'on veut pouvoir imbriquer plusieurs blocs dans une amélioration future
+		// Bouton d'ajout d'instruction , si l'on veut pouvoir imbriquer plusieurs blocs dans une amélioration future
 		/*var buttonInstruction = document.createElement('button');
 		buttonInstruction.id = "instr"+this.nom;
 		buttonInstruction.className = "Rcl_Button_Delete";*/
@@ -290,6 +294,7 @@ function BoucleFor(numero)
 		txt_instruction = document.createTextNode("\r\nInstructions");
         txt_Bloc = document.createTextNode("Glisser un bloc ci-dessous pour l'insérer");
         txt_Appartenance = document.createTextNode("");
+        zoneDropBlocDansBloc = document.createTextNode("[Zone d'insertion de bloc]");
 
 		//Ajout des éléments dans le div
 		div_fils.appendChild(button);
@@ -301,11 +306,14 @@ function BoucleFor(numero)
 		div_fils.appendChild(div_forDebut);
 		div_fils.appendChild(txt_fin);
 		div_fils.appendChild(div_forFin);
+        
 		
 		div_fils.appendChild(txt_instruction);
         div_appartenanceBloc.appendChild(txt_Appartenance);
         div_blocPossede.appendChild(txt_Appartenance);
+        div_zoneDropBdb.appendChild(zoneDropBlocDansBloc);
 		div_fils.appendChild(div_forInstruction);
+        
        
 
 		liste.className = "Rcl_Bloc";
@@ -315,10 +323,14 @@ function BoucleFor(numero)
         div_appartenanceBloc.id = "indicAppartenance"+this.nom;
         div_blocPossede.className = "Rcl_Bloc_Interne_estDansBloc";
         div_blocPossede.id = "dansBloc_"+liste.id;
+        div_zoneDropBdb.id = "zoneDrop_"+liste.id;
+        div_zoneDropBdb.className = "zoneDrop";
         
 		liste.appendChild(div_fils);
         liste.appendChild(div_blocPossede);
+        liste.appendChild(div_zoneDropBdb);
         liste.appendChild(div_appartenanceBloc);
+        
 		bloc_pere.appendChild(liste);
 
 		//Création et ajout des éditeurs dans la liste des éditeurs
@@ -335,7 +347,7 @@ function BoucleFor(numero)
 
 	//---------------------------------//
     
-    this.integrerBlocDansBloc = function(BlocIntegre,idBlocIntegre)
+    this.integrerBlocDansBloc = function(BlocIntegre,idBlocIntegre,numBlocIntegre)
     /* Cette méthode permet d'intégrer un bloc dans ce bloc
     INPUT : 
     BlocIntegre : objet bloc intégré à this
@@ -343,9 +355,9 @@ function BoucleFor(numero)
     */
     {
         
-        alert('Dans la fonction blocDansBloc de FOR');
+        console.log('Dans la fonction blocDansBloc de FOR');
         var nomBlocIntegre = this.nom;
-        console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+       
         var codeVisuel; //le code que l'on va intégrer dans le code pour le visuel
         //var numBlocRecepteur=idEditeur.replace("forInstructionfor",""); // On garde juste le numéro du bloc si c'est un bloc for
         //console.log("Numéro de bloc :",numBlocRecepteur);
@@ -353,7 +365,7 @@ function BoucleFor(numero)
        // this.blocContenu.push(BlocIntegre);// on ajoute le bloc récupéré au tableau
         
         BlocIntegre.hidden = true; // on rend le blocIntegre invisible.
-        console.log("###########################");
+        
         /*for(var i=0; i< this.blocContenu.length; i++)
             {
                 var blocTmp=this.blocContenu[i];
@@ -363,16 +375,17 @@ function BoucleFor(numero)
             }*/
         
         this.blocLie =BlocIntegre;
+        this.numBlocLie = numBlocIntegre; //indice du bloc intégré dans la liste rucheSys.listeBlocPrepa
         console.log(BlocIntegre.nom);
         var DIVBlocIntegre= document.getElementById(idBlocIntegre); //la division dans le code HTML correspondant au bloc
-        codeVisuel = DIVBlocIntegre.innerHTML.replace(/<button.*<\/button>/,"");
-        console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!?????????????!");
+        codeVisuel = DIVBlocIntegre.innerHTML.replace(/<button.*<\/button>/,"");//<button class='Rcl_Button_Delete' onclick='"this".sortirBloc()");   
+        
         console.log("Code HTML intégré = ",codeVisuel);
-        console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        
         //document.getElementById("indicAppartenancefor"+list.id).innerHTML=codeVisuel;
         console.log("BLOC INTEGRE DOIT ETRE TRUE : "+BlocIntegre.hidden);
         
-        codeVisuel = "<div class='BlocInterieur'>"+codeVisuel+"</div>";
+        codeVisuel = "<div class='BlocInterieur'>"+codeVisuel+"</div><!--Fin Bloc Dans Bloc>";
         var numBlocRecepteur = this.nom.replace("for","");
         console.log(codeVisuel);
         document.getElementById("indicAppartenancefor"+numBlocRecepteur).innerHTML=codeVisuel;
@@ -413,6 +426,27 @@ function BoucleFor(numero)
             document.getElementById("forFin" + this.nom).className=document.getElementById("forFin" + this.nom).className.replace(" Rcl_Mini_Editor_hidden","");
             document.getElementById("forInstruction" + this.nom).className=document.getElementById("forInstruction" + this.nom).className.replace(" Rcl_Mini_Editor_hidden","");
         }
+    }
+    
+    this.sortirBloc = function()
+    /*
+     * Fonction permettant de sortir le bloc encapsulé dans le bloc this
+     */
+    {
+        var blocASortir = rucheSys.listeBlocPrepa[this.numBlocLie];
+        /* On formate le contenu du bloc qu'on veux sortir pour restaurer sa mise en forme */
+        var contenueHTMLBloASortir = this.innerHTML.replace("<class='BlocInterieur'>","");
+        contenueHTMLBloASortir= contenueHTMLBloASortir.replace("<\/div><!--Fin Bloc Dans Bloc>","");
+        
+        rucheSys.listeBlocPrepa[this.numBlocLie].hidden=false;
+        
+        
+        this.innerHTML.replace(/<class='BlocInterieur'><\/div><!--Fin Bloc Dans Bloc>/,"");
+        rucheSys.listeBlocPrepa[this.numBlocLie].innerHTML=contenueHTMLBloASortir;
+        this.blocLie=null;
+        
+        
+        
     }
 
 	//---------------------------------//
