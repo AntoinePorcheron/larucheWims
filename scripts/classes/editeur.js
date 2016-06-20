@@ -32,22 +32,31 @@ function Editeur(id,ruc,bool,toolbar){
                               }
                               }
                               });
+//        $("#"+id).bind('blur change click dblclick error focus focusin focusout hover keydown keypress keyup load mousedown mouseenter mouseleave mousemove mouseout mouseover mouseup resize scroll select submit', function(event){
+//                           event.stopPropagation();
+//                       console.log("stopped propagation of "+event.type);
+//                           });
+
 		this.edit.on('selection-change', function(range) {
             if(range){
                 var bloc_pere =document.getElementById("Rid_Prep_Vars");
                 bloc_pere.setAttribute("focusedit",id);
                 var bloc_pere2 =document.getElementById("Rid_Analyse_Vars");
                 bloc_pere2.setAttribute("focusedit",id);
-                document.getElementById(id).style.backgroundColor="lightgreen";
+                document.getElementById(id).style.backgroundColor="GhostWhite";
+                     console.log('small editor selection change', range);
             }
             else{
                 document.getElementById(id).style.backgroundColor="";
-            }
+                     console.log('small editor selection change : no range');
+                     }
 		});
 		
 		this.edit.on('text-change', function(delta, source) {
             var txt=document.getElementById(id);
             txt.value=document.getElementById(id).textContent;
+                     console.log('small editor text-change', delta, source)
+                     
 		});
 	}
 

@@ -303,7 +303,7 @@ Ruche.prototype.initialisationEvent = function ()
                     {
                         //blocDrop=document.getElementById(nameData);
                         //blocDrop.integrerBlocDansBloc(rucheSys.listeEditeur[indice].nom);
-                        integrerBlocDansBloc(nameData,rucheSys.listeEditeur[indice].nom);// Cette méthode va intégrer un bloc dans un autre. Paramètre :l'id du bloc droppé, l'id de l'éditeur  
+                        integrerBlocDansBloc(nameData,rucheSys.listeEditeur[indice].nom);// Cette méthode va intégrer un bloc dans un autre. Paramètre :l'id du bloc droppé, l'id de l'éditeur
                         
                     }
                 else

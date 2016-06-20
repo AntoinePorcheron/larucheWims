@@ -1046,6 +1046,9 @@
          location = "group:quill-init.js">
       </FileRef>
       <FileRef
+         location = "group:quill.js">
+      </FileRef>
+      <FileRef
          location = "group:quill.min.js">
       </FileRef>
    </Group>
