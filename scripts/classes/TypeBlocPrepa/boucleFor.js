@@ -16,6 +16,9 @@ function BoucleFor(numero)
     this.blocContenu = []; // liste des blocs contenus
     this.hidden = false; // dit si le bloc doit être caché ou non
     this.blocLie=null; //Si il y a un bloc dans le bloc inséré dans le champs instructions
+    this.div_forDebut = null;
+    this.div_forFin = null;
+    this.div_forInstruction = null;
 }
 
 // Hérite (classe dérivée) de BlocProgramme
@@ -23,6 +26,8 @@ BoucleFor.prototype = Object.create(BlocProgramme.prototype);
 BoucleFor.prototype.constructor = BoucleFor;
 BoucleFor.prototype.proto = "BoucleFor"; // nature de la classe
     // ATTENTION : DOIT ETRE LE MEME QUE this.proto CI—DESSUS
+
+BoucleFor.prototype.contientAutresBlocs = true;
     
 
 	//--------- METHODES ----------//
@@ -35,15 +40,18 @@ BoucleFor.prototype.creerBloc = function()
 {
     console.log("Entrée dans creerBloc (spec)");
     
+    // Initialisation du bloc vide + entete
+    BlocProgramme.prototype.initBloc.call(this);
+  
     // Récupération des blocs et créations des nouveaux
     
-    var bloc_pere = document.getElementById("Rid_Prep_Blocs");
-    var liste = document.createElement("LI");
-    var div_fils = document.createElement("DIV");
+    var bloc_pere = document.getElementById(this.idParent);
+//    var liste = document.createElement("LI");
+//    liste.id = "RidPrBloc_"+this.nom;
+//    var div_fils = document.createElement("DIV");
     var div_blocDansBloc = document.createElement("DIV");
     var div_appartenanceBloc = document.createElement("DIV");
     var div_blocPossede = document.createElement("DIV");
-    liste.id = "RidPrBloc_"+this.nom;
     var posDrag = document.createAttribute("posdrag");
     
     
@@ -52,20 +60,20 @@ BoucleFor.prototype.creerBloc = function()
     
     /* Modifications pour le drag and drop */
     //On gère l'envoi
-    liste.draggable = true;
+//    liste.draggable = true;
     
-    liste.addEventListener('dragstart', function(e) {
+    this.liBloc.addEventListener('dragstart', function(e) {
                            if(bloc_pere.getAttribute("posdrag")==0){
                            bloc_pere.setAttribute("posdrag",""+e.clientY);
                            }
-                           e.dataTransfer.setData('text/plain', liste.id);
+                           e.dataTransfer.setData('text/plain', this.id);
                            //e.dataTransfer.setDragImage(dragImg, 40, 40); // Une position de 40x40 pixels centrera l'image (de 80x80 pixels) sous le curseur
                            
                            });
     
     // On gère le changement d'apparence entre les deux fonctions.
     
-    liste.addEventListener('dragleave', function(e) {
+    this.liBloc.addEventListener('dragleave', function(e) {
                            //Lorsqu'on sort d'une zone de drop.
                            this.style.borderBottom="";
                            this.style.borderTop="";
@@ -73,7 +81,7 @@ BoucleFor.prototype.creerBloc = function()
                            });
     
     //On gère la réception
-    liste.addEventListener('dragover', function(e) {
+    this.liBloc.addEventListener('dragover', function(e) {
                            e.preventDefault(); // Annule l'interdiction de drop
                            if(e!=this)
                            {
@@ -90,7 +98,7 @@ BoucleFor.prototype.creerBloc = function()
                            }
                            });
     
-    liste.addEventListener('drop', function(e) {
+    this.liBloc.addEventListener('drop', function(e) {
                            /*Cette fonction sert à décrire ce qui se passera pour le bloc ciblé ce qui se passera lorsqu'on lachera un objet droppable sur lui */
                            
                            this.style.borderBottom="";
@@ -181,105 +189,105 @@ BoucleFor.prototype.creerBloc = function()
     
     /* Fin des modifs */
     
-    var div_forDebut = document.createElement("DIV");
-    div_forDebut.id = "forDebut" + this.nom;
-    div_forDebut.className = "Rcl_Droppable Rcl_Mini_Editor";
+    this.div_forDebut = document.createElement("DIV");
+    this.div_forDebut.id = "forDebut" + this.nom;
+    this.div_forDebut.className = "Rcl_Droppable Rcl_Mini_Editor";
     //div_forDebut.className = "Rcl_Mini_Editor";
-    var div_forFin = document.createElement("DIV");
-    div_forFin.id = "forFin" + this.nom;
-    div_forFin.className = "Rcl_Droppable Rcl_Mini_Editor";
+    this.div_forFin = document.createElement("DIV");
+    this.div_forFin.id = "forFin" + this.nom;
+    this.div_forFin.className = "Rcl_Droppable Rcl_Mini_Editor";
     //div_forFin.className = "Rcl_Mini_Editor";
-    var div_forInstruction = document.createElement("DIV");
-    div_forInstruction.id = "forInstruction" + this.nom;
-    div_forInstruction.className = "Rcl_Droppable";
+    this.div_forInstruction = document.createElement("DIV");
+    this.div_forInstruction.id = "forInstruction" + this.nom;
+    this.div_forInstruction.className = "Rcl_Droppable";
     var txt = document.createTextNode("Bloc FOR");
     
-    var button = document.createElement('button');
-    
-    // Bouton pour supprimer le bloc
-    button.id = "Rid_Button_Delete_" + this.nom;
-    button.className = "Rcl_Button_Delete";
-    button.onclick = function()
-    {
-        var n = liste.id.slice("RidPrBloc_".length,liste.id.length);
-        rucheSys.supprInstruction(n,rucheSys.listeBlocPrepa);
-    }
-    
-    // Bouton pour diminuer / agrandir la fenêtre
-    var buttonWindow = document.createElement('button');
-    buttonWindow.id="Rid_Button_MiniMaxi_"+this.nom;
-    buttonWindow.className = "Rcl_Button_Minimize";
-    buttonWindow.addEventListener('click', function (event)
-                                  {
-                                  if (buttonWindow.className == "Rcl_Button_Minimize")
-                                  {
-                                  buttonWindow.className = "";
-                                  buttonWindow.className = "Rcl_Button_Maximize";
-                                  buttonWindow.parentNode.parentNode.className = "Rcl_Closed";
-                                  div_forDebut.className += " Rcl_Mini_Editor_hidden";
-                                  div_forFin.className += " Rcl_Mini_Editor_hidden";
-                                  div_forInstruction.className += " Rcl_Mini_Editor_hidden";
-                                  
-                                  
-                                  }
-                                  else
-                                  {
-                                  buttonWindow.className = "";
-                                  buttonWindow.className = "Rcl_Button_Minimize";
-                                  buttonWindow.parentNode.parentNode.className = "";
-                                  buttonWindow.parentNode.parentNode.className = "Rcl_Bloc";
-                                  div_forDebut.className = div_forDebut.className.replace(" Rcl_Mini_Editor_hidden","");
-                                  div_forFin.className = div_forFin.className.replace(" Rcl_Mini_Editor_hidden","");
-                                  div_forInstruction.className = div_forInstruction.className.replace(" Rcl_Mini_Editor_hidden","");
-                                  
-                                  };
-                                  },
-                                  true);
-    
-    // Bouton de deplacement vers le haut
-    var buttonHaut = document.createElement('button');
-    buttonHaut.id = "Rid_Button_Up_"+this.nom;
-    buttonHaut.className = "Rcl_Move_Up_Arrow";
-    buttonHaut.addEventListener('click', function (event)
-                                {
-                                var li = buttonHaut.parentNode.parentNode;
-                                var previous = li.previousElementSibling;
-                                if (previous)
-                                {
-                                li.parentNode.insertBefore(li, previous);
-                                var nom = li.id.slice("RidPrBloc_".length,li.id.length);
-                                
-                                var ind = rucheSys.rechercheIndice(nom,rucheSys.listeBlocPrepa);
-                                
-                                var temp = rucheSys.listeBlocPrepa[ind];
-                                rucheSys.listeBlocPrepa[ind] = rucheSys.listeBlocPrepa[ind-1];
-                                rucheSys.listeBlocPrepa[ind-1] = temp;
-                                }
-                                },
-                                true);
-    
-    // Bouton de deplacement vers le bas
-    var buttonBas = document.createElement('button');
-    buttonBas.id = "Rid_Button_Down_"+this.nom;
-    buttonBas.className = "Rcl_Move_Down_Arrow";
-    buttonBas.addEventListener('click', function (event)
-                               {
-                               var li = buttonBas.parentNode.parentNode;
-                               var next = li.nextElementSibling;
-                               if (next)
-                               {
-                               next = next.nextElementSibling;
-                               var nom = li.id.slice("RidPrBloc_".length,li.id.length);
-                               
-                               var ind = rucheSys.rechercheIndice(nom,rucheSys.listeBlocPrepa);
-                               
-                               var temp = rucheSys.listeBlocPrepa[ind];
-                               rucheSys.listeBlocPrepa[ind] = rucheSys.listeBlocPrepa[ind+1];
-                               rucheSys.listeBlocPrepa[ind+1] = temp;
-                               }
-                               li.parentNode.insertBefore(li, next);
-                               },
-                               true);
+//    var button = document.createElement('button');
+//    
+//    // Bouton pour supprimer le bloc
+//    button.id = "Rid_Button_Delete_" + this.nom;
+//    button.className = "Rcl_Button_Delete";
+//    button.onclick = function()
+//    {
+//        var n = liste.id.slice("RidPrBloc_".length,liste.id.length);
+//        rucheSys.supprInstruction(n,rucheSys.listeBlocPrepa);
+//    }
+//    
+//    // Bouton pour diminuer / agrandir la fenêtre
+//    var buttonWindow = document.createElement('button');
+//    buttonWindow.id="Rid_Button_MiniMaxi_"+this.nom;
+//    buttonWindow.className = "Rcl_Button_Minimize";
+//    buttonWindow.addEventListener('click', function (event)
+//                                  {
+//                                  if (buttonWindow.className == "Rcl_Button_Minimize")
+//                                  {
+//                                  buttonWindow.className = "";
+//                                  buttonWindow.className = "Rcl_Button_Maximize";
+//                                  buttonWindow.parentNode.parentNode.className = "Rcl_Closed";
+//                                  div_forDebut.className += " Rcl_Mini_Editor_hidden";
+//                                  div_forFin.className += " Rcl_Mini_Editor_hidden";
+//                                  div_forInstruction.className += " Rcl_Mini_Editor_hidden";
+//                                  
+//                                  
+//                                  }
+//                                  else
+//                                  {
+//                                  buttonWindow.className = "";
+//                                  buttonWindow.className = "Rcl_Button_Minimize";
+//                                  buttonWindow.parentNode.parentNode.className = "";
+//                                  buttonWindow.parentNode.parentNode.className = "Rcl_Bloc";
+//                                  div_forDebut.className = div_forDebut.className.replace(" Rcl_Mini_Editor_hidden","");
+//                                  div_forFin.className = div_forFin.className.replace(" Rcl_Mini_Editor_hidden","");
+//                                  div_forInstruction.className = div_forInstruction.className.replace(" Rcl_Mini_Editor_hidden","");
+//                                  
+//                                  };
+//                                  },
+//                                  true);
+//    
+//    // Bouton de deplacement vers le haut
+//    var buttonHaut = document.createElement('button');
+//    buttonHaut.id = "Rid_Button_Up_"+this.nom;
+//    buttonHaut.className = "Rcl_Move_Up_Arrow";
+//    buttonHaut.addEventListener('click', function (event)
+//                                {
+//                                var li = buttonHaut.parentNode.parentNode;
+//                                var previous = li.previousElementSibling;
+//                                if (previous)
+//                                {
+//                                li.parentNode.insertBefore(li, previous);
+//                                var nom = li.id.slice("RidPrBloc_".length,li.id.length);
+//                                
+//                                var ind = rucheSys.rechercheIndice(nom,rucheSys.listeBlocPrepa);
+//                                
+//                                var temp = rucheSys.listeBlocPrepa[ind];
+//                                rucheSys.listeBlocPrepa[ind] = rucheSys.listeBlocPrepa[ind-1];
+//                                rucheSys.listeBlocPrepa[ind-1] = temp;
+//                                }
+//                                },
+//                                true);
+//    
+//    // Bouton de deplacement vers le bas
+//    var buttonBas = document.createElement('button');
+//    buttonBas.id = "Rid_Button_Down_"+this.nom;
+//    buttonBas.className = "Rcl_Move_Down_Arrow";
+//    buttonBas.addEventListener('click', function (event)
+//                               {
+//                               var li = buttonBas.parentNode.parentNode;
+//                               var next = li.nextElementSibling;
+//                               if (next)
+//                               {
+//                               next = next.nextElementSibling;
+//                               var nom = li.id.slice("RidPrBloc_".length,li.id.length);
+//                               
+//                               var ind = rucheSys.rechercheIndice(nom,rucheSys.listeBlocPrepa);
+//                               
+//                               var temp = rucheSys.listeBlocPrepa[ind];
+//                               rucheSys.listeBlocPrepa[ind] = rucheSys.listeBlocPrepa[ind+1];
+//                               rucheSys.listeBlocPrepa[ind+1] = temp;
+//                               }
+//                               li.parentNode.insertBefore(li, next);
+//                               },
+//                               true);
     
     
     // Buouton d'ajout d'instruction , si l'on veut pouvoir imbriquer plusieurs blocs dans une amélioration future
@@ -287,56 +295,148 @@ BoucleFor.prototype.creerBloc = function()
      buttonInstruction.id = "instr"+this.nom;
      buttonInstruction.className = "Rcl_Button_Delete";*/
     
-    txt_debut = document.createTextNode("\r\nPour");
-    txt_fin = document.createTextNode("\r\njusqu'à");
-    txt_instruction = document.createTextNode("\r\nInstructions");
-    txt_Bloc = document.createTextNode("Glisser un bloc ci-dessous pour l'insérer");
-    txt_Appartenance = document.createTextNode("");
+    var txt_debut = document.createTextNode("\r\nPour");
+    var txt_fin = document.createTextNode("\r\njusqu'à");
+    var txt_instruction = document.createTextNode("\r\nInstructions");
+    var txt_Bloc = document.createTextNode("Glisser un bloc ci-dessous pour l'insérer");
+    var txt_Appartenance = document.createTextNode("");
     
     //Ajout des éléments dans le div
-    div_fils.appendChild(button);
-    div_fils.appendChild(buttonWindow);
-    div_fils.appendChild(buttonHaut);
-    div_fils.appendChild(buttonBas);		
     
-    div_fils.appendChild(txt_debut);
-    div_fils.appendChild(div_forDebut);
-    div_fils.appendChild(txt_fin);
-    div_fils.appendChild(div_forFin);
+    this.divBloc.appendChild(txt_debut);
+    this.divBloc.appendChild(this.div_forDebut);
+    this.divBloc.appendChild(txt_fin);
+    this.divBloc.appendChild(this.div_forFin);
     
-    div_fils.appendChild(txt_instruction);
+    this.divBloc.appendChild(txt_instruction);
     div_appartenanceBloc.appendChild(txt_Appartenance);
     div_blocPossede.appendChild(txt_Appartenance);
-    div_fils.appendChild(div_forInstruction);
+    this.divBloc.appendChild(this.div_forInstruction);
     
     
-    liste.className = "Rcl_Bloc";
-    div_fils.className = "Rcl_Bloc_Interne";
+//    liste.className = "Rcl_Bloc";
+//    this.divBloc.className = "Rcl_Bloc_Interne";
     div_blocDansBloc.className = "Rcl_Bloc_Interne";
     div_appartenanceBloc.className = "Rcl_Bloc_Interne_appartenance";
     div_appartenanceBloc.id = "indicAppartenance"+this.nom;
     div_blocPossede.className = "Rcl_Bloc_Interne_estDansBloc";
-    div_blocPossede.id = "dansBloc_"+liste.id;
+    div_blocPossede.id = "dansBloc_"+this.liBloc.id;
     
-    liste.appendChild(div_fils);
-    liste.appendChild(div_blocPossede);
-    liste.appendChild(div_appartenanceBloc);
-    bloc_pere.appendChild(liste);
+    this.liBloc.appendChild(div_blocPossede);
+    this.liBloc.appendChild(div_appartenanceBloc);
     
     //Création et ajout des éditeurs dans la liste des éditeurs
-    var editeurDebut = new Editeur(div_forDebut.id,rucheSys,true);
-    var editeurFin = new Editeur(div_forFin.id,rucheSys,true);
-    var editeurInstruction = new Editeur(div_forInstruction.id,rucheSys,true);
+    var editeurDebut = new Editeur(this.div_forDebut.id,rucheSys,true);
+    var editeurFin = new Editeur(this.div_forFin.id,rucheSys,true);
+    var editeurInstruction = new Editeur(this.div_forInstruction.id,rucheSys,true);
     
     rucheSys.listeEditeur.push(editeurDebut);
     rucheSys.listeEditeur.push(editeurFin);
     rucheSys.listeEditeur.push(editeurInstruction);
 }
 
+BoucleFor.prototype.supprime = function(event)
+/*
+ * Méthode de suppresion du bloc programme
+ * appelée par un click sur le bouton de suppression
+ * doit être surchargée dans les objets dérivés
+ */
+{
+    var liBloc = event.target.parentNode.parentNode.parentNode; //
+    var nomInstruction = liBloc.id.slice("RidPrBloc_".length,liBloc.id.length);// On supprime le "RidPrBloc_" devant le nom du bloc
+    rucheSys.supprInstruction(nomInstruction,rucheSys.listeBlocPrepa);
+}
 
+BoucleFor.prototype.minimise = function(event)
+/*
+ * Minimisation du bloc programme
+ * appelée par un click sur le bouton "minimisation"
+ * doit être surchargée dans les objets dérivés
+ */
+{
+    var liBloc = event.target.parentNode.parentNode.parentNode; //
+    var nomInstruction = liBloc.id.slice("RidPrBloc_".length,liBloc.id.length);// On supprime le "RidPrBloc_" devant le nom du bloc
 
-	//---------------------------------//
+    var buttonWindow = event.target;
+    var div_forDebut = document.getElementById("forDebut"+nomInstruction);
+    var div_forFin = document.getElementById("forFin"+nomInstruction);
+    var div_forInstruction = document.getElementById("forInstruction"+nomInstruction);
     
+    if (buttonWindow.className == "Rcl_Button_Minimize")
+    {
+        buttonWindow.className = "";
+        buttonWindow.className = "Rcl_Button_Maximize";
+        buttonWindow.parentNode.parentNode.className = "Rcl_Closed";
+        div_forDebut.className += " Rcl_Mini_Editor_hidden";
+        div_forFin.className += " Rcl_Mini_Editor_hidden";
+        div_forInstruction.className += " Rcl_Mini_Editor_hidden";
+        
+        
+    }
+    else
+    {
+        buttonWindow.className = "";
+        buttonWindow.className = "Rcl_Button_Minimize";
+        buttonWindow.parentNode.parentNode.className = "";
+        buttonWindow.parentNode.parentNode.className = "Rcl_Bloc";
+        div_forDebut.className = div_forDebut.className.replace(" Rcl_Mini_Editor_hidden","");
+        div_forFin.className = div_forFin.className.replace(" Rcl_Mini_Editor_hidden","");
+        div_forInstruction.className = div_forInstruction.className.replace(" Rcl_Mini_Editor_hidden","");
+        
+    };
+}
+
+
+BoucleFor.prototype.deplaceHaut = function(event)
+/*
+ * Déplacement du bloc programme vers le haut
+ * appelée par un click sur le bouton "haut"
+ * doit être surchargée dans les objets dérivés
+ */
+{
+    var buttonHaut = event.target;
+    var li = buttonHaut.parentNode.parentNode.parentNode;
+    var previous = li.previousElementSibling;
+    if (previous) {
+        li.parentNode.insertBefore(li, previous);
+        var nom = li.id.slice("RidPrBloc_".length,li.id.length);
+        var ind = rucheSys.rechercheIndice(nom,rucheSys.listeBlocPrepa);
+        var temp = rucheSys.listeBlocPrepa[ind];
+        rucheSys.listeBlocPrepa[ind] = rucheSys.listeBlocPrepa[ind-1];
+        rucheSys.listeBlocPrepa[ind-1] = temp;
+    }
+    // Mise à jour du pointeur vers le LI
+    // TODO : En vérifier la nécessité
+    this.liBloc = li;
+}
+
+BoucleFor.prototype.deplaceBas = function(event)
+/*
+ * Déplacement du bloc programme vers le bas
+ * appelée par un click sur le bouton "bas"
+ * doit être surchargée dans les objets dérivés
+ */
+{
+    var buttonBas = event.target;
+    var li = buttonBas.parentNode.parentNode.parentNode;
+    var next = li.nextElementSibling;
+    if (next) {
+        next = next.nextElementSibling;
+        var nom = li.id.slice("RidPrBloc_".length,li.id.length);
+        var ind = rucheSys.rechercheIndice(nom,rucheSys.listeBlocPrepa);
+        var temp = rucheSys.listeBlocPrepa[ind];
+        rucheSys.listeBlocPrepa[ind] = rucheSys.listeBlocPrepa[ind+1];
+        rucheSys.listeBlocPrepa[ind+1] = temp;
+    }
+    li.parentNode.insertBefore(li, next);
+    // Mise à jour du pointeur vers le LI
+    // TODO : En vérifier la nécessité
+    this.liBloc = li;
+}
+
+
+//---------------------------------//
+
 BoucleFor.prototype.integrerBlocDansBloc = function(BlocIntegre,idBlocIntegre)
 /* Cette méthode permet d'intégrer un bloc dans ce bloc
 INPUT : 
@@ -460,7 +560,7 @@ BoucleFor.prototype.toOEF = function()
     }
 }
 
-    
+
     
 // On va rechercher l'objet bloc auquel appartient l'éditeur
 // On va intégrer le nom du bloc posé sur le bloc qu'on viens de récupérer

@@ -28,6 +28,7 @@ BlocProgramme.prototype.idEntetePrefixe = "RidPrBloc_Entete_"; // prefixe de l'i
 BlocProgramme.prototype.liBloc = null;
 BlocProgramme.prototype.divBloc = null;
 BlocProgramme.prototype.divEntete = null;
+BlocProgramme.prototype.contientAutresBlocs = false;
 
     //--------- METHODES ----------//
         
