@@ -11,73 +11,77 @@ function Condition(numero)
 	this.nom = "condition" + numero; // nom de l'élément
 	this.proto = "Condition";	// nature de l'élément
     
+}
 
+// Hérite (classe dérivée) de BlocProgramme
+Condition.prototype = Object.create(BlocProgramme.prototype);
+Condition.prototype.constructor = Condition;
+Condition.prototype.proto = "Condition"; // nature de la classe
+// ATTENTION : DOIT ETRE LE MEME QUE this.proto CI—DESSUS
 
-	//--------- METHODES ---------//
+Condition.prototype.contientAutresBlocs = true;
 
-	this.creerBloc = function()
-	/*
-	 * Fonction qui permet de créer un bloc dans l'onglet préparation
-	 * spécifique pour une instruction de type "condition if".
-	 */
-	{
+//--------- METHODES ---------//
 
-		// Récupération des blocs et créations des nouveaux
-		var bloc_pere = document.getElementById("Rid_Prep_Blocs");
-		var liste = document.createElement("LI");
-		var div_fils = document.createElement("DIV");
-        var div_blocDansBloc = document.createElement("DIV");
-		liste.id = "RidPrBloc_"+this.nom;
-        var posDrag = document.createAttribute("posdrag");
-        posDrag.value=0;
-        bloc_pere.setAttributeNode(posDrag);
-        
-
-		/* Modifications pour le drag and drop */
-		//On gère l'envoi
-		liste.draggable = true;
-		liste.addEventListener('dragstart', function(e) {
-                if(bloc_pere.getAttribute("posdrag")==0){
-                    bloc_pere.setAttribute("posdrag",""+e.clientY);
-                }
-        		e.dataTransfer.setData('text/plain', liste.id);
-        		//e.dataTransfer.setDragImage(dragImg, 40, 40); // Une position de 40x40 pixels centrera l'image (de 80x80 pixels) sous le curseur
-        
-    		});
-        
-            // On gère le changement d'apparence entre les deux fonctions. 
-
-        
-
-        liste.addEventListener('dragleave', function(e) {
-             //Lorsqu'on sort d'une zone de drop.
-            this.style.borderBottom="";
-            this.style.borderTop="";
-            console.log('Sortie de zone');
-         });
+Condition.prototype.creerBloc = function()
+/*
+ * Fonction qui permet de créer un bloc dans l'onglet préparation
+ * spécifique pour une instruction de type "condition if".
+ */
+{
+    // Initialisation du bloc vide + entete
+    BlocProgramme.prototype.initBloc.call(this);
+    
+    // Récupération des blocs et créations des nouveaux
+    var bloc_pere = document.getElementById("Rid_Prep_Blocs");
+    var div_blocDansBloc = document.createElement("DIV");
+    var posDrag = document.createAttribute("posdrag");
+    posDrag.value=0;
+    bloc_pere.setAttributeNode(posDrag);
     
 
-		//On gère la réception
-        liste.addEventListener('dragover', function(e) {
-            e.preventDefault(); // Annule l'interdiction de drop
-            if(e!=this)
-                {
-                    console.log("start : "+bloc_pere.getAttribute("posdrag"));
-                    console.log("over : "+e.clientY);
-                    if(bloc_pere.getAttribute("posdrag")<e.clientY)
-                    {
-                        this.style.borderBottom="2px dotted red";
-                    }
-                    else
-                    {
-                        this.style.borderTop="2px dotted red";
-                    }
-                
-                }
+    /* Modifications pour le drag and drop */
+    //On gère l'envoi
+    this.liBloc.addEventListener('dragstart', function(e) {
+            if(bloc_pere.getAttribute("posdrag")==0){
+                bloc_pere.setAttribute("posdrag",""+e.clientY);
+            }
+            e.dataTransfer.setData('text/plain', this.id);
+            //e.dataTransfer.setDragImage(dragImg, 40, 40); // Une position de 40x40 pixels centrera l'image (de 80x80 pixels) sous le curseur
+    
         });
+    
+    // On gère le changement d'apparence entre les deux fonctions.
 
-   		liste.addEventListener('drop', function(e) {
-        	/*Cette fonction sert à décrire ce qui se passera pour le bloc ciblé ce qui se passera lorsqu'on lachera un objet droppable sur lui */
+    this.liBloc.addEventListener('dragleave', function(e) {
+         //Lorsqu'on sort d'une zone de drop.
+        this.style.borderBottom="";
+        this.style.borderTop="";
+        console.log('Sortie de zone');
+     });
+
+
+    //On gère la réception
+    this.liBloc.addEventListener('dragover', function(e) {
+        e.preventDefault(); // Annule l'interdiction de drop
+        if(e!=this)
+            {
+                console.log("start : "+bloc_pere.getAttribute("posdrag"));
+                console.log("over : "+e.clientY);
+                if(bloc_pere.getAttribute("posdrag")<e.clientY)
+                {
+                    this.style.borderBottom="2px dotted red";
+                }
+                else
+                {
+                    this.style.borderTop="2px dotted red";
+                }
+            
+            }
+    });
+
+    this.liBloc.addEventListener('drop', function(e) {
+            /*Cette fonction sert à décrire ce qui se passera pour le bloc ciblé ce qui se passera lorsqu'on lachera un objet droppable sur lui */
         this.style.borderBottom="";      
         this.style.borderTop="";
         if(bloc_pere.getAttribute("posdrag")!=""+0){
@@ -105,9 +109,7 @@ function Condition(numero)
         //var actu= id_drop;
         if(lgNext>0)
         {
-    	
-        
-            for (var i = 0; i < lgNext; i++) { //on fait faire au bloc droppé lgNext descentes vers le bas.
+             for (var i = 0; i < lgNext; i++) { //on fait faire au bloc droppé lgNext descentes vers le bas.
                 
                 if(next){
                     next = next.nextElementSibling;
@@ -160,207 +162,207 @@ function Condition(numero)
         {
             console.log('Ni suivant, ne précédent !***********************');
         }
-           
-        });
-        
-        /* Fin des modifs */
-        
-		var div_condition = document.createElement("DIV");
-		div_condition.id = "cond" + this.nom;
-		div_condition.className = "Rcl_Droppable Rcl_Mini_Editor";
-		//div_condition.className += "Rcl_Mini_Editor";
-		var div_conditionTrue = document.createElement("DIV");
-		div_conditionTrue.id = "condT" + this.nom;
-		div_conditionTrue.className = "Rcl_Droppable";
-		var div_conditionFalse = document.createElement("DIV");
-		div_conditionFalse.id = "condF" + this.nom;
-		div_conditionFalse.className = "Rcl_Droppable";
-		var txt = document.createTextNode("Bloc IF");
-
-		// Bouton pour supprimer l'instruction if.
-		var button = document.createElement('button');
-		button.id = "Rid_Button_Delete_" + this.nom;
-		button.className = "Rcl_Button_Delete"
-		button.onclick = function()
-		{
-			var n = liste.id.slice("RidPrBloc_".length,liste.id.length);
-			rucheSys.supprInstruction(n,rucheSys.listeBlocPrepa);
-		}
-
-		
-		// Bouton pour diminuer / agrandir la fenêtre
-		var buttonWindow = document.createElement('button');
-        buttonWindow.id="Rid_Button_MiniMaxi_"+this.nom;
-		buttonWindow.className = "Rcl_Button_Minimize";
-		buttonWindow.addEventListener('click', function (event)
-		{ 
-			if (buttonWindow.className == "Rcl_Button_Minimize") 
-			{
-				buttonWindow.className = "";
-				buttonWindow.className = "Rcl_Button_Maximize";
-				buttonWindow.parentNode.parentNode.className = "";
-				buttonWindow.parentNode.parentNode.className = "Rcl_Closed";
-                //cache les zones d'edition
-                div_condition.className += " Rcl_Mini_Editor_hidden";
-                div_conditionTrue.className += " Rcl_Mini_Editor_hidden";
-                div_conditionFalse.className += " Rcl_Mini_Editor_hidden";
-			}
-			else
-			{
-				buttonWindow.className = "";
-				buttonWindow.className = "Rcl_Button_Minimize";
-				buttonWindow.parentNode.parentNode.className = "";
-				buttonWindow.parentNode.parentNode.className = "Rcl_Bloc";
-                //reaffiche les zones d'edition
-                div_condition.className = div_condition.className.replace(" Rcl_Mini_Editor_hidden","");
-                div_conditionTrue.className = div_condition.className.replace(" Rcl_Mini_Editor_hidden","").replace(" Rcl_Mini_Editor","");
-                div_conditionFalse.className = div_condition.className.replace(" Rcl_Mini_Editor_hidden","").replace(" Rcl_Mini_Editor","");
-			};
-		}, 
-		true);
-
-		
-		// Bouton de deplacement vers le haut
-		var buttonHaut = document.createElement('button');
-		buttonHaut.id = "Rid_Button_Up_"+this.nom;
-		buttonHaut.className = "Rcl_Move_Up_Arrow";
-		buttonHaut.addEventListener('click', function (event)
-		{
-        	var li = buttonHaut.parentNode.parentNode;
-        	var previous = li.previousElementSibling;
-        	if (previous)
-			{
-            	li.parentNode.insertBefore(li, previous);
-            	var nom = li.id.slice("RidPrBloc_".length,li.id.length);
-            	var ind = rucheSys.rechercheIndice(nom,rucheSys.listeBlocPrepa);
-            	
-            	var temp = rucheSys.listeBlocPrepa[ind];
-            	rucheSys.listeBlocPrepa[ind] = rucheSys.listeBlocPrepa[ind-1];
-            	rucheSys.listeBlocPrepa[ind-1] = temp;
-    		}
-    	},
-    	true);
-
-		
-		// Bouton de deplacement vers le bas		
-		var buttonBas = document.createElement('button');
-		buttonBas.id = "Rid_Button_Down_"+this.nom;
-		buttonBas.className = "Rcl_Move_Down_Arrow";
-		buttonBas.addEventListener('click', function (event)
-		{ 
-	        var li = buttonBas.parentNode.parentNode;
-	        var next = li.nextElementSibling;
-	        if (next)
-			{
-	            next = next.nextElementSibling;
-	            var nom = li.id.slice("RidPrBloc_".length,li.id.length);
-            	var ind = rucheSys.rechercheIndice(nom,rucheSys.listeBlocPrepa);
-            	var temp = rucheSys.listeBlocPrepa[ind];
-            	rucheSys.listeBlocPrepa[ind] = rucheSys.listeBlocPrepa[ind+1];
-            	rucheSys.listeBlocPrepa[ind+1] = temp;
-	        }
-	        li.parentNode.insertBefore(li, next);
-		},
-		true);
-
-		
-		txt_cond = document.createTextNode("\r\nSi");
-		txt_condT = document.createTextNode("\r\nalors");
-		txt_condF = document.createTextNode("\r\nsinon");
-
-		//Ajout des éléments dans le div
-		div_fils.appendChild(button);
-		div_fils.appendChild(buttonWindow);
-		div_fils.appendChild(buttonHaut);
-		div_fils.appendChild(buttonBas);
-
-		div_fils.appendChild(txt_cond);
-		div_fils.appendChild(div_condition);
-		div_fils.appendChild(txt_condT);
-		div_fils.appendChild(div_conditionTrue);
-		div_fils.appendChild(txt_condF);
-		div_fils.appendChild(div_conditionFalse);
-
-		liste.className = "Rcl_Bloc";
-		div_fils.className = "Rcl_Bloc_Interne";
-
-		liste.appendChild(div_fils);
-		bloc_pere.appendChild(liste);
-
-
-		//Création et ajout des éditeurs dans la liste des éditeurs
-		var editeurCond = new Editeur(div_condition.id,rucheSys,true);
-		var editeurCondT = new Editeur(div_conditionTrue.id,rucheSys,true);
-		var editeurCondF = new Editeur(div_conditionFalse.id,rucheSys,true);
-
-		rucheSys.listeEditeur.push(editeurCond);
-		rucheSys.listeEditeur.push(editeurCondT);
-		rucheSys.listeEditeur.push(editeurCondF);
-	}
-
-	
-	//---------------------------------//
+    });
     
-    this.reduireBloc = function()
-    {
-        console.log(this.nom);
-        if(document.getElementById("Rid_Button_MiniMaxi_"+this.nom).className=="Rcl_Button_Minimize")
-        {
-            document.getElementById("RidPrBloc_"+this.nom).className="Rcl_Closed";
-            document.getElementById("Rid_Button_MiniMaxi_"+this.nom).className="Rcl_Button_Maximize";
-            document.getElementById("cond" + this.nom).className+= " Rcl_Mini_Editor_hidden";
-            document.getElementById("condT" + this.nom).className+= " Rcl_Mini_Editor_hidden";
-            document.getElementById("condF" + this.nom).className+= " Rcl_Mini_Editor_hidden";
-        }
-    }
-    this.agrandirBloc = function()
-    {
-        if(document.getElementById("Rid_Button_MiniMaxi_"+this.nom).className=="Rcl_Button_Maximize")
-            {
-                document.getElementById("RidPrBloc_"+this.nom).className="Rcl_Bloc";
-                document.getElementById("Rid_Button_MiniMaxi_"+this.nom).className="Rcl_Button_Minimize";
-                document.getElementById("cond" + this.nom).className=document.getElementById("cond" + this.nom).className.replace(" Rcl_Mini_Editor_hidden","");
-                document.getElementById("condT" + this.nom).className=document.getElementById("condT" + this.nom).className.replace(" Rcl_Mini_Editor_hidden","").replace(" Rcl_Mini_Editor","");
-                document.getElementById("condF" + this.nom).className=document.getElementById("condF" + this.nom).className.replace(" Rcl_Mini_Editor_hidden","").replace(" Rcl_Mini_Editor","");
-            }
-    }
-
-
-	//---------------------------------//
-
-
-	this.toOEF = function()
-	/*
-	 * Fonction qui permet de générer le code OEF de l'instruction "if"
-	 * retourne une chaine de caractère contenant le code OEF.
-	 */
-	{
-		indice1 = rucheSys.rechercheIndice("cond"+this.nom,rucheSys.listeEditeur);
-		indice2 = rucheSys.rechercheIndice("condT"+this.nom,rucheSys.listeEditeur);
-		indice3 = rucheSys.rechercheIndice("condF"+this.nom,rucheSys.listeEditeur);
-		rucheSys.listeEditeur[indice1].recupDonneesVar();
-		rucheSys.listeEditeur[indice2].recupDonneesVar();
-		rucheSys.listeEditeur[indice3].recupDonneesVar();
-
-		var br = /<div><br><\/div>/;
-
-		// Retrait du <br> de fin de ligne
-		if (br.test(rucheSys.listeEditeur[indice1].enonce_Html) == false)
-		{
-			rucheSys.listeEditeur[indice1].enonce_Html = rucheSys.listeEditeur[indice1].enonce_Html.slice(0, rucheSys.listeEditeur[indice1].enonce_Html.length-6);
-		};
-		if (br.test(rucheSys.listeEditeur[indice2].enonce_Html) == false)
-		{
-			rucheSys.listeEditeur[indice2].enonce_Html = rucheSys.listeEditeur[indice2].enonce_Html.slice(0, rucheSys.listeEditeur[indice2].enonce_Html.length-6);
-		};
-		if (br.test(rucheSys.listeEditeur[indice3].enonce_Html) == false)
-		{
-			rucheSys.listeEditeur[indice3].enonce_Html = rucheSys.listeEditeur[indice3].enonce_Html.slice(0, rucheSys.listeEditeur[indice3].enonce_Html.length-6);
-		};
-
-		return "\\if{"+rucheSys.listeEditeur[indice1].toOEF()+"}{"+rucheSys.listeEditeur[indice2].toOEF()+"}\n 	{"+rucheSys.listeEditeur[indice3].toOEF()+"}\n";
-	}	
+    /* Fin des modifs */
     
-    
+    var div_condition = document.createElement("DIV");
+    div_condition.id = "cond" + this.nom;
+    div_condition.className = "Rcl_Droppable Rcl_Mini_Editor";
+    //div_condition.className += "Rcl_Mini_Editor";
+    var div_conditionTrue = document.createElement("DIV");
+    div_conditionTrue.id = "condT" + this.nom;
+    div_conditionTrue.className = "Rcl_Droppable";
+    var div_conditionFalse = document.createElement("DIV");
+    div_conditionFalse.id = "condF" + this.nom;
+    div_conditionFalse.className = "Rcl_Droppable";
+    var txt = document.createTextNode("Bloc IF");
 
+    
+    txt_cond = document.createTextNode("\r\nSi");
+    txt_condT = document.createTextNode("\r\nalors");
+    txt_condF = document.createTextNode("\r\nsinon");
+
+    //Ajout des éléments dans le div
+    this.divBloc.appendChild(txt_cond);
+    this.divBloc.appendChild(div_condition);
+    this.divBloc.appendChild(txt_condT);
+    this.divBloc.appendChild(div_conditionTrue);
+    this.divBloc.appendChild(txt_condF);
+    this.divBloc.appendChild(div_conditionFalse);
+
+    //Création et ajout des éditeurs dans la liste des éditeurs
+    var editeurCond = new Editeur(div_condition.id,rucheSys,true);
+    var editeurCondT = new Editeur(div_conditionTrue.id,rucheSys,true);
+    var editeurCondF = new Editeur(div_conditionFalse.id,rucheSys,true);
+
+    rucheSys.listeEditeur.push(editeurCond);
+    rucheSys.listeEditeur.push(editeurCondT);
+    rucheSys.listeEditeur.push(editeurCondF);
 }
+
+Condition.prototype.supprime = function(event)
+/*
+ * Méthode de suppresion du bloc programme
+ * appelée par un click sur le bouton de suppression
+ * doit être surchargée dans les objets dérivés
+ */
+{
+    var liBloc = event.target.parentNode.parentNode.parentNode; //
+    var nomInstruction = liBloc.id.slice("RidPrBloc_".length,liBloc.id.length);// On supprime le "RidPrBloc_" devant le nom du bloc
+    rucheSys.supprInstruction(nomInstruction,rucheSys.listeBlocPrepa);
+}
+
+Condition.prototype.minimise = function(event)
+/*
+ * Minimisation du bloc programme
+ * appelée par un click sur le bouton "minimisation"
+ * doit être surchargée dans les objets dérivés
+ */
+{
+    var liBloc = event.target.parentNode.parentNode.parentNode; //
+    var nomInstruction = liBloc.id.slice("RidPrBloc_".length,liBloc.id.length);// On supprime le "RidPrBloc_" devant le nom du bloc
+    
+    var buttonWindow = event.target;
+    var div_condition = document.getElementById("cond"+nomInstruction);
+    var div_conditionTrue = document.getElementById("condT"+nomInstruction);
+    var div_conditionFalse = document.getElementById("condF"+nomInstruction);
+    
+    if (buttonWindow.className == "Rcl_Button_Minimize")
+    {
+        buttonWindow.className = "";
+        buttonWindow.className = "Rcl_Button_Maximize";
+        buttonWindow.parentNode.parentNode.className = "Rcl_Closed";
+        div_condition.className += " Rcl_Mini_Editor_hidden";
+        div_conditionTrue.className += " Rcl_Mini_Editor_hidden";
+        div_conditionFalse.className += " Rcl_Mini_Editor_hidden";
+        
+        
+    }
+    else
+    {
+        buttonWindow.className = "";
+        buttonWindow.className = "Rcl_Button_Minimize";
+        buttonWindow.parentNode.parentNode.className = "";
+        buttonWindow.parentNode.parentNode.className = "Rcl_Bloc";
+        div_condition.className = div_condition.className.replace(" Rcl_Mini_Editor_hidden","");
+        div_conditionTrue.className = div_conditionTrue.className.replace(" Rcl_Mini_Editor_hidden","");
+        div_conditionFalse.className = div_conditionFalse.className.replace(" Rcl_Mini_Editor_hidden","");
+        
+    };
+}
+
+
+Condition.prototype.deplaceHaut = function(event)
+/*
+ * Déplacement du bloc programme vers le haut
+ * appelée par un click sur le bouton "haut"
+ * doit être surchargée dans les objets dérivés
+ */
+{
+    var buttonHaut = event.target;
+    var li = buttonHaut.parentNode.parentNode.parentNode;
+    var previous = li.previousElementSibling;
+    if (previous) {
+        li.parentNode.insertBefore(li, previous);
+        var nom = li.id.slice("RidPrBloc_".length,li.id.length);
+        var ind = rucheSys.rechercheIndice(nom,rucheSys.listeBlocPrepa);
+        var temp = rucheSys.listeBlocPrepa[ind];
+        rucheSys.listeBlocPrepa[ind] = rucheSys.listeBlocPrepa[ind-1];
+        rucheSys.listeBlocPrepa[ind-1] = temp;
+    }
+    // Mise à jour du pointeur vers le LI
+    // TODO : En vérifier la nécessité
+    this.liBloc = li;
+}
+
+Condition.prototype.deplaceBas = function(event)
+/*
+ * Déplacement du bloc programme vers le bas
+ * appelée par un click sur le bouton "bas"
+ * doit être surchargée dans les objets dérivés
+ */
+{
+    var buttonBas = event.target;
+    var li = buttonBas.parentNode.parentNode.parentNode;
+    var next = li.nextElementSibling;
+    if (next) {
+        next = next.nextElementSibling;
+        var nom = li.id.slice("RidPrBloc_".length,li.id.length);
+        var ind = rucheSys.rechercheIndice(nom,rucheSys.listeBlocPrepa);
+        var temp = rucheSys.listeBlocPrepa[ind];
+        rucheSys.listeBlocPrepa[ind] = rucheSys.listeBlocPrepa[ind+1];
+        rucheSys.listeBlocPrepa[ind+1] = temp;
+    }
+    li.parentNode.insertBefore(li, next);
+    // Mise à jour du pointeur vers le LI
+    // TODO : En vérifier la nécessité
+    this.liBloc = li;
+}
+
+
+//---------------------------------//
+
+Condition.prototype.reduireBloc = function()
+{
+    console.log(this.nom);
+    if(document.getElementById("Rid_Button_MiniMaxi_"+this.nom).className=="Rcl_Button_Minimize")
+    {
+        document.getElementById("RidPrBloc_"+this.nom).className="Rcl_Closed";
+        document.getElementById("Rid_Button_MiniMaxi_"+this.nom).className="Rcl_Button_Maximize";
+        document.getElementById("cond" + this.nom).className+= " Rcl_Mini_Editor_hidden";
+        document.getElementById("condT" + this.nom).className+= " Rcl_Mini_Editor_hidden";
+        document.getElementById("condF" + this.nom).className+= " Rcl_Mini_Editor_hidden";
+    }
+}
+
+//---------------------------------//
+
+Condition.prototype.agrandirBloc = function()
+{
+    if(document.getElementById("Rid_Button_MiniMaxi_"+this.nom).className=="Rcl_Button_Maximize")
+        {
+            document.getElementById("RidPrBloc_"+this.nom).className="Rcl_Bloc";
+            document.getElementById("Rid_Button_MiniMaxi_"+this.nom).className="Rcl_Button_Minimize";
+            document.getElementById("cond" + this.nom).className=document.getElementById("cond" + this.nom).className.replace(" Rcl_Mini_Editor_hidden","");
+            document.getElementById("condT" + this.nom).className=document.getElementById("condT" + this.nom).className.replace(" Rcl_Mini_Editor_hidden","").replace(" Rcl_Mini_Editor","");
+            document.getElementById("condF" + this.nom).className=document.getElementById("condF" + this.nom).className.replace(" Rcl_Mini_Editor_hidden","").replace(" Rcl_Mini_Editor","");
+        }
+}
+
+
+//---------------------------------//
+
+
+Condition.prototype.toOEF = function()
+/*
+ * Fonction qui permet de générer le code OEF de l'instruction "if"
+ * retourne une chaine de caractère contenant le code OEF.
+ */
+{
+    indice1 = rucheSys.rechercheIndice("cond"+this.nom,rucheSys.listeEditeur);
+    indice2 = rucheSys.rechercheIndice("condT"+this.nom,rucheSys.listeEditeur);
+    indice3 = rucheSys.rechercheIndice("condF"+this.nom,rucheSys.listeEditeur);
+    rucheSys.listeEditeur[indice1].recupDonneesVar();
+    rucheSys.listeEditeur[indice2].recupDonneesVar();
+    rucheSys.listeEditeur[indice3].recupDonneesVar();
+
+    var br = /<div><br><\/div>/;
+
+    // Retrait du <br> de fin de ligne
+    if (br.test(rucheSys.listeEditeur[indice1].enonce_Html) == false)
+    {
+        rucheSys.listeEditeur[indice1].enonce_Html = rucheSys.listeEditeur[indice1].enonce_Html.slice(0, rucheSys.listeEditeur[indice1].enonce_Html.length-6);
+    };
+    if (br.test(rucheSys.listeEditeur[indice2].enonce_Html) == false)
+    {
+        rucheSys.listeEditeur[indice2].enonce_Html = rucheSys.listeEditeur[indice2].enonce_Html.slice(0, rucheSys.listeEditeur[indice2].enonce_Html.length-6);
+    };
+    if (br.test(rucheSys.listeEditeur[indice3].enonce_Html) == false)
+    {
+        rucheSys.listeEditeur[indice3].enonce_Html = rucheSys.listeEditeur[indice3].enonce_Html.slice(0, rucheSys.listeEditeur[indice3].enonce_Html.length-6);
+    };
+
+    return "\\if{"+rucheSys.listeEditeur[indice1].toOEF()+"}{"+rucheSys.listeEditeur[indice2].toOEF()+"}\n 	{"+rucheSys.listeEditeur[indice3].toOEF()+"}\n";
+}	
+
