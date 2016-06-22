@@ -98,6 +98,7 @@ DessinJSXGraph.prototype.toOEFFromStatement = function(){
     /*TODO*/
 }
 
-$(document).ready(function(){
-    rucheSys.initClasseTypeVariable(DessinJSXGraph);
-});
+// a activer lorsque le module de dessin JSXGraph sera au point
+//$(document).ready(function(){
+//    rucheSys.initClasseTypeVariable(DessinJSXGraph);
+//});
