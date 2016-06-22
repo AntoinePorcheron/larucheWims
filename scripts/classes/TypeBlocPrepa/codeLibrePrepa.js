@@ -240,7 +240,7 @@ CodeLibrePrepa.prototype.minimise = function(event)
     {
         buttonWindow.className = "Rcl_Button_Minimize";
         buttonWindow.parentNode.parentNode.className = "Rcl_Bloc";
-        txt.className = div_condition.className.replace(" Rcl_Mini_Editor_hidden","");
+        txt.className = txt.className.replace(" Rcl_Mini_Editor_hidden","");
         
     };
 }
