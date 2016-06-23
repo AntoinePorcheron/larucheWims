@@ -793,6 +793,10 @@ input:-moz-placeholder { color:rgba(255,10,0,0.5); }
 /*    background-color: rgba(249,239,255,1); */
     background-color: rgba(253,255,187,1);
 }
+/* Style de la zone de drop pour le bloc dans bloc */
+.zoneDrop{ 
+    background: #adadad;
+}
 
 
 /******************************************************************************************

@@ -11,6 +11,7 @@ function BoucleFor(numero)
 	this.nom = "for" + numero; // nom de l'élément
 	this.proto = "BoucleFor"; // nature de la classe
     
+    
     /* On prépare pour le bloc dans bloc */
     
     this.blocContenu = []; // liste des blocs contenus
@@ -52,11 +53,63 @@ BoucleFor.prototype.creerBloc = function()
     var div_blocDansBloc = document.createElement("DIV");
     var div_appartenanceBloc = document.createElement("DIV");
     var div_blocPossede = document.createElement("DIV");
+    var div_zoneDropBdb = document.createElement("DIV");
     var posDrag = document.createAttribute("posdrag");
     
     
     posDrag.value=0;
     bloc_pere.setAttributeNode(posDrag);
+    
+    /* Partie concernant le bloc dans bloc */
+    
+    div_zoneDropBdb.addEventListener('drop',function(e) {
+            
+            console.log("Bloc dans bloc activé. IdBlocInseré pour BDB = "+this.id);
+            
+            // On récupère l'id du bloc inclut
+            
+            nomBlocPose=e.dataTransfer.getData('text/plain');
+            console.log("Données recu : "+nomBlocPose);
+            
+            var numBlocPose=nomBlocPose.replace("RidPrBloc_for",""); // On garde juste le numéro du bloc si c'est un bloc for
+            //numBlocPose=nomBlocPose.replace("RidPrBloc_condition",""); // On garde juste le numéro du bloc si c'est un bloc si
+            console.log(numBlocPose);
+            var indicePose = rucheSys.rechercheIndBlocPrepa("for"+numBlocPose);//On va rechercher à quel indice se trouve le bloc posé dans la liste bloc prépa pour obtenir l'objet correspondant.
+            
+            
+            //on recupère le bloc hôte
+            
+            var indiceHote=rucheSys.rechercheIndBlocPrepa(this.id.replace("zoneDrop_RidPrBloc_",""));
+            blocHote=rucheSys.listeBlocPrepa[indiceHote];
+            
+            var blocPose=rucheSys.listeBlocPrepa[indicePose];
+            
+            blocPose.hidden=true;
+            
+            
+            blocHote.blocContenu.push(blocPose);
+            
+            //var DIVBlocPose=blocPose.innerHTML;
+            
+            var HTMLBlocPose= document.getElementById("RidPrBloc_"+blocPose.nom).innerHTML; //on récupère l'existant pour ne pas l'écraser
+            
+            
+            
+            console.log("Bloc recupéré "+blocPose.nom);
+
+            var idBlocPose="RidPrBloc_"+blocPose.nom;
+            var idBlocHote="RidPrBloc_"+blocHote.nom;
+            //HTMLBlocPose = DIVBlocPose.innerHTML.replace(/<button.*<\/button>/,"");
+            
+            console.log("IDBLOCHOTE = "+idBlocHote);
+            var test =document.getElementById(idBlocHote).innerHTML; 
+            console.log("Test de recup de code = "+test);
+            $('#indicAppartenance'+blocHote.nom).append($('#'+idBlocPose));
+    });
+    /* Fin de la partie concernant le bloc dans bloc */
+    
+    
+    
     
     /* Modifications pour le drag and drop */
     //On gère l'envoi
@@ -300,6 +353,7 @@ BoucleFor.prototype.creerBloc = function()
     var txt_instruction = document.createTextNode("\r\nInstructions");
     var txt_Bloc = document.createTextNode("Glisser un bloc ci-dessous pour l'insérer");
     var txt_Appartenance = document.createTextNode("");
+    var zoneDropBlocDansBloc = document.createTextNode("[Zone d'insertion de bloc]");
     
     //Ajout des éléments dans le div
     
@@ -311,6 +365,7 @@ BoucleFor.prototype.creerBloc = function()
     this.divBloc.appendChild(txt_instruction);
     div_appartenanceBloc.appendChild(txt_Appartenance);
     div_blocPossede.appendChild(txt_Appartenance);
+    div_zoneDropBdb.appendChild(zoneDropBlocDansBloc);
     this.divBloc.appendChild(this.div_forInstruction);
     
     
@@ -321,10 +376,14 @@ BoucleFor.prototype.creerBloc = function()
     div_appartenanceBloc.id = "indicAppartenance"+this.nom;
     div_blocPossede.className = "Rcl_Bloc_Interne_estDansBloc";
     div_blocPossede.id = "dansBloc_"+this.liBloc.id;
+    div_zoneDropBdb.id = "zoneDrop_"+this.liBloc.id;
+    div_zoneDropBdb.className = "zoneDrop";
+    div_zoneDropBdb.draggable = true;
     
     this.liBloc.appendChild(div_blocPossede);
     this.liBloc.appendChild(div_appartenanceBloc);
-    
+    this.liBloc.appendChild(div_zoneDropBdb);
+    // METTRE bloc_pere.appendChild(liste); ,
     //Création et ajout des éditeurs dans la liste des éditeurs
     var editeurDebut = new Editeur(this.div_forDebut.id,rucheSys,true);
     var editeurFin = new Editeur(this.div_forFin.id,rucheSys,true);
