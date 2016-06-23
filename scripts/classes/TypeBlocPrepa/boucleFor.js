@@ -614,9 +614,7 @@ BoucleFor.prototype.toOEF = function()
         var chaineFinale="";//La chaine qui contiendra le résultat de la fonction toOEF() de tous les enfants. 
         for(var i=0;i<this.blocContenu.length;i++)
             {
-                var blocContenuSpecifique = this.blocContenu[i];
-                var chaineTemporaire = blocContenuSpecifique.toOEF();
-                chaineFinale=chaineFinale+chaineTemporaire;
+                chaineFinale=chaineFinale+this.blocContenu[i].toOEF();
                 console.log("chaine finale rotation"+i+" = "+chaineFinale);
             };
         //console.log("chaine Finale ="+chaineFinale);
