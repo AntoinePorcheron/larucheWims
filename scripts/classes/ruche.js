@@ -1756,10 +1756,9 @@ Ruche.prototype.genereCode = function ()
     var elements = "";
 
     for (var i = 0; i < this.listeBlocPrepa.length; i++) {
-        if(!this.listeBlocPrepa[i].hidden)
-        {   
-            elements += this.listeBlocPrepa[i].toOEF();
-        }
+         
+        elements += this.listeBlocPrepa[i].toOEF();
+        
         console.log("Liste "+i+" : "+this.listeBlocPrepa[i].hidden);
     }
 

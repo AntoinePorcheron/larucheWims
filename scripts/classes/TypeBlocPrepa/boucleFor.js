@@ -62,7 +62,8 @@ BoucleFor.prototype.creerBloc = function()
     
     /* Partie concernant le bloc dans bloc */
     
-    div_zoneDropBdb.addEventListener('drop',function(e) {
+    div_zoneDropBdb.addEventListener('drop',function(e) { // ce drop concerne uniquement la zone [integrer bloc dans bloc]
+            
             
             console.log("Bloc dans bloc activé. IdBlocInseré pour BDB = "+this.id);
             
@@ -80,31 +81,30 @@ BoucleFor.prototype.creerBloc = function()
             //on recupère le bloc hôte
             
             var indiceHote=rucheSys.rechercheIndBlocPrepa(this.id.replace("zoneDrop_RidPrBloc_",""));
-            blocHote=rucheSys.listeBlocPrepa[indiceHote];
+            var blocHote=rucheSys.listeBlocPrepa[indiceHote];
             
             var blocPose=rucheSys.listeBlocPrepa[indicePose];
             
-            blocPose.hidden=true;
-            
-            
-            blocHote.blocContenu.push(blocPose);
-            
-            //var DIVBlocPose=blocPose.innerHTML;
-            
-            var HTMLBlocPose= document.getElementById("RidPrBloc_"+blocPose.nom).innerHTML; //on récupère l'existant pour ne pas l'écraser
-            
-            
-            
+                        
             console.log("Bloc recupéré "+blocPose.nom);
 
             var idBlocPose="RidPrBloc_"+blocPose.nom;
             var idBlocHote="RidPrBloc_"+blocHote.nom;
+        
+        if(idBlocHote==idBlocPose)
+            {
+                console.error("ERREUR : Le bloc est le même. Annulation de l'opération");
+                return;
+            }
             //HTMLBlocPose = DIVBlocPose.innerHTML.replace(/<button.*<\/button>/,"");
             
             console.log("IDBLOCHOTE = "+idBlocHote);
             var test =document.getElementById(idBlocHote).innerHTML; 
             console.log("Test de recup de code = "+test);
             $('#indicAppartenance'+blocHote.nom).append($('#'+idBlocPose));
+        
+             blocHote.blocContenu.push(blocPose);
+            rucheSys.listeBlocPrepa.splice(indicePose,1);
     });
     /* Fin de la partie concernant le bloc dans bloc */
     
@@ -609,14 +609,22 @@ BoucleFor.prototype.toOEF = function()
     };
     
     console.log("FONCTION TO OEF : VALEUR DE BDB = "+this.blocLie);
-    if(this.blocLie != null){ // si il y a un bloc inclus on ajoute son toOEF au tout.
+    if(this.blocContenu.length){ // si il y a un bloc inclus on ajoute son toOEF au tout.
         console.log("1er if de OEF");
-        return "\\for{"+rucheSys.listeEditeur[indice1].toOEF()+" to "+rucheSys.listeEditeur[indice2].toOEF()+"}\n 	{ 1erif "+this.blocLie.toOEF()+"}\n";
+        var chaineFinale="";//La chaine qui contiendra le résultat de la fonction toOEF() de tous les enfants. 
+        for(var i=0;i<this.blocContenu.length;i++)
+            {
+                chaineFinale=chaineFinale+this.blocContenu[i].toOEF();
+                console.log("chaine finale rotation"+i+" = "+chaineFinale);
+            };
+        //console.log("chaine Finale ="+chaineFinale);
+        return "\\for{"+rucheSys.listeEditeur[indice1].toOEF()+" to "+rucheSys.listeEditeur[indice2].toOEF()+"}\n 	{ 1erif "+rucheSys.listeEditeur[indice3].toOEF()+chaineFinale+"}\n";
     }
     else {
             console.log("2er if de OEF");
               return "\\for{"+rucheSys.listeEditeur[indice1].toOEF()+" to "+rucheSys.listeEditeur[indice2].toOEF()+"2eme if}\n 	{"+rucheSys.listeEditeur[indice3].toOEF()+"}\n";
     }
+    
 }
 
 
