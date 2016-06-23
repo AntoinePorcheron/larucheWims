@@ -43,7 +43,7 @@ function Editeur(id,ruc,bool,toolbar){
                 bloc_pere.setAttribute("focusedit",id);
                 var bloc_pere2 =document.getElementById("Rid_Analyse_Vars");
                 bloc_pere2.setAttribute("focusedit",id);
-                document.getElementById(id).style.backgroundColor="GhostWhite";
+                document.getElementById(id).style.backgroundColor="LightCyan";
                      console.log('small editor selection change', range);
             }
             else{
@@ -201,7 +201,7 @@ function Editeur(id,ruc,bool,toolbar){
 		var spanBloquant = document.createElement("span");
 		
 		spanBloquant.contentEditable = false;
-		span.contentEditable = true;
+		span.contentEditable = false;
 		
 		span.addEventListener("keydown", function(event)
 		{
@@ -312,7 +312,7 @@ function Editeur(id,ruc,bool,toolbar){
 		var spanBloquant = document.createElement("span");
 		
 		spanBloquant.contentEditable = false;
-		span.contentEditable = true;
+		span.contentEditable = false;
 		
 		span.addEventListener("keydown", function(event)
 		{
@@ -417,7 +417,7 @@ function Editeur(id,ruc,bool,toolbar){
         var spanBloquant = document.createElement("span");
         
         spanBloquant.contentEditable = false;
-        span.contentEditable = true;
+        span.contentEditable = false;
         
         span.addEventListener("keydown", function(event)
         {
@@ -504,6 +504,7 @@ function Editeur(id,ruc,bool,toolbar){
             var selectionContents = range.extractContents();
             
             span.className = "objetVar Rcl_Variable_In_Editor_"+sel0;
+            span.contentEditable = false;
             
             span.innerHTML = typeVar.htmlDessinEnonce();
             
@@ -542,7 +543,7 @@ function Editeur(id,ruc,bool,toolbar){
             var spanBloquant = document.createElement("span");
             
             spanBloquant.contentEditable = false;
-            span.contentEditable = true;
+            span.contentEditable = false;
             
             span.addEventListener("keydown", function(event)
                                   {

@@ -587,9 +587,9 @@ BoucleFor.prototype.toOEF = function()
  */
 {
 
-    indice1 = rucheSys.rechercheIndice("forDebut"+this.nom,rucheSys.listeEditeur);
-    indice2 = rucheSys.rechercheIndice("forFin"+this.nom,rucheSys.listeEditeur);
-    indice3 = rucheSys.rechercheIndice("forInstruction"+this.nom,rucheSys.listeEditeur);
+    var indice1 = rucheSys.rechercheIndice("forDebut"+this.nom,rucheSys.listeEditeur);
+    var indice2 = rucheSys.rechercheIndice("forFin"+this.nom,rucheSys.listeEditeur);
+    var indice3 = rucheSys.rechercheIndice("forInstruction"+this.nom,rucheSys.listeEditeur);
     rucheSys.listeEditeur[indice1].recupDonneesVar();
     rucheSys.listeEditeur[indice2].recupDonneesVar();
     rucheSys.listeEditeur[indice3].recupDonneesVar();
@@ -614,7 +614,9 @@ BoucleFor.prototype.toOEF = function()
         var chaineFinale="";//La chaine qui contiendra le résultat de la fonction toOEF() de tous les enfants. 
         for(var i=0;i<this.blocContenu.length;i++)
             {
-                chaineFinale=chaineFinale+this.blocContenu[i].toOEF();
+                var blocContenuSpecifique = this.blocContenu[i];
+                var chaineTemporaire = blocContenuSpecifique.toOEF();
+                chaineFinale=chaineFinale+chaineTemporaire;
                 console.log("chaine finale rotation"+i+" = "+chaineFinale);
             };
         //console.log("chaine Finale ="+chaineFinale);
