@@ -1136,11 +1136,84 @@ Ruche.prototype.etiqueterTexteEnLatex = function (edit)
      */ {
     if (edit == null) {
         document.getElementById('ql-editor-1').focus();
-        var range = editor.getSelection();
+        var range = editor.getSelection(); // n'est pas l'objet "Selection" de Javascript, ni l'objet "Range" d'ailleurs !!!
 
-        editor.formatText(range.start, range.end, {
-            'background': 'rgb(255, 202, 143)',
-        });
+        // Test general de la configuration de la selection.
+        // Si on selectionne uniquement un bout de formule deja tagge Latex, alors on le de-tagge
+        // (enleve la propriete latex). Sinon, on tagge.
+        // Test basé sur les propriétés de Range et DocumentFragment
+        var rangeContent = window.getSelection().getRangeAt(0);
+        
+        // test si startContainer et endContainer contiennent la meme chaine de texte
+        var testRC1 = false;
+        if (rangeContent.endContainer.data == rangeContent.startContainer.data) {
+            testRC1 = true;
+        }
+        
+        var rangeStartContParentName = rangeContent.startContainer.parentNode.nodeName;
+        var rangeEndContParentName = rangeContent.endContainer.parentNode.nodeName;
+        
+        // test si les conteneur start et end sont des span et qu'on est dans un span "latex"
+        var testRC2 = false;
+        if (rangeStartContParentName == "SPAN" && rangeEndContParentName == "SPAN" && nodeCur.nodeName != "DIV") {
+            var testLatexSpanBkgdColor = rangeContent.startContainer.parentNode.style.backgroundColor;
+            if (testLatexSpanBkgdColor == "rgb(255, 202, 143)") testRC2 = true;
+
+        }
+        
+        // test si le contenu de la selection est constitue de 3 Nodes
+        // avec 1 ou 2 text nodes vides + test si le noeud parent est un span
+        var selectionContents = rangeContent.cloneContents(); // extrait le contenu de la selection
+        var testSC = true;
+        for (var i=0;i<selectionContents.childNodes.length;i++) {
+            nodeCur =selectionContents.childNodes[i];
+            if (nodeCur.nodeName != "#text" && nodeCur.nodeName != "SPAN" && nodeCur.nodeName != "DIV") {
+                testSC = false;
+                break;
+            }
+            if (nodeCur.nodeName == "#text" && nodeCur.data != "") {
+                testSC = false;
+                break;
+            }
+            if (nodeCur.nodeName == "SPAN" && nodeCur.style.backgroundColor !="rgb(255, 202, 143)") {
+                testSC = false;
+                break;
+            }
+            if (nodeCur.nodeName == "DIV") {
+                if (nodeCur.childNodes.length != 0) {
+                    if (nodeCur.childNodes.length!=1) {
+                        testSC = false;
+                        break;
+                    }
+                    if (nodeCur.childNodes[0].nodeName == "#text" && nodeCur.childNodes[0].data != "") {
+                        testSC = false;
+                        break;
+                    }
+                    if (typeof nodeCur.childNodes[0].style === 'undefined') {
+                        testSC = false;
+                        break;
+                    }
+                    if (nodeCur.childNodes[0].style.backgroundColor !="rgb(255, 202, 143)") {
+                        testSC = false;
+                        break;
+                    }
+                }
+            }
+        }
+        
+        //--- variables de test pretes
+        
+        if ( (testRC1==true && testRC2==true) || testSC==true) {
+            // remove latex format
+            editor.formatText(range.start, range.end, {
+                              'background': '',
+                              });
+        } else {
+            // set latex format
+           editor.formatText(range.start, range.end, {
+               'background': 'rgb(255, 202, 143)',
+           });
+        }
 
         var taille = editor.getLength();
 
@@ -1155,9 +1228,83 @@ Ruche.prototype.etiqueterTexteEnLatex = function (edit)
 
         var range = this.listeEditeur[ind].edit.getSelection();
 
-        this.listeEditeur[ind].edit.formatText(range.start, range.end, {
-            'background': 'rgb(255, 202, 143)',
-        });
+        // Test general de la configuration de la selection.
+        // Si on selectionne uniquement un bout de formule deja tagge Latex, alors on le de-tagge
+        // (enleve la propriete latex). Sinon, on tagge.
+        // Test basé sur les propriétés de Range et DocumentFragment
+        var rangeContent = window.getSelection().getRangeAt(0);
+        
+        // test si startContainer et endContainer contiennent la meme chaine de texte
+        var testRC1 = false;
+        if (rangeContent.endContainer.data == rangeContent.startContainer.data) {
+            testRC1 = true;
+        }
+        
+        var rangeStartContParentName = rangeContent.startContainer.parentNode.nodeName;
+        var rangeEndContParentName = rangeContent.endContainer.parentNode.nodeName;
+        
+        // test si les conteneur start et end sont des span et qu'on est dans un span "latex"
+        var testRC2 = false;
+        if (rangeStartContParentName == "SPAN" && rangeEndContParentName == "SPAN") {
+            var testLatexSpanBkgdColor = rangeContent.startContainer.parentNode.style.backgroundColor;
+            if (testLatexSpanBkgdColor == "rgb(255, 202, 143)") testRC2 = true;
+            
+        }
+        
+        // test si le contenu de la selection est constitue de 3 Nodes
+        // avec 1 ou 2 text nodes vides + test si le noeud parent est un span
+        var selectionContents = rangeContent.cloneContents(); // extrait le contenu de la selection
+        var testSC = true;
+        for (var i=0;i<selectionContents.childNodes.length;i++) {
+            nodeCur =selectionContents.childNodes[i];
+            if (nodeCur.nodeName != "#text" && nodeCur.nodeName != "SPAN" && nodeCur.nodeName != "DIV") {
+                testSC = false;
+                break;
+            }
+            if (nodeCur.nodeName == "#text" && nodeCur.data != "") {
+                testSC = false;
+                break;
+            }
+            if (nodeCur.nodeName == "SPAN" && nodeCur.style.backgroundColor !="rgb(255, 202, 143)") {
+                testSC = false;
+                break;
+            }
+            if (nodeCur.nodeName == "DIV") {
+                if (nodeCur.childNodes.length != 0) {
+                    if (nodeCur.childNodes.length!=1) {
+                        testSC = false;
+                        break;
+                    }
+                    if (nodeCur.childNodes[0].nodeName == "#text" && nodeCur.childNodes[0].data != "") {
+                        testSC = false;
+                        break;
+                    }
+                    if (typeof nodeCur.childNodes[0].style === 'undefined') {
+                        testSC = false;
+                        break;
+                    }
+                    if (nodeCur.childNodes[0].style.backgroundColor !="rgb(255, 202, 143)") {
+                        testSC = false;
+                        break;
+                    }
+                }
+            }
+        }
+        
+        //--- variables de test pretes
+        
+        
+        if ( (testRC1==true && testRC2==true) || testSC==true) {
+            // remove latex format
+            this.listeEditeur[ind].edit.formatText(range.start, range.end, {
+                              'background': '',
+                              });
+        } else {
+            // set latex format
+            this.listeEditeur[ind].edit.formatText(range.start, range.end, {
+                              'background': 'rgb(255, 202, 143)',
+                              });
+        }
 
         var taille = this.listeEditeur[ind].edit.getLength();
 
@@ -1181,9 +1328,86 @@ Ruche.prototype.etiqueterTexteEnCodeLibre = function (edit)
 
         var range = editor.getSelection();
 
-        editor.formatText(range.start, range.end, {
-            'background': 'rgb(252, 254, 142)',
-        });
+        // Test general de la configuration de la selection.
+        // Si on selectionne uniquement un bout de code libre, alors on le de-tagge
+        // (enleve la propriete code libre). Sinon, on tagge.
+        // Test basé sur les propriétés de Range et DocumentFragment
+        var rangeContent = window.getSelection().getRangeAt(0);
+        
+        // test si startContainer et endContainer contiennent la meme chaine de texte
+        var testRC1 = false;
+        if (rangeContent.endContainer.data == rangeContent.startContainer.data) {
+            testRC1 = true;
+        }
+        
+        var rangeStartContParentName = rangeContent.startContainer.parentNode.nodeName;
+        var rangeEndContParentName = rangeContent.endContainer.parentNode.nodeName;
+        
+        // test si les conteneur start et end sont des span et qu'on est dans un span specifique
+        var testRC2 = false;
+        if (rangeStartContParentName == "SPAN" && rangeEndContParentName == "SPAN") {
+            var testSpecificSpanBkgdColor = rangeContent.startContainer.parentNode.style.backgroundColor;
+            if (testSpecificSpanBkgdColor == "rgb(252, 254, 142)") testRC2 = true;
+            
+        }
+        
+        // test si le contenu de la selection est constitue de 3 Nodes
+        // avec 1 ou 2 text nodes vides + test si le noeud parent est un span
+        var selectionContents = rangeContent.cloneContents(); // extrait le contenu de la selection
+        var testSC = true;
+        for (var i=0;i<selectionContents.childNodes.length;i++) {
+            var nodeCur =selectionContents.childNodes[i];
+            if (nodeCur.nodeName != "#text" && nodeCur.nodeName != "SPAN" && nodeCur.nodeName != "DIV") {
+                testSC = false;
+                break;
+            }
+            if (nodeCur.nodeName == "#text" && nodeCur.data != "") {
+                testSC = false;
+                break;
+            }
+            if (nodeCur.nodeName == "SPAN" && nodeCur.style.backgroundColor !="rgb(252, 254, 142)") {
+                testSC = false;
+                break;
+            }
+            if (nodeCur.nodeName == "DIV") {
+                if (nodeCur.childNodes.length != 0) {
+                    if (nodeCur.childNodes.length!=1) {
+                        testSC = false;
+                        break;
+                    }
+                    if (nodeCur.childNodes[0].nodeName == "#text" && nodeCur.childNodes[0].data != "") {
+                        testSC = false;
+                        break;
+                    }
+                    if (typeof nodeCur.childNodes[0].style === 'undefined') {
+                        testSC = false;
+                        break;
+                    }
+                    if (nodeCur.childNodes[0].style.backgroundColor !="rgb(252, 254, 142)") {
+                        testSC = false;
+                        break;
+                    }
+                }
+            }
+        }
+        
+        //--- variables de test pretes
+        
+        if ( (testRC1==true && testRC2==true) || testSC==true) {
+            // remove specific format
+            editor.formatText(range.start, range.end, {
+                              'background': '',
+                              });
+        } else {
+            // set specific format
+            editor.formatText(range.start, range.end, {
+                              'background': 'rgb(252, 254, 142)',
+                              });
+        }
+        
+//        editor.formatText(range.start, range.end, {
+//            'background': 'rgb(252, 254, 142)',
+//        });
 
         var txtlibre = editor.getText(range.start, range.end);
 
@@ -1200,9 +1424,82 @@ Ruche.prototype.etiqueterTexteEnCodeLibre = function (edit)
 
         var range = this.listeEditeur[ind].edit.getSelection();
 
-        this.listeEditeur[ind].edit.formatText(range.start, range.end, {
-            'background': 'rgb(252, 254, 142)',
-        });
+        // Test general de la configuration de la selection.
+        // Si on selectionne uniquement un bout de code libre, alors on le de-tagge
+        // (enleve la propriete code libre). Sinon, on tagge.
+        // Test basé sur les propriétés de Range et DocumentFragment
+        var rangeContent = window.getSelection().getRangeAt(0);
+        
+        // test si startContainer et endContainer contiennent la meme chaine de texte
+        var testRC1 = false;
+        if (rangeContent.endContainer.data == rangeContent.startContainer.data) {
+            testRC1 = true;
+        }
+        
+        var rangeStartContParentName = rangeContent.startContainer.parentNode.nodeName;
+        var rangeEndContParentName = rangeContent.endContainer.parentNode.nodeName;
+        
+        // test si les conteneur start et end sont des span et qu'on est dans un span specifique
+        var testRC2 = false;
+        if (rangeStartContParentName == "SPAN" && rangeEndContParentName == "SPAN") {
+            var testSpecificSpanBkgdColor = rangeContent.startContainer.parentNode.style.backgroundColor;
+            if (testSpecificSpanBkgdColor == "rgb(252, 254, 142)") testRC2 = true;
+            
+        }
+        
+        // test si le contenu de la selection est constitue de 3 Nodes
+        // avec 1 ou 2 text nodes vides + test si le noeud parent est un span
+        var selectionContents = rangeContent.cloneContents(); // extrait le contenu de la selection
+        var testSC = true;
+        for (var i=0;i<selectionContents.childNodes.length;i++) {
+            var nodeCur =selectionContents.childNodes[i];
+            if (nodeCur.nodeName != "#text" && nodeCur.nodeName != "SPAN" && nodeCur.nodeName != "DIV") {
+                testSC = false;
+                break;
+            }
+            if (nodeCur.nodeName == "#text" && nodeCur.data != "") {
+                testSC = false;
+                break;
+            }
+            if (nodeCur.nodeName == "SPAN" && nodeCur.style.backgroundColor !="rgb(252, 254, 142)") {
+                testSC = false;
+                break;
+            }
+            if (nodeCur.nodeName == "DIV") {
+                if (nodeCur.childNodes.length != 0) {
+                    if (nodeCur.childNodes.length!=1) {
+                        testSC = false;
+                        break;
+                    }
+                    if (nodeCur.childNodes[0].nodeName == "#text" && nodeCur.childNodes[0].data != "") {
+                        testSC = false;
+                        break;
+                    }
+                    if (typeof nodeCur.childNodes[0].style === 'undefined') {
+                        testSC = false;
+                        break;
+                    }
+                    if (nodeCur.childNodes[0].style.backgroundColor !="rgb(252, 254, 142)") {
+                        testSC = false;
+                        break;
+                    }
+                }
+            }
+        }
+        
+        //--- variables de test pretes
+        
+        if ( (testRC1==true && testRC2==true) || testSC==true) {
+            // remove specific format
+            this.listeEditeur[ind].edit.formatText(range.start, range.end, {
+                              'background': '',
+                              });
+        } else {
+            // set specific format
+            this.listeEditeur[ind].edit.formatText(range.start, range.end, {
+                              'background': 'rgb(252, 254, 142)',
+                              });
+        }
 
         var taille = this.listeEditeur[ind].edit.getLength();
 

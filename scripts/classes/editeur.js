@@ -54,9 +54,10 @@ function Editeur(id,ruc,bool,toolbar){
 		
 		this.edit.on('text-change', function(delta, source) {
             var txt=document.getElementById(id);
+            console.log('old result: ',delta.length());
             txt.value=document.getElementById(id).textContent;
-                     console.log('small editor text-change', delta, source)
-                     
+            
+            console.log('small editor text-change', delta, source)
 		});
 	}
 
