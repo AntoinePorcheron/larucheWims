@@ -35,6 +35,8 @@ Condition.prototype.creerBloc = function()
     // Récupération des blocs et créations des nouveaux
     var bloc_pere = document.getElementById("Rid_Prep_Blocs");
     var div_blocDansBloc = document.createElement("DIV");
+    var div_zoneDropBdb = document.createElement("DIV");
+    var div_zoneDropBdb = document.createElement("DIV");
     var posDrag = document.createAttribute("posdrag");
     posDrag.value=0;
     bloc_pere.setAttributeNode(posDrag);
@@ -177,6 +179,10 @@ Condition.prototype.creerBloc = function()
     div_conditionFalse.id = "condF" + this.nom;
     div_conditionFalse.className = "Rcl_Droppable";
     var txt = document.createTextNode("Bloc IF");
+    var zoneDropBlocDansBloc = document.createTextNode("[Zone d'insertion de bloc]");
+    div_zoneDropBdb.id = "zoneDrop_"+this.liBloc.id;
+    div_zoneDropBdb.className = "zoneDrop";
+    div_zoneDropBdb.draggable = true;
 
     
     txt_cond = document.createTextNode("\r\nSi");
@@ -190,6 +196,9 @@ Condition.prototype.creerBloc = function()
     this.divBloc.appendChild(div_conditionTrue);
     this.divBloc.appendChild(txt_condF);
     this.divBloc.appendChild(div_conditionFalse);
+    div_zoneDropBdb.appendChild(zoneDropBlocDansBloc);
+    this.liBloc.appendChild(div_zoneDropBdb);
+    
 
     //Création et ajout des éditeurs dans la liste des éditeurs
     var editeurCond = new Editeur(div_condition.id,rucheSys,true);

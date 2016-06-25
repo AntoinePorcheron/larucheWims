@@ -20,6 +20,7 @@ function BoucleFor(numero)
     this.div_forDebut = null;
     this.div_forFin = null;
     this.div_forInstruction = null;
+    this.numeroBloc = numero;
 }
 
 // Hérite (classe dérivée) de BlocProgramme
@@ -69,21 +70,58 @@ BoucleFor.prototype.creerBloc = function()
             
             // On récupère l'id du bloc inclut
             
-            nomBlocPose=e.dataTransfer.getData('text/plain');
-            console.log("Données recu : "+nomBlocPose);
+            idDIVBlocPose=e.dataTransfer.getData('text/plain');
+            console.log("Données recu : "+idDIVBlocPose);
+        
+            console.info("BLOC CONTENANT = "+this.blocContenu);
             
-            var numBlocPose=nomBlocPose.replace("RidPrBloc_for",""); // On garde juste le numéro du bloc si c'est un bloc for
-            //numBlocPose=nomBlocPose.replace("RidPrBloc_condition",""); // On garde juste le numéro du bloc si c'est un bloc si
-            console.log(numBlocPose);
-            var indicePose = rucheSys.rechercheIndBlocPrepa("for"+numBlocPose);//On va rechercher à quel indice se trouve le bloc posé dans la liste bloc prépa pour obtenir l'objet correspondant.
-            
+        // On identifie le type de bloc
+            /*var estFor=nomBlocPose.indexOf("for");
+            var estCond=nomBlocPose.indexOf("condition");
+            var estCodeLibre=nomBlocPose.indexOf("codeLibre");
+        // on agit en conséquence
+        
+            if(estFor>-1)
+                {
+                var numBlocPose=nomBlocPose.replace("RidPrBloc_for",""); // On garde juste le numéro du bloc si c'est un bloc for
+                
+                console.log("C'est un for");
+                var indicePose = rucheSys.rechercheIndBlocPrepa("for"+numBlocPose);//On va rechercher à quel indice se trouve le bloc posé dans la liste bloc prépa pour obtenir l'objet correspondant.
+                }
+            if(estCond<-1)
+                {
+                    numBlocPose=nomBlocPose.replace("RidPrBloc_condition",""); // On garde juste le numéro du bloc si c'est un bloc si
+                    
+                }*/
+                var nomBlocPose=idDIVBlocPose.replace("RidPrBloc_",""); // On garde juste le numéro du bloc si c'est un bloc for
+                var indicePose = rucheSys.rechercheIndBlocPrepa(nomBlocPose);//On va rechercher à quel indice se trouve le bloc posé dans la liste bloc prépa pour obtenir l'objet correspondant.
             
             //on recupère le bloc hôte
             
             var indiceHote=rucheSys.rechercheIndBlocPrepa(this.id.replace("zoneDrop_RidPrBloc_",""));
+            console.log(indiceHote);
+            if(indiceHote==-1)
+                {
+                    /*var blocHote = document.getElementById(this.id.replace("zoneDrop_RidPrBloc_",""));
+                    console.log("slt");
+                    console.log(blocHote);
+                    var indicePere=this.rechercheIndBlocContenu(nomBlocPose);
+                    alert(indicePere);*/
+                    
+                    for(var j=0;j<ruchSys.listeBlocPrepa.length;j++)
+                        {
+                            blocProgramme.rechercheRecurBloc(this.id.replace("zoneDrop_RidPrBloc_",""),j);// on lui donne le nom du bloc hote
+                        }
+                    
+                    
+                }
+        else
+            {
+        
             var blocHote=rucheSys.listeBlocPrepa[indiceHote];
             
             var blocPose=rucheSys.listeBlocPrepa[indicePose];
+            }
             
                         
             console.log("Bloc recupéré "+blocPose.nom);
@@ -380,6 +418,7 @@ BoucleFor.prototype.creerBloc = function()
     div_zoneDropBdb.className = "zoneDrop";
     div_zoneDropBdb.draggable = true;
     
+    
     this.liBloc.appendChild(div_blocPossede);
     this.liBloc.appendChild(div_appartenanceBloc);
     this.liBloc.appendChild(div_zoneDropBdb);
@@ -646,5 +685,8 @@ INPUT :
 {
     txtAMaj=document.getElementById("indicAppartenance"+this.nom);
 }
+
+
+
 
 

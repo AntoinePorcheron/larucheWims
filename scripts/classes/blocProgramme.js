@@ -17,6 +17,7 @@ BlocProgramme = function(num)
     this.nom = "BlocProgramme"+num;    // nom de ce BlocProgramme
     this.numero = num;          // numéro de cet BlocProgramme parmi les BlocProgrammes de l'exercice
     this.proto = "BlocProgramme";      // nature de la classe parente
+    this.hotePere; // objet père de chaque bloc dans le contexte du bloc dans bloc
 };
 
 BlocProgramme.prototype.proto = "BlocProgramme"; // nature de la classe parente
@@ -29,6 +30,7 @@ BlocProgramme.prototype.liBloc = null;
 BlocProgramme.prototype.divBloc = null;
 BlocProgramme.prototype.divEntete = null;
 BlocProgramme.prototype.contientAutresBlocs = false;
+
 
     //--------- METHODES ----------//
         
@@ -64,6 +66,7 @@ BlocProgramme.prototype.initBloc = function()
     this.divEntete = div_entete[0];
     
     this.divBloc.appendChild(this.divEntete);
+    var div_zoneDropBdb = document.createElement("DIV");
     
     /* garde l'objet appelant dans le contexte pour les callbacks des boutons */
     var objet_appelant = this;
@@ -117,6 +120,9 @@ BlocProgramme.prototype.initBloc = function()
 
     this.liBloc.appendChild(this.divBloc);
     bloc_pere.appendChild(this.liBloc);
+    /* Debut bloc dans bloc*/
+    
+    
 }
 
 BlocProgramme.prototype.supprime = function(event)
@@ -354,3 +360,48 @@ BlocProgramme.prototype.trouverPrecedent = function(source,cible)
 
     return cpt;
 }
+
+BlocProgramme.prototype.rechercheIndBlocContenu = function(id)
+/*
+     * Retourne l'indice de la variable dans le tableau.
+     * Paramètre(s) : 	- id : variable à rechercher.
+     */     
+{
+        var ind = -1;
+        var tab=rucheSys.listeBlocPrepa;
+        for (var i = 0; i < tab.length; i++) {
+            if (tab[i].nom == id) {
+                ind = i;
+            }
+    }
+    return ind;
+        
+}
+
+blocProgramme.rechercheRecurBloc = function(nom,ind)
+/* va chercher le facon récursive le bloc correspondant à au nom "nom" dans le bloc d'indice ind de la liste blocPrepa
+INPUT : 
+    -nom : le nom du bloc recherché
+    - ind : indice du bloc prepa
+OUTPUT :
+    -le bloc de nom nom
+*/
+{
+    var blocTrouve = -1; // sera = -1 si bloc pas trouvé, 0 sinon
+    var blocRacine=rucheSys.listeBlocPrepa[ind];
+    var blocAnalyse;// bloc analysé
+    for(var k=0;k<blocRacine.blocContenu.length;k++)
+        {
+            blocAnalyse=blocRacine.blocContenu[k];
+            blocTrouve=blocRacine.blocContenu[k].nom.indexOf(nom);
+            
+            if(blocTrouve>-1)// Si le bloc analysé dans le tableau a le même nom que celui recherché
+                {
+                    return blocAnalyse;
+                }
+            
+        }
+}
+
+
+
