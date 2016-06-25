@@ -75,24 +75,6 @@ BoucleFor.prototype.creerBloc = function()
         
             console.info("BLOC CONTENANT = "+this.blocContenu);
             
-        // On identifie le type de bloc
-            /*var estFor=nomBlocPose.indexOf("for");
-            var estCond=nomBlocPose.indexOf("condition");
-            var estCodeLibre=nomBlocPose.indexOf("codeLibre");
-        // on agit en conséquence
-        
-            if(estFor>-1)
-                {
-                var numBlocPose=nomBlocPose.replace("RidPrBloc_for",""); // On garde juste le numéro du bloc si c'est un bloc for
-                
-                console.log("C'est un for");
-                var indicePose = rucheSys.rechercheIndBlocPrepa("for"+numBlocPose);//On va rechercher à quel indice se trouve le bloc posé dans la liste bloc prépa pour obtenir l'objet correspondant.
-                }
-            if(estCond<-1)
-                {
-                    numBlocPose=nomBlocPose.replace("RidPrBloc_condition",""); // On garde juste le numéro du bloc si c'est un bloc si
-                    
-                }*/
                 var nomBlocPose=idDIVBlocPose.replace("RidPrBloc_",""); // On garde juste le numéro du bloc si c'est un bloc for
                 var indicePose = rucheSys.rechercheIndBlocPrepa(nomBlocPose);//On va rechercher à quel indice se trouve le bloc posé dans la liste bloc prépa pour obtenir l'objet correspondant.
             
@@ -102,11 +84,7 @@ BoucleFor.prototype.creerBloc = function()
             console.log(indiceHote);
             if(indiceHote==-1)
                 {
-                    /*var blocHote = document.getElementById(this.id.replace("zoneDrop_RidPrBloc_",""));
-                    console.log("slt");
-                    console.log(blocHote);
-                    var indicePere=this.rechercheIndBlocContenu(nomBlocPose);
-                    alert(indicePere);*/
+                    
                     
                     for(var j=0;j<ruchSys.listeBlocPrepa.length;j++)
                         {
@@ -421,7 +399,7 @@ BoucleFor.prototype.creerBloc = function()
     
     this.liBloc.appendChild(div_blocPossede);
     this.liBloc.appendChild(div_appartenanceBloc);
-    this.liBloc.appendChild(div_zoneDropBdb);
+    this.liBloc.appendChild(div_zoneDropBdb); //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! A SUPPRIMER/COMMENTER POUR ENLEVER LES ZONES SENSIBLES !!!!!!!!!!!!!!!!!
     // METTRE bloc_pere.appendChild(liste); ,
     //Création et ajout des éditeurs dans la liste des éditeurs
     var editeurDebut = new Editeur(this.div_forDebut.id,rucheSys,true);
@@ -535,55 +513,6 @@ BoucleFor.prototype.deplaceBas = function(event)
 
 //---------------------------------//
 
-BoucleFor.prototype.integrerBlocDansBloc = function(BlocIntegre,idBlocIntegre)
-/* Cette méthode permet d'intégrer un bloc dans ce bloc
-INPUT : 
-BlocIntegre : objet bloc intégré à this
-idBlocIntegré : L'id de la div contenant le bloc intégré
-*/
-{
-    
-    alert('Dans la fonction blocDansBloc de FOR');
-    var nomBlocIntegre = this.nom;
-    console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-    var codeVisuel; //le code que l'on va intégrer dans le code pour le visuel
-    //var numBlocRecepteur=idEditeur.replace("forInstructionfor",""); // On garde juste le numéro du bloc si c'est un bloc for
-    //console.log("Numéro de bloc :",numBlocRecepteur);
-    
-   // this.blocContenu.push(BlocIntegre);// on ajoute le bloc récupéré au tableau
-    
-    BlocIntegre.hidden = true; // on rend le blocIntegre invisible.
-    console.log("###########################");
-    /*for(var i=0; i< this.blocContenu.length; i++)
-        {
-            var blocTmp=this.blocContenu[i];
-            codeVisuel= codeVisuel+blocTmp.innerHTML.replace(/<button.*<\/button>/,"");
-                
-            
-        }*/
-    
-    this.blocLie =BlocIntegre;
-    console.log(BlocIntegre.nom);
-    var DIVBlocIntegre= document.getElementById(idBlocIntegre); //la division dans le code HTML correspondant au bloc
-    codeVisuel = DIVBlocIntegre.innerHTML.replace(/<button.*<\/button>/,"");
-    console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!?????????????!");
-    console.log("Code HTML intégré = ",codeVisuel);
-    console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-    //document.getElementById("indicAppartenancefor"+list.id).innerHTML=codeVisuel;
-    console.log("BLOC INTEGRE DOIT ETRE TRUE : "+BlocIntegre.hidden);
-    
-    codeVisuel = "<div class='BlocInterieur'>"+codeVisuel+"</div>";
-    var numBlocRecepteur = this.nom.replace("for","");
-    console.log(codeVisuel);
-    document.getElementById("indicAppartenancefor"+numBlocRecepteur).innerHTML=codeVisuel;
-        
-    
-        //document.getElementById("dansBloc_"+numBlocRecepteur).innerHTML=txtInfo;
-        
-        //BlocIntegre.innerHTML.replace(/<div.*<\/div>,"");
-        DIVBlocIntegre.innerHTML=" ";
-    
-}
 
 BoucleFor.prototype.setblocLie = function(blocAbsorbe)
 {
