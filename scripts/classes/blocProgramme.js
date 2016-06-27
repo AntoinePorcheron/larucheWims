@@ -30,6 +30,7 @@ BlocProgramme.prototype.liBloc = null;
 BlocProgramme.prototype.divBloc = null;
 BlocProgramme.prototype.divEntete = null;
 BlocProgramme.prototype.contientAutresBlocs = false;
+BlocProgramme.prototype.lvlBloc = 1; //niveau du bloc pour le bloc dans bloc (racine (listeBlocPrepa = 1))
 
 
     //--------- METHODES ----------//

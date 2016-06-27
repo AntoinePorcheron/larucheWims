@@ -114,7 +114,7 @@ BoucleFor.prototype.creerBloc = function()
             var idBlocPose="RidPrBloc_"+blocPose.nom;
             var idBlocHote="RidPrBloc_"+blocHote.nom;
         
-        if(idBlocHote==idBlocPose)
+        if(idBlocHote==idBlocPose||blocPose.lvlBloc<1)
             {
                 console.error("ERREUR : Le bloc est le même. Annulation de l'opération");
                 return;
@@ -122,6 +122,8 @@ BoucleFor.prototype.creerBloc = function()
             //HTMLBlocPose = DIVBlocPose.innerHTML.replace(/<button.*<\/button>/,"");
             
             console.log("IDBLOCHOTE = "+idBlocHote);
+        
+            blocPose.lvlBloc=blocHote.lvlBloc+1;
             var test =document.getElementById(idBlocHote).innerHTML; 
             console.log("Test de recup de code = "+test);
             $('#indicAppartenance'+blocHote.nom).append($('#'+idBlocPose));
@@ -335,6 +337,8 @@ BoucleFor.prototype.supprime = function(event)
 {
     var liBloc = event.target.parentNode.parentNode.parentNode; //
     var nomInstruction = liBloc.id.slice("RidPrBloc_".length,liBloc.id.length);// On supprime le "RidPrBloc_" devant le nom du bloc
+    
+    
     rucheSys.supprInstruction(nomInstruction,rucheSys.listeBlocPrepa);
 }
 
@@ -501,11 +505,11 @@ BoucleFor.prototype.toOEF = function()
                 console.log("chaine finale rotation"+i+" = "+chaineFinale);
             };
         //console.log("chaine Finale ="+chaineFinale);
-        return "\\for{"+rucheSys.listeEditeur[indice1].toOEF()+" to "+rucheSys.listeEditeur[indice2].toOEF()+"}\n 	{ 1erif "+rucheSys.listeEditeur[indice3].toOEF()+chaineFinale+"}\n";
+        return "\\for{"+rucheSys.listeEditeur[indice1].toOEF()+" to "+rucheSys.listeEditeur[indice2].toOEF()+"}\n 	{ "+rucheSys.listeEditeur[indice3].toOEF()+chaineFinale+"}\n";
     }
     else {
             console.log("2er if de OEF");
-              return "\\for{"+rucheSys.listeEditeur[indice1].toOEF()+" to "+rucheSys.listeEditeur[indice2].toOEF()+"2eme if}\n 	{"+rucheSys.listeEditeur[indice3].toOEF()+"}\n";
+              return "\\for{"+rucheSys.listeEditeur[indice1].toOEF()+" to "+rucheSys.listeEditeur[indice2].toOEF()+"}\n 	{"+rucheSys.listeEditeur[indice3].toOEF()+"}\n";
     }
     
 }
