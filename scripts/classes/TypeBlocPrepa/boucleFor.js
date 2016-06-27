@@ -79,16 +79,23 @@ BoucleFor.prototype.creerBloc = function()
                 var indicePose = rucheSys.rechercheIndBlocPrepa(nomBlocPose);//On va rechercher à quel indice se trouve le bloc posé dans la liste bloc prépa pour obtenir l'objet correspondant.
             
             //on recupère le bloc hôte
-            
+            var nomDIVBlocHote = this.id.replace("zoneDrop_RidPrBloc_","");
             var indiceHote=rucheSys.rechercheIndBlocPrepa(this.id.replace("zoneDrop_RidPrBloc_",""));
             console.log(indiceHote);
             if(indiceHote==-1)
                 {
                     
+                    var blocHote2= $('[nom*=nomDIVBlocHote]').get(0);
                     
-                    for(var j=0;j<ruchSys.listeBlocPrepa.length;j++)
+                    console.info("Bloc hote = "+blocHote2);
+                    var j=0;
+                        while(j<rucheSys.listeBlocPrepa.length &&blocHote==null)
                         {
-                            blocProgramme.rechercheRecurBloc(this.id.replace("zoneDrop_RidPrBloc_",""),j);// on lui donne le nom du bloc hote
+                            
+                            var blocHote=BlocProgramme.rechercheRecurBloc(nomDIVBlocHote,rucheSys.listeBlocPrepa[j]);// on lui donne le nom du bloc hote et le bloc à analyser
+                            console.log("passage dans la boucle "+j+"blocHote = "+blocHote);
+                            j++;
+                            
                         }
                     
                     
@@ -102,8 +109,8 @@ BoucleFor.prototype.creerBloc = function()
             }
             
                         
-            console.log("Bloc recupéré "+blocPose.nom);
-
+            //console.log("Bloc recupéré "+blocPose.nom);
+            var blocPose=rucheSys.listeBlocPrepa[indicePose];
             var idBlocPose="RidPrBloc_"+blocPose.nom;
             var idBlocHote="RidPrBloc_"+blocHote.nom;
         

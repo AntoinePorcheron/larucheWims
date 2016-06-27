@@ -378,29 +378,35 @@ BlocProgramme.prototype.rechercheIndBlocContenu = function(id)
         
 }
 
-blocProgramme.rechercheRecurBloc = function(nom,ind)
+BlocProgramme.rechercheRecurBloc = function(nom,blocAnalyse)
 /* va chercher le facon récursive le bloc correspondant à au nom "nom" dans le bloc d'indice ind de la liste blocPrepa
 INPUT : 
     -nom : le nom du bloc recherché
-    - ind : indice du bloc prepa
+    - blocAnalyse : le bloc dans lequel on recherche le nom
 OUTPUT :
-    -le bloc de nom nom
+    -le bloc de nom "nom"
 */
 {
     var blocTrouve = -1; // sera = -1 si bloc pas trouvé, 0 sinon
-    var blocRacine=rucheSys.listeBlocPrepa[ind];
-    var blocAnalyse;// bloc analysé
-    for(var k=0;k<blocRacine.blocContenu.length;k++)
-        {
-            blocAnalyse=blocRacine.blocContenu[k];
+    
+            /*blocAnalyse=blocRacine.blocContenu[k];
             blocTrouve=blocRacine.blocContenu[k].nom.indexOf(nom);
-            
+            */
+            blocTrouve=blocAnalyse.nom.indexOf(nom);
             if(blocTrouve>-1)// Si le bloc analysé dans le tableau a le même nom que celui recherché
                 {
                     return blocAnalyse;
                 }
+            else
+                {
+                    for(i=0;i<blocAnalyse.blocContenu.length;i++)
+                        {
+                            return BlocProgramme.rechercheRecurBloc(nom,blocAnalyse.blocContenu[i]);
+                            
+                        }
+                }
             
-        }
+        
 }
 
 
