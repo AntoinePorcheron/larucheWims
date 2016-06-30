@@ -252,7 +252,15 @@
         <!-- ONGLET CODE OEF -->
         <div class="Rcl_Contenu_Onglet" id="Rid_Contenu_Onglet_Previsu">
             <div class="columns sixteen">
-                <textarea id="Rcl_Code_Genere"></textarea>
+                <form action="http://localhost/wims/wims.cgi" method="post" name="replyform" id="Rid_WIMS_OEF_Form" target="_blank">
+                    <input type="hidden" name="lang" value="fr" />
+                    <input type="hidden" name="cmd" value="reply" />
+                    <input type="hidden" name="module" value="adm/createxo" />
+                    <input type="hidden" name="level" value="3" />
+                    <input id="Rid_Submit_WIMS_OEF_Form" type="submit" value="Envoyer" style="display:none"/>
+                    <textarea name="wims_deposit" id="Rcl_Code_Genere"></textarea>
+                </form>
+                <button class="Rcl_Button_Save" id="testAjaxWims">Test AJAX</button>
             </div>
         </div>
 

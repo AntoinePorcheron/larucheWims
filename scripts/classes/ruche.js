@@ -2034,13 +2034,13 @@ Ruche.prototype.genereCode = function ()
      * Fonction qui permet de générer le code OEF.
      *
      */ {
-    $('#Rcl_Code_Genere').remove();
-
-    var code = document.createElement('textarea');
-    code.id = 'Rcl_Code_Genere';
-
-    var principal = document.getElementById('Rid_Contenu_Onglet_Previsu');
-    principal.appendChild(code);
+//    $('#Rcl_Code_Genere')[0].innerHTML="";;
+//
+//    var code = document.createElement('textarea');
+//    code.id = 'Rcl_Code_Genere';
+//
+//    var principal = document.getElementById('Rid_Contenu_Onglet_Previsu');
+//    principal.appendChild(code);
 
 
     this.entete.recupDonnees();
@@ -2665,7 +2665,32 @@ idEditeur = id de l'éditeur sur lequel l'objet this a été droppé
         
       // blocCible.div_fils.appendChild(nomBlocIntegre);
         
-    // On va maintenant afficher dans le bloc qu'on viens d'insérer un champs tete spécifiant qu'il a été intégré dans un autre bloc
+    // On va maintenant afficher dans le bloc qu'on vient d'insérer un champ tete spécifiant qu'il a été intégré dans un autre bloc
         
     // Et enfin, intégrer l'encapsulation au sein même du code. 
 }
+
+GenererFormulaireWIMS = function(reponseWimsJSON,statut)
+// Construit le formulaire permettant d'envoyer requête à WIMS
+{
+    $("#Rid_WIMS_OEF_Form").append("<input type=\"hidden\" name=\"session\" value=\""+reponseWimsJSON["wims_session"]+"\" />");
+    $("#Rid_Submit_WIMS_OEF_Form").show();
+}
+
+// Test de AJAX sur le serveur wims
+$("#testAjaxWims").click(function(){
+                     $.ajax({
+                            url : 'http://localhost/wims/wims.cgi?module=adm/raw&job=getinfoserver',
+                            type : 'GET',
+                            dataType : 'json', // On désire recevoir du Texte
+                            success : GenererFormulaireWIMS, // texte contient le texte renvoyé
+                            error : function(jq, statut){ // texte contient le texte renvoyé
+                            alert("texteerror : "+statut);
+                            }
+//                            complete : function(jq, statut){ // texte contient le texte renvoyé
+//                            alert("textecomplete : "+statut);
+//                            }
+                            });
+                     
+                     });
+
